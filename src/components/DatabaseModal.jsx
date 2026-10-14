@@ -373,6 +373,79 @@ export default function DatabaseModal({
                 </div>
               </div>
 
+              {/* Dedicated Cost Threshold Override Card */}
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-50/90 via-emerald-50/40 to-white border-2 border-amber-200 shadow-xs space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="w-5 h-5 text-amber-600" />
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">
+                        Easy Mode Override Threshold (`COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD`)
+                      </h4>
+                      <p className="text-xs text-slate-500">
+                        When Q1 chooses Easy Mode, if Microsoft annual cost exceeds Athena cost by more than this amount, Athena is picked instead.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold text-amber-800 bg-white px-2.5 py-1 rounded-full border border-amber-200 shadow-2xs font-mono">
+                    Current: ฿{Number(editedVars.COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD ?? 500000).toLocaleString()} THB
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <div className="w-full sm:w-64">
+                    <div className="relative">
+                      <span className="absolute left-3 top-2 text-slate-400 font-bold text-xs">฿</span>
+                      <input
+                        type="number"
+                        step="10000"
+                        value={editedVars.COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD ?? 500000}
+                        onChange={(e) => handleVarChange('COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD', e.target.value)}
+                        className="w-full pl-7 pr-3 py-1.5 rounded-lg border border-slate-300 font-mono font-bold text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => handleVarChange('COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD', 500000)}
+                      className="px-2.5 py-1 rounded bg-white hover:bg-amber-50 text-amber-800 font-semibold border border-amber-200 text-xs transition"
+                    >
+                      ฿500,000 THB (Default)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleVarChange('COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD', 250000)}
+                      className="px-2.5 py-1 rounded bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs transition"
+                    >
+                      ฿250,000 THB (Aggressive)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleVarChange('COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD', 1000000)}
+                      className="px-2.5 py-1 rounded bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs transition"
+                    >
+                      ฿1,000,000 THB (Conservative)
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      dbService.updateVariable('COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD', editedVars.COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD ?? 500000);
+                      loadData();
+                      if (onDatabaseUpdated) onDatabaseUpdated();
+                      setSaveSuccess(true);
+                      setTimeout(() => setSaveSuccess(false), 2000);
+                    }}
+                    className="ml-auto px-4 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition"
+                  >
+                    Save Threshold
+                  </button>
+                </div>
+              </div>
+
               {/* All Database Variables Table Header */}
               <div className="flex items-center justify-between pb-2 border-b border-slate-200">
                 <div>

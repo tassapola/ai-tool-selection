@@ -180,6 +180,51 @@ export async function exportAssessmentToDocx({
             spacing: { before: 240, after: 120 }
           }),
 
+          // Advisory Notice Box
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              new TableRow({
+                children: [
+                  new TableCell({
+                    borders: {
+                      top: { style: BorderStyle.SINGLE, size: 3, color: 'D97706' },
+                      bottom: { style: BorderStyle.SINGLE, size: 3, color: 'D97706' },
+                      left: { style: BorderStyle.SINGLE, size: 6, color: 'D97706' },
+                      right: { style: BorderStyle.SINGLE, size: 3, color: 'D97706' }
+                    },
+                    shading: { fill: 'FFFBEB' },
+                    children: [
+                      new Paragraph({
+                        spacing: { before: 80, after: 60 },
+                        children: [
+                          new TextRun({
+                            text: 'IMPORTANT ADVISORY DISCLAIMER (NON-FINAL SUGGESTION):',
+                            bold: true,
+                            color: '92400E',
+                            size: 19
+                          })
+                        ]
+                      }),
+                      new Paragraph({
+                        spacing: { after: 80 },
+                        children: [
+                          new TextRun({
+                            text: 'This automated tool recommendation is an advisory suggestion generated from technical criteria and cost estimation formulas. It is NOT final. Evaluators and project committees must also comprehensively assess Time-to-Market, Team People & Skills Readiness, Operational Maintenance Capacity, and all relevant KBank Architectural and Enterprise Governance Processes in conjunction with this suggestion before making a final commitment.',
+                            color: '78350F',
+                            size: 17
+                          })
+                        ]
+                      })
+                    ]
+                  })
+                ]
+              })
+            ]
+          }),
+
+          new Paragraph({ text: '', spacing: { after: 140 } }),
+
           new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
             rows: [
@@ -348,6 +393,13 @@ export async function exportAssessmentToDocx({
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `฿${variables.COST_OF_PROD_QUESTION ?? 1.0}` })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'THB per production chat query' })] })
                 ]
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD' })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `฿${(variables.COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD ?? 500000.0).toLocaleString()}`, bold: true })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Cost difference threshold to recommend Athena over Easy Mode' })] })
+                ]
               })
             ]
           }),
@@ -369,13 +421,13 @@ export async function exportAssessmentToDocx({
                   new TableCell({
                     borders: headerBorder,
                     shading: { fill: 'F1F5F9' },
-                    width: { size: 15, type: WidthType.PERCENTAGE },
+                    width: { size: 20, type: WidthType.PERCENTAGE },
                     children: [new Paragraph({ children: [new TextRun({ text: 'Question', bold: true })] })]
                   }),
                   new TableCell({
                     borders: headerBorder,
                     shading: { fill: 'F1F5F9' },
-                    width: { size: 50, type: WidthType.PERCENTAGE },
+                    width: { size: 45, type: WidthType.PERCENTAGE },
                     children: [new Paragraph({ children: [new TextRun({ text: 'Description / Criteria', bold: true })] })]
                   }),
                   new TableCell({
@@ -388,8 +440,8 @@ export async function exportAssessmentToDocx({
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Question 1' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Team capacity to learn multi-stage agentic workflow' })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Question 1: Advanced Builder Readiness' })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Team capacity to learn and configure multi-stage agentic workflow' })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ text: q1AgenticWorkflow === 'yes' ? 'Yes (Workflow Capable)' : 'No (Easy Mode Required)', bold: true })] })
                 ]
               }),

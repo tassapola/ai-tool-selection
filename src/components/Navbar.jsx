@@ -11,13 +11,13 @@ export default function Navbar({
   isDbReady
 }) {
   const steps = [
-    { num: 1, label: 'Readiness' },
-    { num: 2, label: 'Cost: M365' },
-    { num: 3, label: 'Cost: Athena' },
-    { num: 4, label: 'KBank Systems' },
-    { num: 5, label: 'UAM Governance' },
-    { num: 6, label: 'Model Roadmap' },
-    { num: 7, label: 'Summary' },
+    { num: 1, label: 'Builder Readiness', title: 'Question 1: Advanced Builder Readiness' },
+    { num: 2, label: 'Cost: M365', title: 'Question 2: Cost estimation: Microsoft solution' },
+    { num: 3, label: 'Cost: Athena', title: 'Question 3: Cost estimation: Athena' },
+    { num: 4, label: 'KBank Systems', title: 'Question 4: Non-M365/MDP Systems (SmartServe)' },
+    { num: 5, label: 'UAM Governance', title: 'Question 5: UAM Governance & Ownership' },
+    { num: 6, label: 'Model Roadmap', title: 'Question 6: Local LLM / KBTG-Hosted LLM' },
+    { num: 7, label: 'Summary', title: 'Final Recommendation & Comparison' },
   ];
 
   return (
@@ -49,6 +49,8 @@ export default function Navbar({
             {steps.map((s, idx) => (
               <React.Fragment key={s.num}>
                 <button
+                  type="button"
+                  title={s.title}
                   onClick={() => onSelectStep(s.num)}
                   className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all flex items-center space-x-1.5 ${
                     currentStep === s.num

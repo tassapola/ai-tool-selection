@@ -193,7 +193,7 @@ export default function QuestionOne({
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
-            <span>Continue to Question 2 (Cost Estimation)</span>
+            <span>Continue to Question 2 (Cost estimation: Microsoft solution)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
