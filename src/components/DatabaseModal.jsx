@@ -245,19 +245,147 @@ export default function DatabaseModal({
         <div className="flex-1 overflow-auto p-6">
           {/* TAB 1: Config Variables & Thresholds */}
           {activeTab === 'variables' && (
-            <div className="space-y-4">
+            <div className="space-y-6">
+              {/* Dedicated Scoring Weights Tuner Card */}
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-indigo-50/90 via-purple-50/50 to-white border-2 border-indigo-200 shadow-xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    <Sliders className="w-5 h-5 text-indigo-600" />
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">
+                        Scoring Weight Configuration (Stored in SQLite `config_variables`)
+                      </h4>
+                      <p className="text-xs text-slate-500">
+                        Set how much weight is given to financial cost economics vs architectural features & requirements.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold text-indigo-700 bg-white px-2.5 py-1 rounded-full border border-indigo-200 shadow-2xs">
+                    Current: {editedVars.weight_cost_percentage ?? 60}% Cost / {editedVars.weight_features_percentage ?? 40}% Feat
+                  </span>
+                </div>
+
+                {/* Weight Sliders / Quick Controls */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-white p-3.5 rounded-xl border border-indigo-100 space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-slate-800">1. Cost Weight (weight_cost_percentage):</span>
+                      <span className="font-mono font-bold text-indigo-700 text-sm">{editedVars.weight_cost_percentage ?? 60}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="5"
+                      value={editedVars.weight_cost_percentage ?? 60}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        handleVarChange('weight_cost_percentage', val);
+                        handleVarChange('weight_features_percentage', 100 - val);
+                      }}
+                      className="w-full accent-indigo-600 cursor-pointer"
+                    />
+                    <div className="text-[11px] text-slate-400">Evaluates M365 license vs Athena operational costs</div>
+                  </div>
+
+                  <div className="bg-white p-3.5 rounded-xl border border-indigo-100 space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-slate-800">2. Features Weight (weight_features_percentage):</span>
+                      <span className="font-mono font-bold text-purple-700 text-sm">{editedVars.weight_features_percentage ?? 40}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="5"
+                      value={editedVars.weight_features_percentage ?? 40}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        handleVarChange('weight_features_percentage', val);
+                        handleVarChange('weight_cost_percentage', 100 - val);
+                      }}
+                      className="w-full accent-purple-600 cursor-pointer"
+                    />
+                    <div className="text-[11px] text-slate-400">Evaluates readiness, SmartServe, UAM & local LLMs</div>
+                  </div>
+                </div>
+
+                {/* Preset Chips */}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-indigo-100/80">
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span className="text-slate-500 font-medium text-[11px]">Quick Weight Presets:</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleVarChange('weight_cost_percentage', 60);
+                        handleVarChange('weight_features_percentage', 40);
+                      }}
+                      className="px-2.5 py-1 rounded bg-white hover:bg-indigo-50 text-indigo-700 font-bold border border-indigo-200 text-xs transition"
+                    >
+                      60% Cost / 40% Feat (Default)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleVarChange('weight_cost_percentage', 70);
+                        handleVarChange('weight_features_percentage', 30);
+                      }}
+                      className="px-2.5 py-1 rounded bg-white hover:bg-slate-100 text-slate-700 font-medium border border-slate-200 text-xs transition"
+                    >
+                      70% Cost / 30% Feat
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleVarChange('weight_cost_percentage', 50);
+                        handleVarChange('weight_features_percentage', 50);
+                      }}
+                      className="px-2.5 py-1 rounded bg-white hover:bg-slate-100 text-slate-700 font-medium border border-slate-200 text-xs transition"
+                    >
+                      50% / 50% Balanced
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleVarChange('weight_cost_percentage', 40);
+                        handleVarChange('weight_features_percentage', 60);
+                      }}
+                      className="px-2.5 py-1 rounded bg-white hover:bg-slate-100 text-slate-700 font-medium border border-slate-200 text-xs transition"
+                    >
+                      40% Cost / 60% Feat
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      dbService.updateVariable('weight_cost_percentage', editedVars.weight_cost_percentage ?? 60);
+                      dbService.updateVariable('weight_features_percentage', editedVars.weight_features_percentage ?? 40);
+                      loadData();
+                      if (onDatabaseUpdated) onDatabaseUpdated();
+                      setSaveSuccess(true);
+                      setTimeout(() => setSaveSuccess(false), 2000);
+                    }}
+                    className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition"
+                  >
+                    Save Weights to SQLite
+                  </button>
+                </div>
+              </div>
+
+              {/* All Database Variables Table Header */}
               <div className="flex items-center justify-between pb-2 border-b border-slate-200">
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">
                     Live Database Variables (`config_variables` table)
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Modify exchange rates, monthly seat costs, and scoring threshold variables below. Changes instantly recalculate all scoring formulas.
+                    Modify exchange rates, monthly seat costs, and Athena unit pricing below. Changes instantly recalculate all scoring formulas.
                   </p>
                 </div>
                 <button
                   onClick={handleSaveAll}
-                  className="inline-flex items-center space-x-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm transition"
+                  className="inline-flex items-center space-x-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-sm transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save All Changes</span>

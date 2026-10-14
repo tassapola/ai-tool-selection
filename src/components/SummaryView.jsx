@@ -1,5 +1,6 @@
-import React from 'react';
-import { ArrowLeft, CheckCircle2, Bot, Workflow, Cpu, Printer, Sparkles, ExternalLink, HelpCircle, FileText, Check, X, Shield, Server, Building2, Sliders } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, CheckCircle2, Bot, Workflow, Cpu, Printer, Sparkles, ExternalLink, HelpCircle, FileText, Check, X, Shield, Server, Building2, Sliders, FileDown, Stamp } from 'lucide-react';
+import { exportAssessmentToDocx } from '../utils/docxExport';
 
 export default function SummaryView({
   evaluation,
@@ -20,6 +21,8 @@ export default function SummaryView({
   onBackToQ6,
   onOpenDatabase
 }) {
+  const [isExportingDocx, setIsExportingDocx] = useState(false);
+
   const {
     scores = {},
     recommendedToolId,
@@ -36,6 +39,29 @@ export default function SummaryView({
     U = 0,
     reasoning = []
   } = evaluation;
+
+  const handleExportDocx = async () => {
+    setIsExportingDocx(true);
+    try {
+      await exportAssessmentToDocx({
+        evaluation,
+        q1AgenticWorkflow,
+        hUsers,
+        uUsers,
+        athenaInputs,
+        q4ConnectNonM365,
+        q5UamGovernance,
+        q6LocalKbtgLlm,
+        variables,
+        tools
+      });
+    } catch (err) {
+      console.error('Error exporting DOCX report:', err);
+      alert('Failed to generate .docx report: ' + err.message);
+    } finally {
+      setIsExportingDocx(false);
+    }
+  };
 
   const getToolIcon = (id) => {
     switch (id) {
@@ -63,7 +89,7 @@ export default function SummaryView({
         }`}>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-2">
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs uppercase font-extrabold tracking-wider px-2.5 py-1 rounded bg-white shadow-2xs border border-slate-200 text-slate-800">
                   Recommended Choice
                 </span>
@@ -134,17 +160,33 @@ export default function SummaryView({
               Comprehensive 3-Way Tool Comparison
             </h2>
             <p className="text-xs text-slate-500">
-              Evaluated against 60% Cost and 40% Features (readiness, KBank systems, UAM governance, LLM hosting).
+              Evaluated against {weightCost}% Cost and {weightFeatures}% Features (readiness, KBank systems, UAM governance, LLM hosting).
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="inline-flex items-center space-x-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Print / Save PDF</span>
-          </button>
+          
+          {/* Action Buttons: Export to DOCX & Print */}
+          <div className="flex items-center space-x-2 shrink-0">
+            <button
+              type="button"
+              disabled={isExportingDocx}
+              onClick={handleExportDocx}
+              className="inline-flex items-center space-x-1.5 text-xs font-bold text-white bg-blue-700 hover:bg-blue-800 active:scale-95 px-3.5 py-2 rounded-lg shadow-sm transition cursor-pointer"
+              title="Download formal Word Document (.docx) report with override & stamp sections"
+            >
+              <FileDown className="w-4 h-4" />
+              <span>{isExportingDocx ? 'Generating Word Doc...' : 'Export Report (.docx)'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="inline-flex items-center space-x-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg transition"
+              title="Print assessment summary"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Print</span>
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
@@ -279,6 +321,72 @@ export default function SummaryView({
         </div>
       </div>
 
+      {/* Human Override & Stamp Preview Section */}
+      <div className="p-6 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/70 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+          <div className="flex items-center space-x-2.5">
+            <div className="p-2 rounded-lg bg-indigo-100 text-indigo-700">
+              <Stamp className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">
+                Formal Sign-off & Human Override Section (Included in .docx)
+              </h3>
+              <p className="text-xs text-slate-500">
+                The exported Word document includes dedicated sections for human assessor verification, management override, and official department stamps.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            disabled={isExportingDocx}
+            onClick={handleExportDocx}
+            className="inline-flex items-center space-x-1.5 text-xs font-bold text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3.5 py-2 rounded-lg transition shrink-0"
+          >
+            <FileDown className="w-4 h-4" />
+            <span>Download .docx Report</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+            <span className="font-bold text-slate-800 block uppercase tracking-wider text-[11px]">
+              Management Override Options:
+            </span>
+            <div className="space-y-1.5 text-slate-600">
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 border border-slate-400 rounded-sm inline-block"></span>
+                <span>Accept automated recommendation ({recommendedTool ? recommendedTool.name : 'Selected'})</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 border border-slate-400 rounded-sm inline-block"></span>
+                <span>Override with alternate tool: [ ] M365 Copilot  [ ] Studio  [ ] Athena</span>
+              </div>
+              <div className="pt-1 text-[11px] text-slate-400 italic">
+                * Includes 3 multi-line rows for written management justification.
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+            <span className="font-bold text-slate-800 block uppercase tracking-wider text-[11px]">
+              Official Stamp & Signature Box:
+            </span>
+            <div className="flex justify-between items-center text-slate-600 pt-1">
+              <div className="space-y-1">
+                <div>• Assessor Name & Title</div>
+                <div>• Department / Division</div>
+                <div>• Physical Signature & Date</div>
+              </div>
+              <div className="w-28 h-20 border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center text-center p-1 bg-slate-50 text-[10px] text-slate-400 font-semibold">
+                AFFIX OFFICIAL STAMP / SEAL
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Inputs Review of all 6 Questions */}
       <div className="bg-slate-50 rounded-xl border border-slate-200 p-5 space-y-3">
         <div className="flex items-center justify-between pb-2 border-b border-slate-200">
@@ -370,14 +478,26 @@ export default function SummaryView({
           <span>Back to Question 6 (Model Roadmap)</span>
         </button>
 
-        <button
-          type="button"
-          onClick={onOpenDatabase}
-          className="inline-flex items-center space-x-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-sm transition"
-        >
-          <Sliders className="w-4 h-4 text-indigo-300" />
-          <span>Tweak Weights & SQLite Variables</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <button
+            type="button"
+            disabled={isExportingDocx}
+            onClick={handleExportDocx}
+            className="inline-flex items-center space-x-2 px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition"
+          >
+            <FileDown className="w-4 h-4" />
+            <span>Export Report (.docx)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenDatabase}
+            className="inline-flex items-center space-x-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-sm transition"
+          >
+            <Sliders className="w-4 h-4 text-indigo-300" />
+            <span>Tweak Weights & SQLite Variables</span>
+          </button>
+        </div>
       </div>
     </div>
   );
