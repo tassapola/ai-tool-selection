@@ -14,7 +14,7 @@ import SummaryView from './components/SummaryView';
 import DatabaseModal from './components/DatabaseModal';
 import AssumptionsModal from './components/AssumptionsModal';
 import ScreenSizeAlert from './components/ScreenSizeAlert';
-import { Sparkles, Database } from 'lucide-react';
+import { Sparkles, Database, Laptop } from 'lucide-react';
 
 const SESSION_STORAGE_KEY = 'antigravity_assessment_draft_v1';
 
@@ -297,6 +297,25 @@ export default function App() {
         licenseMonthlyUsd={variables.m365_license_monthly_usd ?? 20}
         isDbReady={isDbReady}
       />
+
+      {/* Mobile & Small Screen Suggestion Strip (Visible on screens < 1280px) */}
+      <div className="block xl:hidden bg-amber-50/90 border-b border-amber-200/90 px-3 sm:px-4 py-1.5">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2 text-xs">
+          <div className="flex items-center space-x-2 text-amber-900 min-w-0">
+            <Laptop className="w-4 h-4 text-amber-700 shrink-0" />
+            <span className="text-[11px] sm:text-xs truncate">
+              <strong className="text-amber-950 font-bold">แนะนำเปิดบน Laptop:</strong> เพื่อดูแถบขั้นตอน 8 สเตจและตารางเปรียบเทียบเต็มรูปแบบ
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsScreenAlertOpen(true)}
+            className="shrink-0 text-[11px] font-bold text-amber-800 hover:text-amber-950 bg-white hover:bg-amber-100/80 px-2 py-0.5 rounded border border-amber-300 shadow-2xs cursor-pointer transition whitespace-nowrap"
+          >
+            คัดลอกลิงก์ ↗
+          </button>
+        </div>
+      </div>
 
       {/* 2. Top Sticky Tool Recommendation Panel (Holds off recommendation until first 3 questions are completed) */}
       <RecommendationPanel

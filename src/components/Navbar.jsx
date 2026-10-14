@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, Sparkles, RefreshCw, ArrowRight, Info, Maximize2 } from 'lucide-react';
+import { Database, Sparkles, RefreshCw, ArrowRight, Info, Maximize2, Laptop } from 'lucide-react';
 
 export default function Navbar({
   currentStep,
@@ -26,9 +26,9 @@ export default function Navbar({
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-40 backdrop-blur-md bg-white/90 w-full">
       <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6">
-        <div className="flex items-center justify-between h-16 gap-2">
+        <div className="flex items-center justify-between h-16 gap-1 sm:gap-2">
           {/* Logo & Narrow Title */}
-          <div className="flex items-center space-x-2 shrink-0">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-xs text-white shrink-0">
               <Sparkles className="w-4 h-4" />
             </div>
@@ -37,11 +37,11 @@ export default function Navbar({
                 <span className="font-extrabold text-slate-900 tracking-tight text-xs sm:text-sm leading-tight whitespace-nowrap">
                   เครื่องมือ AI
                 </span>
-                <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 whitespace-nowrap">
+                <span className="hidden sm:inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 whitespace-nowrap">
                   M365 vs Studio vs Athena
                 </span>
               </div>
-              <span className="text-[10px] text-slate-500 font-medium leading-tight whitespace-nowrap">
+              <span className="hidden sm:inline text-[10px] text-slate-500 font-medium leading-tight whitespace-nowrap">
                 (AI Tool Selection Advisor)
               </span>
             </div>
@@ -71,23 +71,22 @@ export default function Navbar({
             ))}
           </div>
 
-          {/* Compact Stage Indicator with Screen Size / Laptop Hint (Visible on screens < 1280px) */}
-          <div className="flex xl:hidden items-center space-x-2 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 shrink-0">
-            <span className="text-xs font-bold text-indigo-700">ข้อ {currentStep}/8</span>
+          {/* Compact Stage Indicator with Laptop Hint (Visible on screens < 1280px, guaranteed to fit on mobile) */}
+          <div className="flex xl:hidden items-center space-x-1.5 shrink-0">
             <button
               type="button"
               onClick={onOpenScreenSizeAlert}
-              className="inline-flex items-center space-x-1 text-[11px] font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded border border-amber-300 transition cursor-pointer shadow-2xs"
-              title="คลิกเพื่อดูคำแนะนำการขยายหน้าจอหรือการใช้งานบนคอมพิวเตอร์"
+              className="inline-flex items-center space-x-1 text-[11px] font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-lg border border-amber-300 transition cursor-pointer shadow-2xs whitespace-nowrap"
+              title="แนะนำเปิดบน Laptop เพื่อการแสดงผลที่สมบูรณ์"
             >
-              <Maximize2 className="w-3 h-3 text-amber-600" />
-              <span className="hidden sm:inline">แนะนำขยายจอเพื่อดูขั้นตอน</span>
-              <span className="sm:hidden">แนะนำขยายจอ</span>
+              <Laptop className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <span className="hidden md:inline">แนะนำเปิดบน Laptop / ขยายจอ</span>
+              <span className="md:hidden">แนะนำเปิดบน Laptop</span>
             </button>
           </div>
 
           {/* Right Action Buttons & Database Status */}
-          <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+          <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
             {/* Live Database Variables Pill */}
             <div className="hidden 2xl:flex items-center space-x-1 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -100,22 +99,24 @@ export default function Navbar({
             <button
               type="button"
               onClick={onOpenAssumptions}
-              className="relative inline-flex items-center space-x-1 px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-lg text-xs font-semibold transition shadow-xs cursor-pointer whitespace-nowrap"
+              className="relative inline-flex items-center space-x-1 px-2 py-1.5 sm:px-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-lg text-xs font-semibold transition shadow-xs cursor-pointer whitespace-nowrap"
               title="ดูสมมุติฐานเพิ่มเติมของระบบ (UAM & User Scale)"
             >
               <Info className="w-3.5 h-3.5 text-amber-600" />
-              <span>สมมุติฐานเพิ่มเติม</span>
+              <span className="hidden lg:inline">สมมุติฐานเพิ่มเติม</span>
+              <span className="hidden md:inline lg:hidden">สมมุติฐาน</span>
             </button>
 
             {/* SQLite Database Button */}
             <button
               type="button"
               onClick={onOpenDatabase}
-              className="relative inline-flex items-center space-x-1 px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium transition shadow-xs cursor-pointer whitespace-nowrap"
+              className="relative inline-flex items-center space-x-1 px-2 py-1.5 sm:px-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium transition shadow-xs cursor-pointer whitespace-nowrap"
               title="เปิดจัดการฐานข้อมูล SQLite และค่าน้ำหนัก"
             >
               <Database className="w-3.5 h-3.5 text-indigo-300" />
-              <span>ฐานข้อมูล SQLite</span>
+              <span className="hidden lg:inline">ฐานข้อมูล SQLite</span>
+              <span className="hidden md:inline lg:hidden">DB</span>
               {isDbReady && (
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               )}
