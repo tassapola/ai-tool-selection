@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, CheckCircle2, Bot, Workflow, Cpu, Printer, Sparkles, ExternalLink, HelpCircle, FileText, Check, X } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Bot, Workflow, Cpu, Printer, Sparkles, ExternalLink, HelpCircle, FileText, Check, X, Shield, Server, Building2, Sliders } from 'lucide-react';
 
 export default function SummaryView({
   evaluation,
@@ -7,11 +7,17 @@ export default function SummaryView({
   hUsers,
   uUsers,
   athenaInputs = {},
+  q4ConnectNonM365,
+  q5UamGovernance,
+  q6LocalKbtgLlm,
   tools = [],
   variables = {},
   onBackToQ1,
   onBackToQ2,
   onBackToQ3,
+  onBackToQ4,
+  onBackToQ5,
+  onBackToQ6,
   onOpenDatabase
 }) {
   const {
@@ -24,7 +30,8 @@ export default function SummaryView({
     athenaTotalCostThb = 0,
     athenaDevPocTotal = 0,
     athenaPilotProdTotal = 0,
-    athenaBreakdown = {},
+    weightCost = 60,
+    weightFeatures = 40,
     H = 0,
     U = 0,
     reasoning = []
@@ -63,6 +70,9 @@ export default function SummaryView({
                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
                   {scores[recommendedToolId]}% Match Score
                 </span>
+                <span className="text-[11px] font-mono text-slate-500 bg-white/70 px-2 py-0.5 rounded border border-slate-200">
+                  {weightCost}% Cost / {weightFeatures}% Features Weighting
+                </span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="p-2.5 bg-white rounded-xl shadow-xs border border-slate-200">
@@ -82,10 +92,10 @@ export default function SummaryView({
               </p>
             </div>
 
-            {/* Cost Comparison Pill */}
+            {/* Cost Snapshot Pill */}
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs text-right shrink-0 space-y-1">
               <div className="text-xs text-slate-500 font-medium">Estimated Solution Cost</div>
-              <div className="text-xl font-black text-slate-900">
+              <div className="text-2xl font-black text-slate-900">
                 {recommendedToolId === 'athena' ? (
                   <span>฿{athenaTotalCostThb.toLocaleString()}</span>
                 ) : (
@@ -124,7 +134,7 @@ export default function SummaryView({
               Comprehensive 3-Way Tool Comparison
             </h2>
             <p className="text-xs text-slate-500">
-              Cross-evaluation between Microsoft Turnkey, Copilot Studio Workflow Designer, and Athena (Gemini 3.1 Flash Lite).
+              Evaluated against 60% Cost and 40% Features (readiness, KBank systems, UAM governance, LLM hosting).
             </p>
           </div>
           <button
@@ -160,8 +170,14 @@ export default function SummaryView({
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">License Fee:</span>
-                <span className="font-semibold text-slate-800">${variables.m365_license_monthly_usd || 20}/mo/seat</span>
+                <span className="text-slate-500">KBank Internal APIs:</span>
+                <span className="font-semibold text-slate-800 flex items-center gap-1">
+                  <X className="w-3.5 h-3.5 text-slate-400" /> Cloud M365 Only
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">UAM Governance:</span>
+                <span className="font-semibold text-slate-800">Microsoft 365 Native</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Annual Est. Cost:</span>
@@ -170,7 +186,7 @@ export default function SummaryView({
             </div>
             <div className="text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
               <span className="font-bold text-slate-700 block mb-1">Best For:</span>
-              <span>General productivity, document drafting, summarization in Teams/Word without multi-step chaining.</span>
+              <span>General productivity, summarization in Teams/Word without multi-step chaining or internal core integrations.</span>
             </div>
           </div>
 
@@ -196,8 +212,12 @@ export default function SummaryView({
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">License Fee:</span>
-                <span className="font-semibold text-slate-800">${variables.m365_license_monthly_usd || 20}/mo/seat</span>
+                <span className="text-slate-500">Non-M365 Systems:</span>
+                <span className="font-semibold text-slate-800">Requires Custom Gateways</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">UAM Governance:</span>
+                <span className="font-semibold text-purple-700">Decentralized / Manual</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Annual Est. Cost:</span>
@@ -206,7 +226,7 @@ export default function SummaryView({
             </div>
             <div className="text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
               <span className="font-bold text-slate-700 block mb-1">Best For:</span>
-              <span>Custom multi-stage triggers, CRM/ERP connectors, prompt chaining where existing M365 licenses cover seats.</span>
+              <span>Multi-step flows confined to Microsoft 365/MDP where your team actively owns UAM audit lifecycle.</span>
             </div>
           </div>
 
@@ -231,71 +251,110 @@ export default function SummaryView({
             </div>
             <div className="space-y-2 text-xs border-t border-slate-100 pt-3">
               <div className="flex justify-between">
-                <span className="text-slate-500">Workflow Designer:</span>
+                <span className="text-slate-500">SmartServe Integration:</span>
                 <span className="font-semibold text-emerald-700 flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5 text-emerald-600" /> Custom / Code
+                  <Check className="w-3.5 h-3.5 text-emerald-600" /> Native Internal
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Microsoft Seat Tax:</span>
-                <span className="font-semibold text-emerald-700">฿0 / user seat</span>
+                <span className="text-slate-500">UAM Governance:</span>
+                <span className="font-semibold text-emerald-700">Centralized Enterprise</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Estimated Total Cost:</span>
-                <span className="font-bold text-emerald-800">฿{athenaTotalCostThb.toLocaleString()}</span>
+                <span className="text-slate-500">Local / KBTG LLM:</span>
+                <span className="font-semibold text-emerald-700 flex items-center gap-1">
+                  <Check className="w-3.5 h-3.5 text-emerald-600" /> Supported
+                </span>
               </div>
-              <div className="text-[11px] text-slate-500 flex justify-between">
-                <span>• Dev & PoC: ฿{athenaDevPocTotal.toLocaleString()}</span>
-                <span>• Pilot/Prod: ฿{athenaPilotProdTotal.toLocaleString()}</span>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Estimated Cost:</span>
+                <span className="font-bold text-emerald-800">฿{athenaTotalCostThb.toLocaleString()}</span>
               </div>
             </div>
             <div className="text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
               <span className="font-bold text-slate-700 block mb-1">Best For:</span>
-              <span>Large user cohorts, proprietary documents, customized LLM routing with Gemini 3.1 Flash Lite without recurring per-seat fees.</span>
+              <span>Non-M365 KBank systems (SmartServe), centralized UAM governance, KBTG/local LLM roadmap, and avoiding per-user seat tax.</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Inputs Review */}
+      {/* Inputs Review of all 6 Questions */}
       <div className="bg-slate-50 rounded-xl border border-slate-200 p-5 space-y-3">
         <div className="flex items-center justify-between pb-2 border-b border-slate-200">
           <span className="text-xs font-bold uppercase text-slate-700 tracking-wider">
-            Inputs Summary Recorded
+            All 6 Assessment Answers
           </span>
-          <div className="flex items-center space-x-2 text-xs">
-            <button onClick={onBackToQ1} className="text-indigo-600 hover:underline font-medium">
-              Edit Q1
-            </button>
-            <span className="text-slate-300">•</span>
-            <button onClick={onBackToQ2} className="text-blue-600 hover:underline font-medium">
-              Edit Q2 (Microsoft)
-            </button>
-            <span className="text-slate-300">•</span>
-            <button onClick={onBackToQ3} className="text-emerald-600 hover:underline font-medium">
-              Edit Q3 (Athena)
-            </button>
-          </div>
+          <span className="text-xs text-slate-500 font-mono">
+            Weighting: {weightCost}% Cost • {weightFeatures}% Features
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div className="bg-white p-3 rounded-lg border border-slate-200">
-            <span className="text-slate-500 block">Q1 Agentic Learner:</span>
-            <span className="font-bold text-slate-900 capitalize">
-              {q1AgenticWorkflow === 'yes' ? 'Yes (Workflow Capable)' : 'No (Requires Easy Mode)'}
-            </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          {/* Q1 */}
+          <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-slate-800">1. Workflow Learner</span>
+              <button onClick={onBackToQ1} className="text-indigo-600 hover:underline text-[11px]">Edit</button>
+            </div>
+            <div className="text-slate-600">
+              {q1AgenticWorkflow === 'yes' ? '✅ Yes (Ready to build)' : '❌ No (Turnkey needed)'}
+            </div>
           </div>
-          <div className="bg-white p-3 rounded-lg border border-slate-200">
-            <span className="text-slate-500 block">Q2 Microsoft Licenses:</span>
-            <span className="font-bold text-slate-900">
-              H: {H} existing • U: {U} users (฿{annualCostThb.toLocaleString()} / yr)
-            </span>
+
+          {/* Q2 */}
+          <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-slate-800">2. Microsoft Cost</span>
+              <button onClick={onBackToQ2} className="text-blue-600 hover:underline text-[11px]">Edit</button>
+            </div>
+            <div className="text-slate-600">
+              H: {H} • U: {U} → <strong>฿{annualCostThb.toLocaleString()} / yr</strong>
+            </div>
           </div>
-          <div className="bg-white p-3 rounded-lg border border-slate-200">
-            <span className="text-slate-500 block">Q3 Athena Modeling:</span>
-            <span className="font-bold text-slate-900">
-              Total: ฿{athenaTotalCostThb.toLocaleString()} (Gemini 3.1 Flash Lite)
-            </span>
+
+          {/* Q3 */}
+          <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-slate-800">3. Athena Cost</span>
+              <button onClick={onBackToQ3} className="text-emerald-600 hover:underline text-[11px]">Edit</button>
+            </div>
+            <div className="text-slate-600">
+              Total: <strong>฿{athenaTotalCostThb.toLocaleString()}</strong> (Gemini 3.1 Flash Lite)
+            </div>
+          </div>
+
+          {/* Q4 */}
+          <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-slate-800">4. KBank Systems (SmartServe)</span>
+              <button onClick={onBackToQ4} className="text-emerald-600 hover:underline text-[11px]">Edit</button>
+            </div>
+            <div className="text-slate-600">
+              {q4ConnectNonM365 === 'yes' ? '✅ Yes (Need SmartServe integration)' : '❌ No (M365/MDP only)'}
+            </div>
+          </div>
+
+          {/* Q5 */}
+          <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-slate-800">5. UAM Governance Control</span>
+              <button onClick={onBackToQ5} className="text-purple-600 hover:underline text-[11px]">Edit</button>
+            </div>
+            <div className="text-slate-600">
+              {q5UamGovernance === 'yes' ? '✅ Yes (Team can audit UAM)' : '❌ No (Need centralized UAM)'}
+            </div>
+          </div>
+
+          {/* Q6 */}
+          <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-slate-800">6. Local / KBTG LLM</span>
+              <button onClick={onBackToQ6} className="text-teal-600 hover:underline text-[11px]">Edit</button>
+            </div>
+            <div className="text-slate-600">
+              {q6LocalKbtgLlm === 'yes' ? '✅ Yes (Plan internal models)' : '❌ No (Cloud commercial LLMs)'}
+            </div>
           </div>
         </div>
       </div>
@@ -304,11 +363,11 @@ export default function SummaryView({
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200">
         <button
           type="button"
-          onClick={onBackToQ3}
+          onClick={onBackToQ6}
           className="inline-flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Athena Cost (Q3)</span>
+          <span>Back to Question 6 (Model Roadmap)</span>
         </button>
 
         <button
@@ -316,8 +375,8 @@ export default function SummaryView({
           onClick={onOpenDatabase}
           className="inline-flex items-center space-x-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-sm transition"
         >
-          <Sparkles className="w-4 h-4 text-indigo-300" />
-          <span>Tweak Variables in SQLite Database</span>
+          <Sliders className="w-4 h-4 text-indigo-300" />
+          <span>Tweak Weights & SQLite Variables</span>
         </button>
       </div>
     </div>

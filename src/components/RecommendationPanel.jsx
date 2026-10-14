@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, CheckCircle2, ChevronDown, ChevronUp, Bot, Workflow, Cpu, AlertCircle, HelpCircle } from 'lucide-react';
+import { Sparkles, CheckCircle2, ChevronDown, ChevronUp, Bot, Workflow, Cpu, Lock, HelpCircle, ArrowRight } from 'lucide-react';
 
 export default function RecommendationPanel({
   evaluation,
@@ -13,10 +13,16 @@ export default function RecommendationPanel({
     recommendedToolId,
     recommendedTool,
     annualCostThb = 0,
+    m365AnnualCostThb = 0,
+    athenaTotalCostThb = 0,
     H = 0,
     U = 0,
     reasoning = [],
-    isDecisive
+    isDecisive,
+    isPendingFirstThree = false,
+    completedCoreCount = 0,
+    weightCost = 60,
+    weightFeatures = 40
   } = evaluation;
 
   // Icon mapping for tools
@@ -77,20 +83,25 @@ export default function RecommendationPanel({
         {/* Top Header Row of the Panel */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-2.5">
           <div className="flex items-center space-x-2">
-            <span className="text-xs uppercase font-extrabold tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
-              Live Recommendation
+            <span className={`text-xs uppercase font-extrabold tracking-wider px-2 py-0.5 rounded border ${
+              isPendingFirstThree
+                ? 'bg-amber-50 text-amber-800 border-amber-200'
+                : 'bg-indigo-50 text-indigo-700 border-indigo-100'
+            }`}>
+              {isPendingFirstThree ? 'Assessment In Progress' : 'Live Recommendation'}
             </span>
             <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
               <span>Tool Recommendation:</span>
-              {isDecisive && recommendedTool ? (
+              {!isPendingFirstThree && recommendedTool ? (
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs sm:text-sm font-semibold border ${currentTheme.pillBg}`}>
                   {getToolIcon(recommendedToolId)}
                   <span>{recommendedTool.name}</span>
                   <span className="text-[11px] opacity-80 font-normal">({recommendedTool.mode_name})</span>
                 </span>
               ) : (
-                <span className="text-slate-400 font-normal italic text-xs sm:text-sm">
-                  (Awaiting answers to questions below)
+                <span className="text-amber-700 font-medium text-xs sm:text-sm flex items-center gap-1">
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>Unlocks after Question 3 (Readiness & Cost)</span>
                 </span>
               )}
             </h2>
@@ -101,14 +112,14 @@ export default function RecommendationPanel({
             <div className="hidden sm:flex items-center space-x-1.5 bg-blue-50/80 border border-blue-200 px-2.5 py-1 rounded-md">
               <span className="text-blue-700 font-medium">M365:</span>
               <span className="font-bold text-slate-900">
-                {annualCostThb === 0 ? '฿0/yr' : `฿${annualCostThb.toLocaleString()}/yr`}
+                {m365AnnualCostThb === 0 ? '฿0/yr' : `฿${m365AnnualCostThb.toLocaleString()}/yr`}
               </span>
             </div>
 
             <div className="flex items-center space-x-1.5 bg-emerald-50/80 border border-emerald-200 px-2.5 py-1 rounded-md">
               <span className="text-emerald-700 font-medium">Athena:</span>
               <span className="font-bold text-emerald-900">
-                {(evaluation.athenaTotalCostThb || 0) === 0 ? '฿0' : `฿${(evaluation.athenaTotalCostThb || 0).toLocaleString()}`}
+                {athenaTotalCostThb === 0 ? '฿0' : `฿${athenaTotalCostThb.toLocaleString()}`}
               </span>
             </div>
 
@@ -125,64 +136,89 @@ export default function RecommendationPanel({
 
         {/* The Bar which spans left to right */}
         <div className="space-y-1.5">
-          <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex shadow-inner border border-slate-200/80">
-            {/* Microsoft 365 Copilot Segment (Blue) */}
-            <div
-              style={{ width: `${scores.m365_copilot}%` }}
-              className={`h-full transition-all duration-500 ease-out flex items-center justify-center ${
-                recommendedToolId === 'm365_copilot'
-                  ? 'bg-blue-600'
-                  : 'bg-blue-400/80'
-              }`}
-              title={`Microsoft 365 Copilot: ${scores.m365_copilot}%`}
-            />
-
-            {/* Copilot Studio Segment (Purple) */}
-            <div
-              style={{ width: `${scores.copilot_studio}%` }}
-              className={`h-full transition-all duration-500 ease-out flex items-center justify-center ${
-                recommendedToolId === 'copilot_studio'
-                  ? 'bg-purple-600'
-                  : 'bg-purple-400/80'
-              }`}
-              title={`Copilot Studio: ${scores.copilot_studio}%`}
-            />
-
-            {/* Athena Segment (Emerald) */}
-            <div
-              style={{ width: `${scores.athena}%` }}
-              className={`h-full transition-all duration-500 ease-out flex items-center justify-center ${
-                recommendedToolId === 'athena'
-                  ? 'bg-emerald-600'
-                  : 'bg-emerald-400/80'
-              }`}
-              title={`Athena: ${scores.athena}%`}
-            />
-          </div>
-
-          {/* Bar Legend / Distribution labels */}
-          <div className="flex items-center justify-between text-[11px] sm:text-xs text-slate-600 font-medium px-1">
-            <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span>
-              <span className={recommendedToolId === 'm365_copilot' ? 'font-bold text-blue-900' : ''}>
-                M365 Copilot (Easy): <span className="font-semibold">{scores.m365_copilot}%</span>
-              </span>
+          {isPendingFirstThree ? (
+            /* Pending State: Progress bar indicating steps 1–3 */
+            <div className="space-y-1">
+              <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex shadow-inner border border-slate-200/80">
+                <div
+                  style={{ width: `${Math.round((completedCoreCount / 3) * 100)}%` }}
+                  className="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-500"
+                />
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
+                <span>Core questions answered: <strong>{completedCoreCount} of 3</strong></span>
+                <span className="font-medium text-amber-700">
+                  Tool recommendation appears once Questions 1, 2, and 3 are answered
+                </span>
+              </div>
             </div>
+          ) : (
+            /* Decisive State: Left to Right Tool Fit Distribution Bar */
+            <>
+              <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex shadow-inner border border-slate-200/80">
+                {/* Microsoft 365 Copilot Segment (Blue) */}
+                <div
+                  style={{ width: `${scores.m365_copilot}%` }}
+                  className={`h-full transition-all duration-500 ease-out flex items-center justify-center ${
+                    recommendedToolId === 'm365_copilot'
+                      ? 'bg-blue-600'
+                      : 'bg-blue-400/80'
+                  }`}
+                  title={`Microsoft 365 Copilot: ${scores.m365_copilot}%`}
+                />
 
-            <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-600 inline-block"></span>
-              <span className={recommendedToolId === 'copilot_studio' ? 'font-bold text-purple-900' : ''}>
-                Copilot Studio: <span className="font-semibold">{scores.copilot_studio}%</span>
-              </span>
-            </div>
+                {/* Copilot Studio Segment (Purple) */}
+                <div
+                  style={{ width: `${scores.copilot_studio}%` }}
+                  className={`h-full transition-all duration-500 ease-out flex items-center justify-center ${
+                    recommendedToolId === 'copilot_studio'
+                      ? 'bg-purple-600'
+                      : 'bg-purple-400/80'
+                  }`}
+                  title={`Copilot Studio: ${scores.copilot_studio}%`}
+                />
 
-            <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></span>
-              <span className={recommendedToolId === 'athena' ? 'font-bold text-emerald-900' : ''}>
-                Athena (Internal): <span className="font-semibold">{scores.athena}%</span>
-              </span>
-            </div>
-          </div>
+                {/* Athena Segment (Emerald) */}
+                <div
+                  style={{ width: `${scores.athena}%` }}
+                  className={`h-full transition-all duration-500 ease-out flex items-center justify-center ${
+                    recommendedToolId === 'athena'
+                      ? 'bg-emerald-600'
+                      : 'bg-emerald-400/80'
+                  }`}
+                  title={`Athena: ${scores.athena}%`}
+                />
+              </div>
+
+              {/* Bar Legend / Distribution labels */}
+              <div className="flex flex-wrap items-center justify-between text-[11px] sm:text-xs text-slate-600 font-medium px-1 gap-1">
+                <div className="flex items-center space-x-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span>
+                  <span className={recommendedToolId === 'm365_copilot' ? 'font-bold text-blue-900' : ''}>
+                    M365 Copilot (Easy): <span className="font-semibold">{scores.m365_copilot}%</span>
+                  </span>
+                </div>
+
+                <div className="flex items-center space-x-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-purple-600 inline-block"></span>
+                  <span className={recommendedToolId === 'copilot_studio' ? 'font-bold text-purple-900' : ''}>
+                    Copilot Studio: <span className="font-semibold">{scores.copilot_studio}%</span>
+                  </span>
+                </div>
+
+                <div className="flex items-center space-x-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></span>
+                  <span className={recommendedToolId === 'athena' ? 'font-bold text-emerald-900' : ''}>
+                    Athena (Internal): <span className="font-semibold">{scores.athena}%</span>
+                  </span>
+                </div>
+
+                <span className="text-[10px] text-slate-400 font-mono hidden md:inline">
+                  (Weighting: {weightCost}% Cost • {weightFeatures}% Features)
+                </span>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Expandable Rationale Drawer */}
@@ -190,7 +226,7 @@ export default function RecommendationPanel({
           <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-3 animate-fadeIn">
             <div className="md:col-span-2 space-y-2">
               <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                Decision Rationale
+                Decision & Weighting Rationale
               </h3>
               <ul className="space-y-1.5">
                 {reasoning.map((r, i) => (
@@ -205,23 +241,23 @@ export default function RecommendationPanel({
             <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs space-y-1.5">
               <div className="font-semibold text-slate-800 flex items-center justify-between">
                 <span>Cost Comparison</span>
-                <span className="text-[10px] text-slate-500 font-normal">Annual / Operational</span>
+                <span className="text-[10px] text-slate-500 font-normal">Weight: {weightCost}%</span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>M365 License Cost:</span>
                 <span className="font-bold text-blue-700">
-                  {annualCostThb === 0 ? '฿0 / yr' : `฿${annualCostThb.toLocaleString()} / yr`}
+                  {m365AnnualCostThb === 0 ? '฿0 / yr' : `฿${m365AnnualCostThb.toLocaleString()} / yr`}
                 </span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Athena Run Cost:</span>
                 <span className="font-bold text-emerald-700">
-                  ฿{(evaluation.athenaTotalCostThb || 0).toLocaleString()}
+                  ฿{athenaTotalCostThb.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between text-slate-500 text-[10px] pt-1 border-t border-slate-200">
-                <span>Model Base:</span>
-                <span className="font-medium text-slate-700">Gemini 3.1 Flash Lite</span>
+                <span>Features Weight:</span>
+                <span className="font-medium text-slate-700">{weightFeatures}%</span>
               </div>
             </div>
           </div>

@@ -27,6 +27,25 @@ export const DEFAULT_CONFIG_VARIABLES = [
     category: 'pricing',
     description: 'Multiplier for annualizing recurring monthly license fees.'
   },
+  // Scoring Weights: Cost = 60%, Features = 40%
+  {
+    key: 'weight_cost_percentage',
+    value: 60.0,
+    data_type: 'number',
+    unit: '%',
+    label: 'Cost Evaluation Weight',
+    category: 'weights',
+    description: 'Weight assigned to licensing & infrastructure cost economics (default 60%).'
+  },
+  {
+    key: 'weight_features_percentage',
+    value: 40.0,
+    data_type: 'number',
+    unit: '%',
+    label: 'Features & Architecture Weight',
+    category: 'weights',
+    description: 'Weight assigned to readiness, enterprise integration, governance, and model hosting (default 40%).'
+  },
   // Athena Cost Variables (Gemini 3.1 Flash Lite model)
   {
     key: 'COST_OF_1_DL_PAGE',
@@ -167,9 +186,9 @@ export const DEFAULT_TOOLS = [
     bg_color: 'bg-purple-50',
     border_color: 'border-purple-300',
     text_color: 'text-purple-700',
-    ideal_for: 'Teams with at least one member ready to learn flow designer and build multi-stage agentic logic.',
+    ideal_for: 'Teams with at least one member ready to learn flow designer and build multi-stage agentic logic within Microsoft 365/MDP ecosystem.',
     pros: 'Visual flow designer, enterprise connectors, agentic multi-stage triggers, Microsoft ecosystem synergy',
-    cons: 'Requires builder learning curve, additional capacity/licensing governance',
+    cons: 'Requires builder learning curve, requires decentralized UAM governance management, additional licensing governance',
     workflow_complexity: 'High (Visual Builder)'
   },
   {
@@ -178,13 +197,13 @@ export const DEFAULT_TOOLS = [
     mode_name: 'Internal Agentic Platform',
     badge: 'Custom Enterprise System (Gemini 3.1 Flash Lite)',
     tagline: 'High-scale internal agent with zero per-user seat license overhead',
-    description: 'Proprietary internal agent platform engineered for deep internal document processing, customized LLM routing with Gemini 3.1 Flash Lite, domain-specific data governance, and high-volume scalability.',
+    description: 'Proprietary internal agent platform engineered for deep internal document processing, customized LLM routing with Gemini 3.1 Flash Lite, KBank internal system integrations (e.g. SmartServe), centralized UAM governance, and future KBTG/local LLM support.',
     primary_color: '#059669', // Emerald-600
     bg_color: 'bg-emerald-50',
     border_color: 'border-emerald-300',
     text_color: 'text-emerald-700',
-    ideal_for: 'Custom document corpora, high user counts where Microsoft per-seat licenses become costly, or proprietary internal integrations.',
-    pros: 'Zero per-user Microsoft tax, tailored to internal documents & databases, Gemini 3.1 Flash Lite cost efficiency',
+    ideal_for: 'Non-M365/MDP integrations (SmartServe), centralized UAM governance, KBTG/local LLM roadmap, and eliminating per-user seat licenses.',
+    pros: 'Zero per-user Microsoft tax, connects to KBank systems (SmartServe), enterprise-managed UAM, local/KBTG LLM roadmap support',
     cons: 'Internal team maintenance required, separate UI from standard Office apps',
     workflow_complexity: 'Customizable / Advanced'
   }
@@ -202,24 +221,33 @@ export const DEFAULT_SCORING_RULES = [
   },
   {
     id: 2,
-    rule_name: 'has_workflow_builder',
-    condition: 'q1_has_agentic_person == 1',
-    target_tool: 'copilot_studio',
-    score_delta: 45,
-    is_hard_override: 0,
-    reason: 'Team has capacity to build multi-stage agentic workflows.'
+    rule_name: 'need_non_m365_kbank_systems',
+    condition: 'q4_need_non_m365_systems == 1',
+    target_tool: 'athena',
+    score_delta: 60,
+    is_hard_override: 1,
+    reason: 'Requirement to connect to KBank internal systems outside M365/MDP (e.g. SmartServe); Athena is uniquely capable.'
   },
   {
     id: 3,
-    rule_name: 'athena_agentic_capability',
-    condition: 'q1_has_agentic_person == 1',
+    rule_name: 'no_uam_governance_prepared',
+    condition: 'q5_uam_governance_ready == 0',
     target_tool: 'athena',
-    score_delta: 40,
-    is_hard_override: 0,
-    reason: 'Team technical capability also unlocks Athena custom agent orchestration.'
+    score_delta: 50,
+    is_hard_override: 1,
+    reason: 'Team lacks people/processes for manual agent permission reviews and ownership transfers; Athena provides centralized enterprise UAM.'
   },
   {
     id: 4,
+    rule_name: 'plan_local_or_kbtg_llm',
+    condition: 'q6_plan_local_kbtg_llm == 1',
+    target_tool: 'athena',
+    score_delta: 50,
+    is_hard_override: 1,
+    reason: 'Future roadmap includes Local LLMs or KBank/KBTG-hosted models; only Athena supports custom internal model endpoints.'
+  },
+  {
+    id: 5,
     rule_name: 'zero_additional_cost_advantage',
     condition: 'q2_extra_cost == 0',
     target_tool: 'copilot_studio',
@@ -228,12 +256,12 @@ export const DEFAULT_SCORING_RULES = [
     reason: 'All users already possess Advanced licenses (U <= H), making Microsoft 365 Copilot Studio free of additional license fees.'
   },
   {
-    id: 5,
-    rule_name: 'high_cost_athena_pivot',
-    condition: 'q2_extra_cost >= athena_cost',
+    id: 6,
+    rule_name: 'athena_cost_efficiency',
+    condition: 'athena_cost < m365_extra_cost',
     target_tool: 'athena',
-    score_delta: 40,
+    score_delta: 35,
     is_hard_override: 0,
-    reason: 'Annual Microsoft licensing cost exceeds Athena total deployment cost; Athena delivers superior economics.'
+    reason: 'Athena operational cost delivers superior economics over Microsoft additional seat licensing.'
   }
 ];

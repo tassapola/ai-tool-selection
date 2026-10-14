@@ -1,6 +1,8 @@
 /**
  * Computes tool recommendation scores, Microsoft license cost, and Athena infrastructure cost
  * based on user inputs and SQLite database variables.
+ *
+ * Weighting: Cost = 60%, Features = 40%
  */
 export function calculateEvaluation({
   q1AgenticWorkflow, // 'yes' | 'no' | null
@@ -8,14 +10,24 @@ export function calculateEvaluation({
   hUsers = 0,        // Number of existing Advanced licenses (H)
   uUsers = 0,        // Number of users needed (U)
   // Question 3 (Athena Solution)
-  athenaInputs = {}, // DL, DL_AVG_PAGES, DM, DM_AVG_PAGES, DH, DH_AVG_PAGES, IMG_COUNT, NOD, AD, EVAL_Q, EVAL_ATTEMPTS, U_ATHENA, Q_PER_DAY, PROD_MONTHS
-  variables = {},    // Values from SQLite config_variables table
-  tools = []         // Tools from SQLite tools table
+  athenaInputs = {}, // DL, DL_AVG_PAGES, DM, DM_AVG_PAGES, DH, DH_AVG_PAGES, IMG_COUNT, NOD, AD, EVAL_Q, EVAL_ATTEMPTS, U, Q_PER_DAY, PROD_MONTHS
+  // Question 4, 5, 6 (Features & Governance)
+  q4ConnectNonM365 = null, // 'yes' | 'no' | null (KBank systems outside M365/MDP e.g. SmartServe)
+  q5UamGovernance = null,  // 'yes' | 'no' | null (UAM governance & ownership transfer accountability)
+  q6LocalKbtgLlm = null,   // 'yes' | 'no' | null (Local LLM or KBank/KBTG-hosted LLM)
+  // Assessment progress flag
+  hasCompletedFirstThree = false,
+  variables = {},
+  tools = []
 }) {
   // Read dynamic variables from DB with safe defaults
   const usdThbRate = Number(variables.usd_thb_rate ?? 35.0);
   const licenseMonthlyUsd = Number(variables.m365_license_monthly_usd ?? 20.0);
   const monthsPerYear = Number(variables.m365_months_per_year ?? 12.0);
+
+  // Configurable weights (default 60% Cost, 40% Features)
+  const weightCost = Number(variables.weight_cost_percentage ?? 60.0) / 100.0;
+  const weightFeatures = Number(variables.weight_features_percentage ?? 40.0) / 100.0;
 
   // Athena rate constants from DB
   const costDlPage = Number(variables.COST_OF_1_DL_PAGE ?? 1.0);
@@ -52,19 +64,17 @@ export function calculateEvaluation({
   const EVAL_ATTEMPTS = Math.max(0, parseFloat(athenaInputs.EVAL_ATTEMPTS) || 0);
 
   // Section 2: Pilot & Production
-  // Use either dedicated Athena user input or fallback to general U
   const U_PROD = athenaInputs.U !== undefined && athenaInputs.U !== ''
     ? Math.max(0, parseInt(athenaInputs.U, 10) || 0)
     : U;
   const Q_PER_DAY = Math.max(0, parseFloat(athenaInputs.Q_PER_DAY) || 0);
   const PROD_MONTHS = Math.max(0, parseFloat(athenaInputs.PROD_MONTHS) || 0);
 
-  // Custom unit override if provided in example mode
   const effectiveCostOther = athenaInputs.COST_OF_1_OTHER !== undefined
     ? Number(athenaInputs.COST_OF_1_OTHER)
     : costOther;
 
-  // Section 1.1 Breakdown
+  // Subtotals
   const costDlTotal = DL * DL_AVG_PAGES * costDlPage;
   const costDmTotal = DM * DM_AVG_PAGES * costDmPage;
   const costDhTotal = DH * DH_AVG_PAGES * costDhPage;
@@ -72,46 +82,46 @@ export function calculateEvaluation({
   const costNodTotal = NOD * effectiveCostOther;
   const docsCostTotal = costDlTotal + costDmTotal + costDhTotal + costImgTotal + costNodTotal;
 
-  // Section 1.3 Breakdown
   const evalCostTotal = EVAL_Q * EVAL_ATTEMPTS * costEvalQ;
-
-  // Section 1: Dev & PoC Total
   const athenaDevPocTotal = docsCostTotal + evalCostTotal;
-
-  // Section 2: Pilot & Production Total
-  // Formula: U x Q_PER_DAY x 30 x PROD_MONTHS x COST_OF_PROD_QUESTION
   const athenaPilotProdTotal = U_PROD * Q_PER_DAY * 30 * PROD_MONTHS * costProdQ;
-
-  // Athena Total Cost
   const athenaTotalCostThb = athenaDevPocTotal + athenaPilotProdTotal;
 
   // -------------------------------------------------------------
-  // Tool Scoring Logic
+  // Check if first 3 questions are completed
   // -------------------------------------------------------------
-  let scores = {
-    m365_copilot: 0,
-    copilot_studio: 0,
-    athena: 0
-  };
+  // "Don't show tool recommendation until a user completes 3 first questions (readiness and cost)."
+  const isQ1Answered = q1AgenticWorkflow !== null;
+  const isQ2Answered = uUsers !== '' && uUsers !== null && !isNaN(uUsers);
+  const isQ3Answered = (athenaInputs.DL !== '' && athenaInputs.DL !== undefined) || 
+                       (athenaInputs.U !== '' && athenaInputs.U !== undefined) || 
+                       athenaTotalCostThb > 0 || 
+                       hasCompletedFirstThree;
 
-  let primaryRecommendationId = 'm365_copilot';
-  let reasoning = [];
-  let isDecisive = false;
+  const isEligibleForRecommendation = hasCompletedFirstThree || (isQ1Answered && isQ2Answered && isQ3Answered);
 
-  // Unanswered Q1 state
-  if (!q1AgenticWorkflow) {
+  // If first 3 questions not yet completed, return pending state
+  if (!isEligibleForRecommendation) {
+    let completedCount = 0;
+    if (isQ1Answered) completedCount++;
+    if (isQ2Answered) completedCount++;
+    if (isQ3Answered) completedCount++;
+
     return {
       scores: { m365_copilot: 34, copilot_studio: 33, athena: 33 },
       recommendedToolId: null,
       recommendedTool: null,
       m365AnnualCostUsd,
       m365AnnualCostThb,
-      annualCostThb: m365AnnualCostThb, // Alias for backward compatibility
+      annualCostThb: m365AnnualCostThb,
       additionalLicensesNeeded,
       usdThbRate,
       licenseMonthlyUsd,
       H,
       U,
+      athenaTotalCostThb,
+      athenaDevPocTotal,
+      athenaPilotProdTotal,
       athenaBreakdown: {
         costDlTotal,
         costDmTotal,
@@ -127,72 +137,133 @@ export function calculateEvaluation({
         Q_PER_DAY,
         PROD_MONTHS
       },
-      reasoning: ['Please answer Question 1 to begin personalized tool scoring.'],
-      isDecisive: false
+      reasoning: [
+        `Assessment in progress (${completedCount} of 3 core questions answered).`,
+        'Tool recommendation unlocks automatically once you complete Question 3 (Cost estimation: Athena).'
+      ],
+      isDecisive: false,
+      isPendingFirstThree: true,
+      completedCoreCount: completedCount
     };
   }
 
-  // --- RULE 1: Question 1 is 'no' ---
-  // "If the answer is no, tool recommendation is Microsoft 365 (easy mode)."
-  if (q1AgenticWorkflow === 'no') {
-    scores.m365_copilot = 92;
-    scores.copilot_studio = 4;
-    scores.athena = 4;
-    primaryRecommendationId = 'm365_copilot';
-    isDecisive = true;
-    reasoning.push('Your team does not have a dedicated builder to learn multi-stage agentic workflows.');
-    reasoning.push('Microsoft 365 Copilot (Easy Mode) is recommended because it provides immediate out-of-the-box productivity directly in Word, Excel, Teams, and Outlook with zero workflow designer learning curve.');
-  } 
-  // --- RULE 2: Question 1 is 'yes' ---
-  else if (q1AgenticWorkflow === 'yes') {
-    isDecisive = true;
-    scores.m365_copilot = 15; // Easy mode is suboptimal for teams needing multi-stage workflows
+  // -------------------------------------------------------------
+  // Scoring Model: 60% Cost + 40% Features
+  // -------------------------------------------------------------
+  let costScores = { m365_copilot: 50, copilot_studio: 50, athena: 50 };
+  let featureScores = { m365_copilot: 50, copilot_studio: 50, athena: 50 };
+  let reasoning = [];
 
-    // When U <= H: Microsoft has 0 additional license fees!
+  // A. COST SCORING (60% Weight)
+  if (m365AnnualCostThb === 0) {
+    // All users covered by H -> Microsoft license is ฿0
+    costScores.m365_copilot = 90;
+    costScores.copilot_studio = 95;
+    costScores.athena = 40;
+  } else if (athenaTotalCostThb > 0 && athenaTotalCostThb < m365AnnualCostThb) {
+    // Athena total cost is significantly less than Microsoft licenses
+    const ratio = Math.min(3, m365AnnualCostThb / Math.max(1, athenaTotalCostThb));
+    costScores.athena = Math.min(100, 70 + ratio * 10);
+    costScores.copilot_studio = Math.max(15, 60 - ratio * 15);
+    costScores.m365_copilot = Math.max(15, 50 - ratio * 15);
+  } else if (athenaTotalCostThb > m365AnnualCostThb && m365AnnualCostThb > 0) {
+    // Microsoft is cheaper than Athena
+    costScores.copilot_studio = 80;
+    costScores.m365_copilot = 75;
+    costScores.athena = 45;
+  }
+
+  // B. FEATURES SCORING (40% Weight)
+  // Question 1: Readiness
+  if (q1AgenticWorkflow === 'no') {
+    featureScores.m365_copilot += 80;
+    featureScores.copilot_studio -= 60;
+    featureScores.athena -= 60;
+  } else if (q1AgenticWorkflow === 'yes') {
+    featureScores.copilot_studio += 30;
+    featureScores.athena += 30;
+  }
+
+  // Question 4: Non-M365/MDP Systems (e.g. SmartServe)
+  // "If yes, recommend Athena."
+  if (q4ConnectNonM365 === 'yes') {
+    featureScores.athena += 70;
+    featureScores.copilot_studio -= 40;
+    featureScores.m365_copilot -= 40;
+  }
+
+  // Question 5: UAM Governance & Ownership
+  // "If no, recommend Athena."
+  if (q5UamGovernance === 'no') {
+    featureScores.athena += 60;
+    featureScores.copilot_studio -= 35;
+    featureScores.m365_copilot -= 30;
+  }
+
+  // Question 6: Local LLM or KBank/KBTG-hosted LLM
+  // "If yes, recommend Athena."
+  if (q6LocalKbtgLlm === 'yes') {
+    featureScores.athena += 65;
+    featureScores.copilot_studio -= 35;
+    featureScores.m365_copilot -= 35;
+  }
+
+  // C. COMBINED WEIGHTED SCORE: (60% Cost + 40% Features)
+  let rawWeightedScores = {
+    m365_copilot: Math.max(5, (weightCost * costScores.m365_copilot) + (weightFeatures * featureScores.m365_copilot)),
+    copilot_studio: Math.max(5, (weightCost * costScores.copilot_studio) + (weightFeatures * featureScores.copilot_studio)),
+    athena: Math.max(5, (weightCost * costScores.athena) + (weightFeatures * featureScores.athena))
+  };
+
+  // D. DECISIVE RULES & OVERRIDES
+  let primaryRecommendationId = 'm365_copilot';
+
+  // Rule 1: Q1 == 'no' -> Microsoft 365 Copilot (Easy Mode)
+  if (q1AgenticWorkflow === 'no') {
+    primaryRecommendationId = 'm365_copilot';
+    rawWeightedScores = { m365_copilot: 92, copilot_studio: 4, athena: 4 };
+    reasoning.push('Team does not have a member to learn multi-stage workflows; Microsoft 365 Copilot (Easy Mode) is recommended as the turnkey solution.');
+  }
+  // Rule 2, 3, 4: Athena decisive criteria (Q4=yes, Q5=no, Q6=yes)
+  else if (q4ConnectNonM365 === 'yes' || q5UamGovernance === 'no' || q6LocalKbtgLlm === 'yes') {
+    primaryRecommendationId = 'athena';
+    rawWeightedScores.athena = Math.max(68, rawWeightedScores.athena + 25);
+    rawWeightedScores.copilot_studio = Math.min(22, rawWeightedScores.copilot_studio);
+    rawWeightedScores.m365_copilot = Math.min(10, rawWeightedScores.m365_copilot);
+
+    if (q4ConnectNonM365 === 'yes') {
+      reasoning.push('Required connectivity to KBank internal systems outside M365/MDP (e.g. SmartServe); Athena is uniquely capable.');
+    }
+    if (q5UamGovernance === 'no') {
+      reasoning.push('Team lacks resources for manual agent permission reviews and ownership transfer; Athena provides centralized enterprise UAM governance.');
+    }
+    if (q6LocalKbtgLlm === 'yes') {
+      reasoning.push('Future roadmap includes Local LLMs or KBank/KBTG-hosted models; only Athena supports custom internal model endpoints.');
+    }
+  }
+  // Rule 5: Team ready for workflows, no Athena-specific blocker
+  else {
     if (m365AnnualCostThb === 0) {
-      scores.copilot_studio = 65;
-      scores.athena = 20;
       primaryRecommendationId = 'copilot_studio';
-      reasoning.push('Your team has members ready to build multi-stage agentic workflows.');
-      reasoning.push(`All ${U} users are already covered by existing Microsoft licenses (${H} available), resulting in ฿0 additional annual license fees.`);
-      reasoning.push('Microsoft 365 Copilot Studio is strongly recommended for native workflow orchestration and connectors at zero incremental seat cost.');
-    } 
-    // When Microsoft has license cost, compare with Athena economics
-    else if (athenaTotalCostThb > 0 && athenaTotalCostThb < m365AnnualCostThb) {
-      // Athena is cheaper overall than Microsoft licenses!
-      scores.athena = 65;
-      scores.copilot_studio = 20;
+      rawWeightedScores.copilot_studio = Math.max(65, rawWeightedScores.copilot_studio);
+      reasoning.push('Team has workflow builders and all users are covered by existing Microsoft licenses (฿0 incremental seat tax).');
+      reasoning.push('Copilot Studio is recommended for seamless Power Platform and Office 365 ecosystem synergy.');
+    } else if (athenaTotalCostThb < m365AnnualCostThb) {
       primaryRecommendationId = 'athena';
-      reasoning.push('Your team is technically equipped for multi-stage workflow engineering.');
-      reasoning.push(`Athena deployment cost (฿${athenaTotalCostThb.toLocaleString()}) provides superior ROI over Microsoft additional licensing (฿${m365AnnualCostThb.toLocaleString()}).`);
-      reasoning.push('Athena (Internal System) powered by Gemini 3.1 Flash Lite eliminates recurring per-seat Microsoft license fees with full customization.');
-    } 
-    else if (m365AnnualCostThb >= 210000 || U >= 30) {
-      // High annual Microsoft license cost (>฿210k / 25+ users)
-      scores.athena = 58;
-      scores.copilot_studio = 27;
-      primaryRecommendationId = 'athena';
-      reasoning.push('Your team is technically equipped for multi-stage workflow engineering.');
-      reasoning.push(`Additional Microsoft licensing would cost ฿${m365AnnualCostThb.toLocaleString()} / year (${additionalLicensesNeeded} extra users needed).`);
-      reasoning.push('Athena (Internal System) is recommended to scale across enterprise documents without per-user seat tax.');
-    } 
-    else {
-      // Moderate cost, team ready for workflows
-      scores.copilot_studio = 55;
-      scores.athena = 30;
+      reasoning.push(`Athena operational cost (฿${athenaTotalCostThb.toLocaleString()}) delivers superior 60% cost economics over Microsoft licensing (฿${m365AnnualCostThb.toLocaleString()}).`);
+      reasoning.push('Athena eliminates recurring per-user seat licenses while providing custom agentic capabilities.');
+    } else {
       primaryRecommendationId = 'copilot_studio';
-      reasoning.push('Your team has the capability to learn and construct multi-stage agentic workflows.');
-      reasoning.push(`Additional Microsoft licensing is manageable at ฿${m365AnnualCostThb.toLocaleString()} / year for ${additionalLicensesNeeded} extra licenses.`);
-      reasoning.push('Microsoft 365 Copilot Studio is recommended for seamless Microsoft 365 ecosystem synergy.');
+      reasoning.push(`Team has agentic workflow capacity and licensing cost (฿${m365AnnualCostThb.toLocaleString()}/yr) aligns with Microsoft ecosystem requirements.`);
     }
   }
 
-  // Calculate percentage distribution for the left-to-right bar
-  const totalScore = scores.m365_copilot + scores.copilot_studio + scores.athena;
+  // Normalize percentages to sum to 100%
+  const totalRaw = rawWeightedScores.m365_copilot + rawWeightedScores.copilot_studio + rawWeightedScores.athena;
   const percentages = {
-    m365_copilot: Math.round((scores.m365_copilot / totalScore) * 100),
-    copilot_studio: Math.round((scores.copilot_studio / totalScore) * 100),
-    athena: Math.max(0, 100 - (Math.round((scores.m365_copilot / totalScore) * 100) + Math.round((scores.copilot_studio / totalScore) * 100)))
+    m365_copilot: Math.round((rawWeightedScores.m365_copilot / totalRaw) * 100),
+    copilot_studio: Math.round((rawWeightedScores.copilot_studio / totalRaw) * 100),
+    athena: Math.max(0, 100 - (Math.round((rawWeightedScores.m365_copilot / totalRaw) * 100) + Math.round((rawWeightedScores.copilot_studio / totalRaw) * 100)))
   };
 
   const toolMap = {};
@@ -201,19 +272,21 @@ export function calculateEvaluation({
 
   return {
     scores: percentages,
-    rawScores: scores,
+    rawWeightedScores,
+    costScores,
+    featureScores,
+    weightCost: weightCost * 100,
+    weightFeatures: weightFeatures * 100,
     recommendedToolId: primaryRecommendationId,
     recommendedTool,
-    // Microsoft figures
     m365AnnualCostUsd,
     m365AnnualCostThb,
-    annualCostThb: m365AnnualCostThb, // Alias
+    annualCostThb: m365AnnualCostThb,
     additionalLicensesNeeded,
     usdThbRate,
     licenseMonthlyUsd,
     H,
     U,
-    // Athena figures
     athenaTotalCostThb,
     athenaDevPocTotal,
     athenaPilotProdTotal,
@@ -233,6 +306,7 @@ export function calculateEvaluation({
       PROD_MONTHS
     },
     reasoning,
-    isDecisive
+    isDecisive: true,
+    isPendingFirstThree: false
   };
 }
