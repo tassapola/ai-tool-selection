@@ -13,6 +13,7 @@ import QuestionSeven from './components/QuestionSeven';
 import SummaryView from './components/SummaryView';
 import DatabaseModal from './components/DatabaseModal';
 import AssumptionsModal from './components/AssumptionsModal';
+import ScreenSizeAlert from './components/ScreenSizeAlert';
 import { Sparkles, Database } from 'lucide-react';
 
 const SESSION_STORAGE_KEY = 'antigravity_assessment_draft_v1';
@@ -33,6 +34,7 @@ export default function App() {
   const [tools, setTools] = useState([]);
   const [isDatabaseOpen, setIsDatabaseOpen] = useState(false);
   const [isAssumptionsOpen, setIsAssumptionsOpen] = useState(false);
+  const [isScreenAlertOpen, setIsScreenAlertOpen] = useState(false);
 
   // Questionnaire Steps:
   // 1 = Q1 (Advanced Builder Readiness)
@@ -116,6 +118,33 @@ export default function App() {
       if (unsubscribe) unsubscribe();
     };
   }, [refreshDbState]);
+
+  // Screen size check for stage navigation bar visibility (< 1280px)
+  useEffect(() => {
+    const checkWidth = () => {
+      if (typeof window !== 'undefined') {
+        const isDismissed = sessionStorage.getItem('dismiss_screen_size_alert') === 'true';
+        if (window.innerWidth < 1280 && !isDismissed) {
+          setIsScreenAlertOpen(true);
+        }
+      }
+    };
+    checkWidth();
+
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        const isDismissed = sessionStorage.getItem('dismiss_screen_size_alert') === 'true';
+        if (window.innerWidth >= 1280) {
+          setIsScreenAlertOpen(false);
+        } else if (!isDismissed) {
+          setIsScreenAlertOpen(true);
+        }
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Compute live recommendation and costs
   const evaluation = useMemo(() => {
@@ -277,6 +306,7 @@ export default function App() {
         }}
         onOpenDatabase={() => setIsDatabaseOpen(true)}
         onOpenAssumptions={() => setIsAssumptionsOpen(true)}
+        onOpenScreenSizeAlert={() => setIsScreenAlertOpen(true)}
         onReset={handleResetAssessment}
         usdRate={variables.usd_thb_rate ?? 35}
         licenseMonthlyUsd={variables.m365_license_monthly_usd ?? 20}
@@ -506,6 +536,13 @@ export default function App() {
       <AssumptionsModal
         isOpen={isAssumptionsOpen}
         onClose={() => setIsAssumptionsOpen(false)}
+      />
+
+      {/* 4.2 Screen Size Alert Modal */}
+      <ScreenSizeAlert
+        isOpen={isScreenAlertOpen}
+        onClose={() => setIsScreenAlertOpen(false)}
+        minWidthRequired={1280}
       />
 
       {/* 5. Minimalist Public Deployment Footer */}

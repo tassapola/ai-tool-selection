@@ -1,11 +1,12 @@
 import React from 'react';
-import { Database, Sparkles, RefreshCw, ArrowRight, Info } from 'lucide-react';
+import { Database, Sparkles, RefreshCw, ArrowRight, Info, Maximize2 } from 'lucide-react';
 
 export default function Navbar({
   currentStep,
   onSelectStep,
   onOpenDatabase,
   onOpenAssumptions,
+  onOpenScreenSizeAlert,
   onReset,
   usdRate,
   licenseMonthlyUsd,
@@ -46,7 +47,7 @@ export default function Navbar({
             </div>
           </div>
 
-          {/* Stage Button Navigation */}
+          {/* Stage Button Navigation (Visible on xl screens >= 1280px) */}
           <div className="hidden xl:flex items-center space-x-1 bg-slate-100/90 p-1 rounded-xl border border-slate-200/60 shrink-0">
             {steps.map((s) => (
               <button
@@ -68,6 +69,20 @@ export default function Navbar({
                 <span className="whitespace-nowrap">{s.label}</span>
               </button>
             ))}
+          </div>
+
+          {/* Compact Stage Indicator with Screen Size Alert Trigger (Visible on screens < 1280px) */}
+          <div className="flex xl:hidden items-center space-x-2 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 shrink-0">
+            <span className="text-xs font-bold text-indigo-700">ข้อ {currentStep}/8</span>
+            <button
+              type="button"
+              onClick={onOpenScreenSizeAlert}
+              className="inline-flex items-center space-x-1 text-[11px] font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded border border-amber-300 transition cursor-pointer shadow-2xs"
+              title="หน้าต่างเล็กเกินไป คลิกเพื่อดูคำแนะนำการขยายหน้าจอเพื่อแสดงแถบขั้นตอนทั้งหมด"
+            >
+              <Maximize2 className="w-3 h-3 text-amber-600" />
+              <span>แนะนำเปิดบน Laptop</span>
+            </button>
           </div>
 
           {/* Right Action Buttons & Database Status */}
