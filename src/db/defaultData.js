@@ -4,28 +4,28 @@ export const DEFAULT_CONFIG_VARIABLES = [
     key: 'usd_thb_rate',
     value: 35.0,
     data_type: 'number',
-    unit: 'THB/USD',
-    label: 'USD to THB Exchange Rate',
+    unit: 'บาท/USD',
+    label: 'อัตราแลกเปลี่ยน USD เป็น THB',
     category: 'pricing',
-    description: 'Current currency exchange rate used to convert USD costs into Thai Baht.'
+    description: 'อัตราแลกเปลี่ยนสกุลเงินปัจจุบันที่ใช้แปลงต้นทุน USD เป็นเงินบาทไทย'
   },
   {
     key: 'm365_license_monthly_usd',
     value: 20.0,
     data_type: 'number',
-    unit: 'USD/user/month',
-    label: 'Microsoft 365 Add-on License Cost',
+    unit: 'USD/ผู้ใช้/เดือน',
+    label: 'ค่าไลเซนส์เพิ่มเติม Microsoft 365 ต่อเดือน',
     category: 'pricing',
-    description: 'Cost per additional user per month for Microsoft 365 Copilot / Advanced license.'
+    description: 'ต้นทุนต่อผู้ใช้งานเพิ่มเติมต่อเดือนสำหรับไลเซนส์ Microsoft 365 Copilot / Advanced'
   },
   {
     key: 'm365_months_per_year',
     value: 12.0,
     data_type: 'number',
-    unit: 'months',
-    label: 'Months per Year',
+    unit: 'เดือน',
+    label: 'จำนวนเดือนต่อปี',
     category: 'pricing',
-    description: 'Multiplier for annualizing recurring monthly license fees.'
+    description: 'ตัวคูณสำหรับแปลงค่าธรรมเนียมไลเซนส์รายเดือนเป็นต้นทุนรายปี'
   },
   // Scoring Weights: Cost = 60%, Features = 40%
   {
@@ -33,137 +33,146 @@ export const DEFAULT_CONFIG_VARIABLES = [
     value: 60.0,
     data_type: 'number',
     unit: '%',
-    label: 'Cost Evaluation Weight',
+    label: 'น้ำหนักการประเมินด้านต้นทุน (Cost)',
     category: 'weights',
-    description: 'Weight assigned to licensing & infrastructure cost economics (default 60%).'
+    description: 'น้ำหนักที่กำหนดให้กับความคุ้มค่าด้านต้นทุนไลเซนส์และโครงสร้างพื้นฐาน (ค่าเริ่มต้น 60%)'
   },
   {
     key: 'weight_features_percentage',
     value: 40.0,
     data_type: 'number',
     unit: '%',
-    label: 'Features & Architecture Weight',
+    label: 'น้ำหนักการประเมินด้านฟีเจอร์และสถาปัตยกรรม (Features)',
     category: 'weights',
-    description: 'Weight assigned to readiness, enterprise integration, governance, and model hosting (default 40%).'
+    description: 'น้ำหนักที่กำหนดให้กับความพร้อมของทีม การเชื่อมต่อระบบองค์กร การกำกับดูแล UAM และการโฮสต์โมเดล (ค่าเริ่มต้น 40%)'
   },
   // Athena Cost Variables (Gemini 3.1 Flash Lite model)
   {
     key: 'COST_OF_1_DL_PAGE',
     value: 1.0,
     data_type: 'number',
-    unit: 'THB/page',
-    label: 'Cost per page (docx, txt, md)',
+    unit: 'บาท/หน้า',
+    label: 'ต้นทุนต่อหน้า (docx, txt, md)',
     category: 'athena',
-    description: 'Processing cost per page of docx, txt, md documents for Athena indexing/chunking.'
+    description: 'ต้นทุนการประมวลผลต่อหน้าของเอกสาร docx, txt, md สำหรับการทำ Indexing และ Chunking บน Athena'
   },
   {
     key: 'COST_OF_1_DM_PAGE',
     value: 1.4,
     data_type: 'number',
-    unit: 'THB/page',
-    label: 'Cost per page (pdf, pptx without images)',
+    unit: 'บาท/หน้า',
+    label: 'ต้นทุนต่อหน้า (pdf, pptx ไม่มีรูปภาพ)',
     category: 'athena',
-    description: 'Processing cost per page of text-only PDF and PPTX documents.'
+    description: 'ต้นทุนการประมวลผลต่อหน้าของเอกสาร PDF และ PPTX ที่เป็นข้อความล้วน'
   },
   {
     key: 'COST_OF_1_DH_PAGE',
     value: 1.4,
     data_type: 'number',
-    unit: 'THB/page',
-    label: 'Cost per page (pdf, pptx with images)',
+    unit: 'บาท/หน้า',
+    label: 'ต้นทุนต่อหน้า (pdf, pptx มีรูปภาพ)',
     category: 'athena',
-    description: 'Processing cost per page of image-heavy PDF and PPTX documents.'
+    description: 'ต้นทุนการประมวลผลต่อหน้าของเอกสาร PDF และ PPTX ที่มีรูปภาพประกอบ'
   },
   {
     key: 'COST_OF_1_IMAGE',
     value: 1.4,
     data_type: 'number',
-    unit: 'THB/image',
-    label: 'Cost per 1 image extraction',
+    unit: 'บาท/รูปภาพ',
+    label: 'ต้นทุนต่อการสกัด 1 รูปภาพ',
     category: 'athena',
-    description: 'Multimodal vision embedding cost per image in documents.'
+    description: 'ต้นทุน Multimodal Vision Embedding ต่อ 1 รูปภาพในเอกสาร'
   },
   {
     key: 'COST_OF_1_OTHER',
     value: 1.4,
     data_type: 'number',
-    unit: 'THB/doc',
-    label: 'Cost per 1 other document',
+    unit: 'บาท/ฉบับ',
+    label: 'ต้นทุนต่อ 1 เอกสารรูปแบบอื่น',
     category: 'athena',
-    description: 'Handling cost for other miscellaneous document formats.'
+    description: 'ต้นทุนการประมวลผลสำหรับเอกสารรูปแบบอื่นๆ'
   },
   {
     key: 'COST_OF_1_EVAL_QUESTION',
     value: 1.0,
     data_type: 'number',
-    unit: 'THB/eval question',
-    label: 'Cost per 1 evaluation question',
+    unit: 'บาท/คำถามทดสอบ',
+    label: 'ต้นทุนต่อ 1 คำถามทดสอบ (Evaluation)',
     category: 'athena',
-    description: 'Cost for automated model evaluation question inference.'
+    description: 'ต้นทุนการอนุมาน (Inference) สำหรับคำถามทดสอบและประเมินผลโมเดลอัตโนมัติ'
   },
   {
     key: 'COST_OF_PROD_QUESTION',
     value: 1.0,
     data_type: 'number',
-    unit: 'THB/chat bubble',
-    label: 'Cost per 1 production chat question',
+    unit: 'บาท/คำถามแชท',
+    label: 'ต้นทุนต่อ 1 คำถามแชทในระบบจริง (Production)',
     category: 'athena',
-    description: 'Inference and retrieval cost per user chat bubble in pilot & production.'
+    description: 'ต้นทุนการดึงข้อมูล (Retrieval) และการอนุมานโมเดลต่อ 1 คำถามแชทของผู้ใช้ในระยะ Pilot & Production'
+  },
+  {
+    key: 'COST_OF_CLOUD_FIXED_COST_PER_MONTH',
+    value: 12000.0,
+    data_type: 'number',
+    unit: 'บาท/เดือน',
+    label: 'ต้นทุนคงที่สำหรับ Cloud Compute ต่อเดือน (Fixed Cloud Compute Cost)',
+    category: 'athena',
+    description: 'ค่าบริการ Cloud Compute คงที่ต่อเดือนสำหรับ Athena ในช่วง Dev & PoC'
   },
   // Thresholds & Weights
   {
     key: 'studio_readiness_weight',
     value: 40.0,
     data_type: 'number',
-    unit: 'points',
-    label: 'Copilot Studio Agentic Weight',
+    unit: 'คะแนน',
+    label: 'น้ำหนักความพร้อม Agentic ของ Copilot Studio',
     category: 'scoring',
-    description: 'Points awarded to Copilot Studio if team has an agentic workflow builder.'
+    description: 'คะแนนที่เพิ่มให้ Copilot Studio หากทีมงานมีบุคลากรพร้อมสร้าง Agentic Workflow'
   },
   {
     key: 'athena_readiness_weight',
     value: 35.0,
     data_type: 'number',
-    unit: 'points',
-    label: 'Athena Agentic Readiness Weight',
+    unit: 'คะแนน',
+    label: 'น้ำหนักความพร้อม Agentic ของ Athena',
     category: 'scoring',
-    description: 'Points awarded to Athena if team has an agentic workflow builder.'
+    description: 'คะแนนที่เพิ่มให้ Athena หากทีมงานมีบุคลากรพร้อมสร้าง Agentic Workflow'
   },
   {
     key: 'm365_easy_penalty_if_complex',
     value: 30.0,
     data_type: 'number',
-    unit: 'points',
-    label: 'Easy Mode Penalty for Complex Needs',
+    unit: 'คะแนน',
+    label: 'คะแนนหักลด Easy Mode เมื่อต้องการความซับซ้อน',
     category: 'scoring',
-    description: 'Deduction for Easy Mode when multi-stage agentic workflow is required.'
+    description: 'คะแนนที่หักลดสำหรับ Easy Mode เมื่อจำเป็นต้องใช้ Multi-Stage Agentic Workflow'
   },
   {
     key: 'athena_high_cost_threshold_thb',
     value: 210000.0,
     data_type: 'number',
-    unit: 'THB/year',
-    label: 'Athena High-Cost Pivot Threshold',
+    unit: 'บาท/ปี',
+    label: 'เกณฑ์ต้นทุนสูงในการเปลี่ยนไปใช้ Athena',
     category: 'threshold',
-    description: 'When annual Microsoft licensing costs exceed this threshold (~25+ extra users), Athena internal platform becomes heavily favored.'
+    description: 'เมื่อต้นทุนไลเซนส์ Microsoft รายปีเกินกว่าเกณฑ์นี้ (~25+ คนขึ้นไป) แพลตฟอร์มภายใน Athena จะมีความคุ้มค่ามากกว่าอย่างเห็นได้ชัด'
   },
   {
     key: 'athena_min_user_scale',
     value: 30.0,
     data_type: 'number',
-    unit: 'users',
-    label: 'Athena Scale Threshold',
+    unit: 'คน',
+    label: 'เกณฑ์ขนาดผู้ใช้งานของ Athena',
     category: 'threshold',
-    description: 'Minimum user volume where internal system Athena delivers superior ROI.'
+    description: 'ปริมาณผู้ใช้งานขั้นต่ำที่ทำให้การใช้งานระบบภายในอย่าง Athena ให้ผลตอบแทนการลงทุน (ROI) สูงกว่า'
   },
   {
     key: 'COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD',
-    value: 500000.0,
+    value: 350000.0,
     data_type: 'number',
-    unit: 'THB',
-    label: 'Cost Threshold to Pick Athena Instead',
+    unit: 'บาท',
+    label: 'เกณฑ์ส่วนต่างต้นทุนเพื่อเปลี่ยนเป็น Athena แทน Easy Mode',
     category: 'threshold',
-    description: 'When Q1 (Advanced Builder Readiness) chooses Easy Mode, if Microsoft annual cost exceeds Athena total cost by more than this amount, Athena is recommended instead.'
+    description: 'เมื่อข้อ 1 (ความพร้อมในการสร้าง Agent ขั้นสูง) เลือก Easy Mode หากต้นทุนรายปีของ Microsoft สูงกว่าต้นทุนรวมของ Athena เกินกว่าจำนวนนี้ ระบบจะแนะนำ Athena แทน ถ้าเลือกเลขต่ำ โอกาสเลือก Microsoft จะสูงขึ้น'
   }
 ];
 
@@ -172,49 +181,65 @@ export const DEFAULT_TOOLS = [
     id: 'm365_copilot',
     name: 'Microsoft 365 Copilot',
     mode_name: 'Easy Mode',
-    badge: 'Turnkey • Zero Learning Curve',
-    tagline: 'Instant out-of-the-box productivity & enterprise chat',
-    description: 'Pre-built Microsoft 365 AI integration embedded directly in Word, Excel, Teams, and Outlook. Perfect for immediate adoption without needing dedicated workflow builders.',
+    badge: 'Turnkey • ไม่ต้องใช้เวลาเรียนรู้',
+    tagline: 'เพิ่มผลผลิตและแชทระดับองค์กรได้ทันทีแบบสำเร็จรูป',
+    description: 'ระบบ AI ที่ผสานการทำงานโดยตรงกับ Microsoft 365 บน Word, Excel, Teams และ Outlook เหมาะอย่างยิ่งสำหรับการเริ่มใช้งานทันทีโดยไม่จำเป็นต้องมีทีมพัฒนา Workflow',
     primary_color: '#2563EB', // Blue-600
     bg_color: 'bg-blue-50',
     border_color: 'border-blue-300',
     text_color: 'text-blue-700',
-    ideal_for: 'Teams wanting rapid time-to-value without multi-step workflow engineering.',
-    pros: 'Zero setup time, native Office 365 integration, seamless security compliance',
-    cons: 'Limited custom multi-stage chaining, fixed prompt interface, per-user monthly license',
-    workflow_complexity: 'Low (Pre-built)'
+    ideal_for: 'ทีมงานที่ต้องการผลลัพธ์รวดเร็วทันทีโดยไม่ต้องเขียนขั้นตอนการทำงานที่ซับซ้อน',
+    pros: 'พร้อมใช้งานทันทีโดยไม่ต้องติดตั้ง, ทำงานร่วมกับ Office 365 ได้อย่างสมบูรณ์แบบ, เป็นไปตามมาตรฐานความปลอดภัยระดับองค์กร',
+    cons: 'ความยืดหยุ่นในการเชื่อมโยงหลายขั้นตอนจำกัด, หน้าจอ Prompt ฟิกซ์ตายตัว, มีค่าไลเซนส์รายเดือนต่อผู้ใช้งาน',
+    workflow_complexity: 'ต่ำ (สร้างไว้ให้สำเร็จรูป)'
   },
   {
     id: 'copilot_studio',
     name: 'Microsoft 365 Copilot Studio',
     mode_name: 'Builder Multi-Step Workflow',
-    badge: 'Multi-Step Agentic Builder',
-    tagline: 'Design autonomous multi-stage flows, connectors & triggers',
-    description: 'Visual low-code canvas to engineer multi-stage agentic workflows, dynamic prompt chaining, Power Automate connectors, and custom multi-agent orchestration.',
+    badge: 'เครื่องมือสร้าง Multi-Step Agentic',
+    tagline: 'ออกแบบโฟลว์การทำงานอัตโนมัติหลายขั้นตอน ตัวเชื่อมต่อ และทริกเกอร์',
+    description: 'เครื่องมือ Visual Low-Code สำหรับออกแบบ Multi-Stage Agentic Workflow, การต่อยอด Prompt ต่อเนื่อง, ตัวเชื่อมต่อ Power Automate และการประสานงาน Multi-Agent ตามสั่ง',
     primary_color: '#7C3AED', // Violet-600
     bg_color: 'bg-purple-50',
     border_color: 'border-purple-300',
     text_color: 'text-purple-700',
-    ideal_for: 'Teams with at least one member ready to learn flow designer and build multi-stage agentic logic within Microsoft 365/MDP ecosystem.',
-    pros: 'Visual flow designer, enterprise connectors, agentic multi-stage triggers, Microsoft ecosystem synergy',
-    cons: 'Requires builder learning curve, requires decentralized UAM governance management, additional licensing governance',
-    workflow_complexity: 'High (Visual Builder)'
+    ideal_for: 'ทีมงานที่มีบุคลากรอย่างน้อยหนึ่งคนพร้อมเรียนรู้ Flow Designer และสร้างตรรกะ Agent หลายขั้นตอนภายในระบบนิเวศ Microsoft 365/MDP',
+    pros: 'หน้าจอออกแบบโฟลว์แบบภาพ (Visual Flow Designer), มี Enterprise Connectors พร้อมใช้, รองรับ Agentic Triggers, ทำงานร่วมกับระบบนิเวศ Microsoft ได้อย่างไร้รอยต่อ',
+    cons: 'ทีมงานต้องใช้เวลาเรียนรู้, ต้องบริหารจัดการกำกับดูแลสิทธิ์ UAM แบบกระจายศูนย์ด้วยตนเอง, ต้องบริหารจัดการไลเซนส์เพิ่มเติม',
+    workflow_complexity: 'สูง (Visual Builder)'
   },
   {
     id: 'athena',
     name: 'Athena',
     mode_name: 'Internal Agentic Platform',
-    badge: 'Custom Enterprise System (Gemini 3.1 Flash Lite)',
-    tagline: 'High-scale internal agent with zero per-user seat license overhead',
-    description: 'Proprietary internal agent platform engineered for deep internal document processing, customized LLM routing with Gemini 3.1 Flash Lite, KBank internal system integrations (e.g. SmartServe), centralized UAM governance, and future KBTG/local LLM support.',
+    badge: 'ระบบปรับแต่งระดับองค์กร (Gemini 3.1 Flash Lite)',
+    tagline: 'Agent ภายในองค์กรสำหรับสเกลสูง โดยไม่มีภาระค่าไลเซนส์รายบุคคล',
+    description: 'แพลตฟอร์ม Agent ภายในองค์กรที่พัฒนาขึ้นโดยเฉพาะเพื่อการประมวลผลเอกสารเชิงลึก, การเลือกใช้ LLM ด้วย Gemini 3.1 Flash Lite, การเชื่อมต่อกับระบบภายในของ KBank (เช่น SmartServe), ระบบกำกับดูแล UAM รวมศูนย์ และรองรับการใช้ KBTG/Local LLM ในอนาคต',
     primary_color: '#059669', // Emerald-600
     bg_color: 'bg-emerald-50',
     border_color: 'border-emerald-300',
     text_color: 'text-emerald-700',
-    ideal_for: 'Non-M365/MDP integrations (SmartServe), centralized UAM governance, KBTG/local LLM roadmap, and eliminating per-user seat licenses.',
-    pros: 'Zero per-user Microsoft tax, connects to KBank systems (SmartServe), enterprise-managed UAM, local/KBTG LLM roadmap support',
-    cons: 'Internal team maintenance required, separate UI from standard Office apps',
-    workflow_complexity: 'Customizable / Advanced'
+    ideal_for: 'การเชื่อมต่อระบบนอก M365/MDP (SmartServe), การกำกับดูแล UAM แบบรวมศูนย์, แผนงานการใช้ Local/KBTG LLM และการตัดภาระค่าไลเซนส์รายคน',
+    pros: 'ไม่มีค่าไลเซนส์รายบุคคลของ Microsoft, เชื่อมต่อกับระบบภายใน KBank ได้ (SmartServe), ระบบ UAM ควบคุมโดยองค์กร, รองรับแผนงาน Local/KBTG LLM',
+    cons: 'ต้องมีทีมงานภายในคอยดูแลรักษาระบบ, หน้าจอแยกต่างหากจากโปรแกรมมาตรฐาน Office',
+    workflow_complexity: 'ปรับแต่งได้ระดับสูง / ขั้นสูง'
+  },
+  {
+    id: 'no_recommendation',
+    name: 'ไม่มีคำตอบ',
+    mode_name: 'คำตอบมีความขัดแย้งกัน (Conflicting Requirements)',
+    badge: 'ไม่สามารถสรุปเครื่องมือได้ • สถาปัตยกรรมขัดแย้ง',
+    tagline: 'ข้อกำหนดทางเทคนิคและสถาปัตยกรรมมีความขัดแย้งกัน จำเป็นต้องทบทวนความต้องการ',
+    description: 'ผลการประเมินพบข้อกำหนดที่มีความขัดแย้งกันระหว่างโซลูชัน เช่น สถาปัตยกรรมต้องการเชื่อมต่อระบบภายในเฉพาะของ Athena หรือ Local LLM แต่ไม่สามารถย้ายเอกสารออกจากระบบ Office 365 ได้ หรือระบบเน้น Microsoft ล้วนแต่ไม่มีทีมกำกับดูแล UAM แบบกระจายศูนย์ จึงไม่สามารถเลือกโซลูชันใดโซลูชันหนึ่งได้อย่างสมบูรณ์แบบ แนะนำให้ปรึกษาทีม Enterprise Architecture หรือทบทวนข้อกำหนดร่วมกัน',
+    primary_color: '#E11D48', // Rose-600
+    bg_color: 'bg-rose-50',
+    border_color: 'border-rose-300',
+    text_color: 'text-rose-700',
+    ideal_for: 'กรณีที่คำตอบของผู้ประเมินมีข้อขัดแย้งเชิงโครงสร้างสถาปัตยกรรม (Architectural Conflicts)',
+    pros: 'ช่วยตรวจจับความเสี่ยงและความขัดแย้งเชิงสถาปัตยกรรมได้ทันทีตั้งแต่ช่วงวางแผน ป้องกันการลงทุนในโซลูชันที่ไม่ตอบโจทย์',
+    cons: 'ไม่สามารถตัดสินใจเลือกเครื่องมือได้ทันที จำเป็นต้องประสานงานฝ่ายที่เกี่ยวข้องเพื่อปรับเงื่อนไขข้อจำกัด',
+    workflow_complexity: 'ต้องทบทวนเชิงสถาปัตยกรรม (Architectural Review)'
   }
 ];
 
@@ -226,7 +251,7 @@ export const DEFAULT_SCORING_RULES = [
     target_tool: 'm365_copilot',
     score_delta: 100,
     is_hard_override: 1,
-    reason: 'Team does not have a member to learn multi-stage workflows; Easy Mode is the required turnkey solution.'
+    reason: 'ทีมงานยังไม่มีบุคลากรพร้อมเรียนรู้ Multi-Stage Workflows; Easy Mode คือโซลูชันสำเร็จรูปที่จำเป็น (Turnkey)'
   },
   {
     id: 2,
@@ -235,7 +260,7 @@ export const DEFAULT_SCORING_RULES = [
     target_tool: 'athena',
     score_delta: 60,
     is_hard_override: 1,
-    reason: 'Requirement to connect to KBank internal systems outside M365/MDP (e.g. SmartServe); Athena is uniquely capable.'
+    reason: 'จำเป็นต้องเชื่อมต่อกับระบบภายในของ KBank ภายนอก M365/MDP (เช่น SmartServe); มีเพียง Athena เท่านั้นที่รองรับ'
   },
   {
     id: 3,
@@ -244,7 +269,7 @@ export const DEFAULT_SCORING_RULES = [
     target_tool: 'athena',
     score_delta: 50,
     is_hard_override: 1,
-    reason: 'Team lacks people/processes for manual agent permission reviews and ownership transfers; Athena provides centralized enterprise UAM.'
+    reason: 'ทีมงานยังไม่มีกระบวนการและบุคลากรสำหรับตรวจสอบสิทธิ์ Agent และส่งมอบความเป็นเจ้าของ; Athena มีระบบการกำกับดูแล UAM ระดับองค์กรแบบรวมศูนย์'
   },
   {
     id: 4,
@@ -253,7 +278,7 @@ export const DEFAULT_SCORING_RULES = [
     target_tool: 'athena',
     score_delta: 50,
     is_hard_override: 1,
-    reason: 'Future roadmap includes Local LLMs or KBank/KBTG-hosted models; only Athena supports custom internal model endpoints.'
+    reason: 'มีแผนการใช้งาน Local LLM หรือโมเดลที่โฮสต์บน KBank/KBTG ในอนาคต; มีเพียง Athena เท่านั้นที่รองรับ Internal Endpoint เหล่านี้'
   },
   {
     id: 5,
@@ -262,7 +287,7 @@ export const DEFAULT_SCORING_RULES = [
     target_tool: 'copilot_studio',
     score_delta: 25,
     is_hard_override: 0,
-    reason: 'All users already possess Advanced licenses (U <= H), making Microsoft 365 Copilot Studio free of additional license fees.'
+    reason: 'ผู้ใช้งานทุกคนมีไลเซนส์แบบ Advanced อยู่แล้ว (U <= H) ทำให้ Microsoft 365 Copilot Studio ไม่มีค่าใช้จ่ายไลเซนส์เพิ่มเติม'
   },
   {
     id: 6,
@@ -271,6 +296,51 @@ export const DEFAULT_SCORING_RULES = [
     target_tool: 'athena',
     score_delta: 35,
     is_hard_override: 0,
-    reason: 'Athena operational cost delivers superior economics over Microsoft additional seat licensing.'
+    reason: 'ต้นทุนดำเนินงานของ Athena ให้ความคุ้มค่าทางเศรษฐศาสตร์ด้านต้นทุนที่เหนือกว่าค่าไลเซนส์รายคนของ Microsoft'
+  },
+  {
+    id: 7,
+    rule_name: 'cannot_move_o365_knowledge_to_sharepoint',
+    condition: 'q5_cannot_move_o365_knowledge == 1',
+    target_tool: 'm365_copilot',
+    score_delta: 65,
+    is_hard_override: 1,
+    reason: 'ไม่สามารถรวบรวมฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้; แนะนำโซลูชัน Microsoft ซึ่งเข้าถึงข้อมูลในระบบนิเวศ Office 365 ได้โดยตรงแบบ In-Place'
+  },
+  {
+    id: 8,
+    rule_name: 'conflict_smartserve_vs_cannot_move_o365',
+    condition: 'q4_need_non_m365 == 1 && q5_cannot_move_o365 == 1',
+    target_tool: 'no_recommendation',
+    score_delta: 100,
+    is_hard_override: 1,
+    reason: 'จำเป็นต้องเชื่อมต่อระบบภายใน KBank ที่ไม่ใช่ M365 (SmartServe) ซึ่งรองรับเฉพาะ Athena แต่ไม่สามารถรวบรวมฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้ ซึ่งต้องใช้ Microsoft -> ความต้องการขัดแย้งกัน (ไม่มีคำตอบ)'
+  },
+  {
+    id: 9,
+    rule_name: 'conflict_m365_only_vs_no_uam_governance',
+    condition: 'q4_need_non_m365 == 0 && q6_uam_governance == 0',
+    target_tool: 'no_recommendation',
+    score_delta: 100,
+    is_hard_override: 1,
+    reason: 'ใช้เฉพาะระบบนิเวศ M365 ล้วน (เหมาะกับ Microsoft) แต่ไม่มีบุคลากรดูแลสิทธิ์ UAM กระจายศูนย์ (ต้องการ Athena รวมศูนย์) -> ความต้องการขัดแย้งกัน (ไม่มีคำตอบ)'
+  },
+  {
+    id: 10,
+    rule_name: 'conflict_local_llm_vs_cannot_move_o365',
+    condition: 'q7_plan_local_kbtg_llm == 1 && q5_cannot_move_o365 == 1',
+    target_tool: 'no_recommendation',
+    score_delta: 100,
+    is_hard_override: 1,
+    reason: 'มีแผนจะใช้ Local LLM หรือ LLM ภายใน KBank/KBTG ซึ่งรองรับเฉพาะ Athena แต่ไม่สามารถรวบรวมฐานความรู้ลงใน OneDrive/SharePoint ได้ ซึ่งต้องใช้ Microsoft -> ความต้องการขัดแย้งกัน (ไม่มีคำตอบ)'
+  },
+  {
+    id: 11,
+    rule_name: 'conflict_no_uam_vs_cannot_move_o365',
+    condition: 'q6_uam_governance == 0 && q5_cannot_move_o365 == 1',
+    target_tool: 'no_recommendation',
+    score_delta: 100,
+    is_hard_override: 1,
+    reason: 'ไม่สามารถรวบรวมฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้ (ต้องใช้ Microsoft) แต่ไม่มีบุคลากรดูแลสิทธิ์ UAM กระจายศูนย์ (ต้องการ Athena รวมศูนย์) -> ความต้องการขัดแย้งกัน (ไม่มีคำตอบ)'
   }
 ];

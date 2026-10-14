@@ -15,13 +15,13 @@ export default function QuestionFour({
           <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
             4
           </span>
-          <span>Question 4 • Internal System Integration</span>
+          <span>คำถามที่ 4 • การเชื่อมต่อระบบ KBank อื่น (Internal System Integration)</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
-          Do you need to connect to systems within KBank which are NOT Microsoft 365 or MDP?
+          คุณจำเป็นต้องเชื่อมต่อกับระบบภายใน KBank ที่ไม่ใช่ Microsoft 365 หรือ MDP หรือไม่?
         </h2>
         <p className="mt-2 text-sm text-slate-600 max-w-2xl leading-relaxed">
-          For example, you want agentic capability with <strong>SmartServe</strong>, internal core banking APIs, or on-premise transactional systems.
+          ตัวอย่างเช่น คุณต้องการขีดความสามารถของ Agent กับ <strong>SmartServe</strong>, Core Banking APIs ภายใน หรือระบบประมวลผลธุรกรรม On-Premise
         </p>
       </div>
 
@@ -30,10 +30,10 @@ export default function QuestionFour({
         <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-2">
           <div className="font-bold flex items-center gap-1.5 text-slate-900">
             <Building2 className="w-4 h-4 text-emerald-600" />
-            <span>KBank Ecosystem Boundary</span>
+            <span>ขอบเขตระบบงานภายใน KBank (KBank Ecosystem Boundary)</span>
           </div>
           <p className="leading-relaxed">
-            Microsoft Copilot and Copilot Studio excel within Microsoft 365 services (SharePoint, Outlook, Teams, OneDrive) and Azure/MDP. When your agent must call internal services like <strong>SmartServe</strong>, private microservices, or legacy banking backends, internal platforms like <strong>Athena</strong> provide native internal network routing without complex cloud gateway egress.
+            Microsoft Copilot และ Copilot Studio โดดเด่นอย่างมากกับบริการของ Microsoft 365 (SharePoint, Outlook, Teams, OneDrive) และ Azure/MDP หาก Agent ของคุณจำเป็นต้องเรียกใช้งานระบบภายใน เช่น <strong>SmartServe</strong>, Private Microservices หรือระบบ Banking Backend เดิม แพลตฟอร์มภายในอย่าง <strong>Athena</strong> จะมีเส้นทางเครือข่ายภายในองค์กรโดยตรง โดยไม่ต้องผ่าน Cloud Gateway Egress ที่ซับซ้อน
           </p>
         </div>
 
@@ -52,7 +52,7 @@ export default function QuestionFour({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className={`text-lg font-bold ${value === 'yes' ? 'text-emerald-900' : 'text-slate-900'}`}>
-                  Yes
+                  ใช่ (Yes)
                 </span>
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                   value === 'yes' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-400'
@@ -61,14 +61,14 @@ export default function QuestionFour({
                 </div>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Yes, our AI agent must integrate with non-M365/MDP systems such as <strong>SmartServe</strong>, internal databases, or banking services.
+                ใช่ AI Agent ของเราต้องเชื่อมต่อกับระบบที่ไม่ใช่ M365/MDP เช่น <strong>SmartServe</strong>, ฐานข้อมูลภายใน หรือบริการของธนาคาร
               </p>
             </div>
 
             {value === 'yes' && (
               <div className="mt-3 pt-3 border-t border-emerald-200 text-xs font-semibold text-emerald-800 flex items-center space-x-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Athena recommended: Built for internal KBank system bridging</span>
+                <span>แนะนำ Athena: สร้างขึ้นเพื่อเชื่อมต่อระบบภายในของ KBank โดยเฉพาะ</span>
               </div>
             )}
           </button>
@@ -86,7 +86,7 @@ export default function QuestionFour({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className={`text-lg font-bold ${value === 'no' ? 'text-indigo-900' : 'text-slate-900'}`}>
-                  No
+                  ไม่ใช่ (No)
                 </span>
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                   value === 'no' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'
@@ -95,14 +95,14 @@ export default function QuestionFour({
                 </div>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                No, our agent will only access documents and data within Microsoft 365, SharePoint, OneDrive, or MDP.
+                ไม่ใช่ Agent ของเราจะเข้าถึงเฉพาะเอกสารและข้อมูลภายใน Microsoft 365, SharePoint, OneDrive หรือ MDP เท่านั้น
               </p>
             </div>
 
             {value === 'no' && (
               <div className="mt-3 pt-3 border-t border-indigo-200 text-xs font-semibold text-indigo-700 flex items-center space-x-1.5">
                 <Info className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Microsoft 365 / Copilot Studio ecosystem remains a strong fit</span>
+                <span>ระบบนิเวศ Microsoft 365 / Copilot Studio ยังคงเป็นตัวเลือกที่เหมาะสมอย่างยิ่ง</span>
               </div>
             )}
           </button>
@@ -113,8 +113,8 @@ export default function QuestionFour({
           <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-start space-x-3">
             <Sparkles className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold">Architectural Guidance: </span>
-              Because you require agentic connectivity into <strong>SmartServe</strong> or internal KBank systems, <strong>Athena</strong> is strongly recommended to avoid enterprise network egress hurdles and custom connector overhead.
+              <span className="font-bold">คำแนะนำเชิงสถาปัตยกรรม: </span>
+              เนื่องจากคุณต้องการความสามารถของ Agent ในการเชื่อมต่อกับ <strong>SmartServe</strong> หรือระบบภายในของ KBank จึงขอแนะนำ <strong>Athena</strong> อย่างยิ่ง เพื่อหลีกเลี่ยงข้อจำกัดการส่งข้อมูลออกนอกเครือข่ายองค์กร (Network Egress) และความซับซ้อนของ Custom Connectors
             </div>
           </div>
         )}
@@ -127,7 +127,7 @@ export default function QuestionFour({
             className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Question 3</span>
+            <span>ย้อนกลับไปคำถามที่ 3 (Athena)</span>
           </button>
 
           <button
@@ -140,7 +140,7 @@ export default function QuestionFour({
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
-            <span>Continue to Question 5 (UAM Governance)</span>
+            <span>ต่อไปยังคำถามที่ 5 (การรวบรวมความรู้สู่ OneDrive)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

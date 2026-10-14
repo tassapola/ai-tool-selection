@@ -9,8 +9,10 @@ import QuestionThree from './components/QuestionThree';
 import QuestionFour from './components/QuestionFour';
 import QuestionFive from './components/QuestionFive';
 import QuestionSix from './components/QuestionSix';
+import QuestionSeven from './components/QuestionSeven';
 import SummaryView from './components/SummaryView';
 import DatabaseModal from './components/DatabaseModal';
+import AssumptionsModal from './components/AssumptionsModal';
 import { Sparkles, Database } from 'lucide-react';
 
 const SESSION_STORAGE_KEY = 'antigravity_assessment_draft_v1';
@@ -30,15 +32,17 @@ export default function App() {
   const [variables, setVariables] = useState({});
   const [tools, setTools] = useState([]);
   const [isDatabaseOpen, setIsDatabaseOpen] = useState(false);
+  const [isAssumptionsOpen, setIsAssumptionsOpen] = useState(false);
 
   // Questionnaire Steps:
   // 1 = Q1 (Advanced Builder Readiness)
   // 2 = Q2 (Cost: Microsoft)
   // 3 = Q3 (Cost: Athena)
   // 4 = Q4 (KBank Systems / SmartServe)
-  // 5 = Q5 (UAM Governance)
-  // 6 = Q6 (Model Roadmap: Local/KBTG LLM)
-  // 7 = Summary & 3-Way Comparison
+  // 5 = Q5 (O365 Knowledge to OneDrive/SharePoint)
+  // 6 = Q6 (UAM Governance)
+  // 7 = Q7 (Model Roadmap: Local/KBTG LLM)
+  // 8 = Summary & 3-Way Comparison
   const [currentStep, setCurrentStep] = useState(savedState?.currentStep || 1);
   
   // Q1 State: Advanced Builder Readiness
@@ -61,9 +65,10 @@ export default function App() {
     AD: '',
     EVAL_Q: '',
     EVAL_ATTEMPTS: '',
+    DEV_POC_MONTHS: 2,
     U: '',
     Q_PER_DAY: '',
-    PROD_MONTHS: ''
+    PROD_MONTHS: 10
   });
 
   // Track if first 3 questions have been completed
@@ -72,11 +77,14 @@ export default function App() {
   // Q4 State: Non-M365/MDP KBank systems (e.g. SmartServe)
   const [q4ConnectNonM365, setQ4ConnectNonM365] = useState(savedState?.q4ConnectNonM365 ?? null); // 'yes' | 'no' | null
 
-  // Q5 State: UAM governance & ownership accountability
-  const [q5UamGovernance, setQ5UamGovernance] = useState(savedState?.q5UamGovernance ?? null); // 'yes' | 'no' | null
+  // Q5 State: Move O365 knowledge to OneDrive/SharePoint
+  const [q5O365KnowledgeToSharepoint, setQ5O365KnowledgeToSharepoint] = useState(savedState?.q5O365KnowledgeToSharepoint ?? null); // 'yes' | 'no' | null
 
-  // Q6 State: Local LLM or KBank/KBTG-hosted LLM
-  const [q6LocalKbtgLlm, setQ6LocalKbtgLlm] = useState(savedState?.q6LocalKbtgLlm ?? null); // 'yes' | 'no' | null
+  // Q6 State: UAM governance & ownership accountability
+  const [q6UamGovernance, setQ6UamGovernance] = useState(savedState?.q6UamGovernance ?? savedState?.q5UamGovernance ?? null); // 'yes' | 'no' | null
+
+  // Q7 State: Local LLM or KBank/KBTG-hosted LLM
+  const [q7LocalKbtgLlm, setQ7LocalKbtgLlm] = useState(savedState?.q7LocalKbtgLlm ?? savedState?.q6LocalKbtgLlm ?? null); // 'yes' | 'no' | null
 
   // Reload data from SQLite database
   const refreshDbState = useCallback(() => {
@@ -117,8 +125,9 @@ export default function App() {
       uUsers,
       athenaInputs,
       q4ConnectNonM365,
-      q5UamGovernance,
-      q6LocalKbtgLlm,
+      q5O365KnowledgeToSharepoint,
+      q6UamGovernance,
+      q7LocalKbtgLlm,
       hasCompletedFirstThree,
       variables,
       tools
@@ -129,8 +138,9 @@ export default function App() {
     uUsers,
     athenaInputs,
     q4ConnectNonM365,
-    q5UamGovernance,
-    q6LocalKbtgLlm,
+    q5O365KnowledgeToSharepoint,
+    q6UamGovernance,
+    q7LocalKbtgLlm,
     hasCompletedFirstThree,
     variables,
     tools
@@ -147,8 +157,9 @@ export default function App() {
         athenaInputs,
         hasCompletedFirstThree,
         q4ConnectNonM365,
-        q5UamGovernance,
-        q6LocalKbtgLlm
+        q5O365KnowledgeToSharepoint,
+        q6UamGovernance,
+        q7LocalKbtgLlm
       };
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(draft));
     } catch (e) {}
@@ -160,8 +171,9 @@ export default function App() {
     athenaInputs,
     hasCompletedFirstThree,
     q4ConnectNonM365,
-    q5UamGovernance,
-    q6LocalKbtgLlm
+    q5O365KnowledgeToSharepoint,
+    q6UamGovernance,
+    q7LocalKbtgLlm
   ]);
 
   // Apply the specified example parameters for Question 3
@@ -179,9 +191,10 @@ export default function App() {
       AD: 2,
       EVAL_Q: 300,
       EVAL_ATTEMPTS: 10,
+      DEV_POC_MONTHS: 2,
       U: 400,
       Q_PER_DAY: 2,
-      PROD_MONTHS: 12
+      PROD_MONTHS: 10
     });
   };
 
@@ -205,14 +218,16 @@ export default function App() {
       AD: '',
       EVAL_Q: '',
       EVAL_ATTEMPTS: '',
+      DEV_POC_MONTHS: 2,
       U: '',
       Q_PER_DAY: '',
-      PROD_MONTHS: ''
+      PROD_MONTHS: 10
     });
     setHasCompletedFirstThree(false);
     setQ4ConnectNonM365(null);
-    setQ5UamGovernance(null);
-    setQ6LocalKbtgLlm(null);
+    setQ5O365KnowledgeToSharepoint(null);
+    setQ6UamGovernance(null);
+    setQ7LocalKbtgLlm(null);
     setCurrentStep(1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -234,19 +249,20 @@ export default function App() {
         recommendedTool: evaluation.recommendedToolId
       });
     }
-    setCurrentStep(7);
+    setCurrentStep(8);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Step descriptions map
+  // Step descriptions map in Thai
   const stepTitles = {
-    1: "Question 1: Advanced Builder Readiness",
-    2: "Question 2: Cost estimation: Microsoft solution",
-    3: "Question 3: Cost estimation: Athena (Gemini 3.1 Flash Lite)",
-    4: "Question 4: Non-M365/MDP Systems (SmartServe)",
-    5: "Question 5: UAM Governance & Ownership Control",
-    6: "Question 6: Local LLM / KBTG-Hosted LLM Roadmap",
-    7: "Final Recommendation & Comprehensive 3-Way Comparison"
+    1: "ข้อที่ 1: ความพร้อมสร้าง Agent ขั้นสูง (Advanced Builder Readiness)",
+    2: "ข้อที่ 2: ประมาณการค่าใช้จ่าย: โซลูชัน Microsoft (Cost estimation: Microsoft solution)",
+    3: "ข้อที่ 3: ประมาณการค่าใช้จ่าย: Athena (Gemini 3.1 Flash Lite)",
+    4: "ข้อที่ 4: การเชื่อมต่อระบบ KBank อื่น ที่ไม่ใช่ M365/MDP (SmartServe)",
+    5: "ข้อที่ 5: การรวบรวมความรู้สู่ OneDrive/SharePoint",
+    6: "ข้อที่ 6: การกำกับดูแลสิทธิ์ UAM และการโอนย้ายความเป็นเจ้าของ Agent",
+    7: "ข้อที่ 7: แผนการใช้งานโมเดล Local LLM หรือ LLM ภายใน KBank/KBTG",
+    8: "สรุปผลการประเมินและเปรียบเทียบทั้ง 3 โซลูชัน (Final Recommendation & Comparison)"
   };
 
   return (
@@ -260,6 +276,7 @@ export default function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenDatabase={() => setIsDatabaseOpen(true)}
+        onOpenAssumptions={() => setIsAssumptionsOpen(true)}
         onReset={handleResetAssessment}
         usdRate={variables.usd_thb_rate ?? 35}
         licenseMonthlyUsd={variables.m365_license_monthly_usd ?? 20}
@@ -270,7 +287,7 @@ export default function App() {
       <RecommendationPanel
         evaluation={evaluation}
         onNavigateToSummary={() => {
-          setCurrentStep(7);
+          setCurrentStep(8);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         currentStep={currentStep}
@@ -282,7 +299,7 @@ export default function App() {
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Step {currentStep} of 7:
+              ขั้นตอนที่ {currentStep} จาก 8:
             </span>
             <span className="text-sm font-bold text-slate-900">
               {stepTitles[currentStep]}
@@ -291,7 +308,7 @@ export default function App() {
 
           {/* Step dots */}
           <div className="flex items-center space-x-1.5 self-start sm:self-auto">
-            {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
               <button
                 key={num}
                 type="button"
@@ -311,9 +328,11 @@ export default function App() {
                     ? 'bg-emerald-500'
                     : num === 4 && q4ConnectNonM365
                     ? 'bg-emerald-500'
-                    : num === 5 && q5UamGovernance
+                    : num === 5 && q5O365KnowledgeToSharepoint
                     ? 'bg-emerald-500'
-                    : num === 6 && q6LocalKbtgLlm
+                    : num === 6 && q6UamGovernance
+                    ? 'bg-emerald-500'
+                    : num === 7 && q7LocalKbtgLlm
                     ? 'bg-emerald-500'
                     : 'bg-slate-300'
                 }`}
@@ -365,7 +384,7 @@ export default function App() {
             onComplete={handleFinishQuestionThree}
             onSkipToSummary={() => {
               setHasCompletedFirstThree(true);
-              setCurrentStep(7);
+              setCurrentStep(8);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             variables={variables}
@@ -390,8 +409,8 @@ export default function App() {
 
         {currentStep === 5 && (
           <QuestionFive
-            value={q5UamGovernance}
-            onChange={(val) => setQ5UamGovernance(val)}
+            value={q5O365KnowledgeToSharepoint}
+            onChange={(val) => setQ5O365KnowledgeToSharepoint(val)}
             onBack={() => {
               setCurrentStep(4);
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -405,17 +424,32 @@ export default function App() {
 
         {currentStep === 6 && (
           <QuestionSix
-            value={q6LocalKbtgLlm}
-            onChange={(val) => setQ6LocalKbtgLlm(val)}
+            value={q6UamGovernance}
+            onChange={(val) => setQ6UamGovernance(val)}
             onBack={() => {
               setCurrentStep(5);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onNext={() => {
+              setCurrentStep(7);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        )}
+
+        {currentStep === 7 && (
+          <QuestionSeven
+            value={q7LocalKbtgLlm}
+            onChange={(val) => setQ7LocalKbtgLlm(val)}
+            onBack={() => {
+              setCurrentStep(6);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onComplete={handleCompleteQuestionnaire}
           />
         )}
 
-        {currentStep === 7 && (
+        {currentStep === 8 && (
           <SummaryView
             evaluation={evaluation}
             q1AgenticWorkflow={q1AgenticWorkflow}
@@ -423,8 +457,9 @@ export default function App() {
             uUsers={uUsers}
             athenaInputs={athenaInputs}
             q4ConnectNonM365={q4ConnectNonM365}
-            q5UamGovernance={q5UamGovernance}
-            q6LocalKbtgLlm={q6LocalKbtgLlm}
+            q5O365KnowledgeToSharepoint={q5O365KnowledgeToSharepoint}
+            q6UamGovernance={q6UamGovernance}
+            q7LocalKbtgLlm={q7LocalKbtgLlm}
             tools={tools}
             variables={variables}
             onBackToQ1={() => {
@@ -451,6 +486,10 @@ export default function App() {
               setCurrentStep(6);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
+            onBackToQ7={() => {
+              setCurrentStep(7);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             onOpenDatabase={() => setIsDatabaseOpen(true)}
           />
         )}
@@ -463,24 +502,37 @@ export default function App() {
         onDatabaseUpdated={refreshDbState}
       />
 
+      {/* 4.1 Assumptions Modal (Window Popup Style) */}
+      <AssumptionsModal
+        isOpen={isAssumptionsOpen}
+        onClose={() => setIsAssumptionsOpen(false)}
+      />
+
       {/* 5. Minimalist Public Deployment Footer */}
       <footer className="mt-auto border-t border-slate-200 bg-white py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <div className="flex items-center space-x-2">
-            <span className="font-semibold text-slate-700">AI Tool Selection Advisor</span>
+            <span className="font-semibold text-slate-700">ระบบช่วยประเมินและเลือกเครื่องมือ AI (AI Tool Selection Advisor)</span>
             <span>•</span>
             <span>Microsoft 365 Copilot vs Copilot Studio vs Athena</span>
           </div>
           <div className="flex items-center space-x-4">
             <button
+              onClick={() => setIsAssumptionsOpen(true)}
+              className="text-amber-700 hover:text-amber-900 font-medium flex items-center space-x-1"
+            >
+              <span>สมมุติฐานเพิ่มเติม (UAM & ผู้ใช้)</span>
+            </button>
+            <span>•</span>
+            <button
               onClick={() => setIsDatabaseOpen(true)}
               className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center space-x-1"
             >
               <Database className="w-3.5 h-3.5" />
-              <span>SQLite Tables, Weights & Rules</span>
+              <span>ตาราง SQLite, ค่าน้ำหนัก และกฎการตัดสินใจ</span>
             </button>
             <span>•</span>
-            <span className="text-slate-400">Zero-backend serverless SPA</span>
+            <span className="text-slate-400">เว็บแอปพลิเคชันแบบ Serverless Single-Page App</span>
           </div>
         </div>
       </footer>

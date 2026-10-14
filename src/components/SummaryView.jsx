@@ -9,6 +9,10 @@ export default function SummaryView({
   uUsers,
   athenaInputs = {},
   q4ConnectNonM365,
+  q5O365KnowledgeToSharepoint,
+  q6UamGovernance,
+  q7LocalKbtgLlm,
+  // backwards compatibility
   q5UamGovernance,
   q6LocalKbtgLlm,
   tools = [],
@@ -19,9 +23,12 @@ export default function SummaryView({
   onBackToQ4,
   onBackToQ5,
   onBackToQ6,
+  onBackToQ7,
   onOpenDatabase
 }) {
   const [isExportingDocx, setIsExportingDocx] = useState(false);
+  const effectiveQ6Uam = q6UamGovernance !== undefined && q6UamGovernance !== null ? q6UamGovernance : q5UamGovernance;
+  const effectiveQ7Llm = q7LocalKbtgLlm !== undefined && q7LocalKbtgLlm !== null ? q7LocalKbtgLlm : q6LocalKbtgLlm;
 
   const {
     scores = {},
@@ -37,7 +44,7 @@ export default function SummaryView({
     weightFeatures = 40,
     isCostThresholdOverride = false,
     costDiffM365VsAthena = 0,
-    costThresholdToPickAthena = 500000,
+    costThresholdToPickAthena = 350000,
     H = 0,
     U = 0,
     reasoning = []
@@ -53,8 +60,9 @@ export default function SummaryView({
         uUsers,
         athenaInputs,
         q4ConnectNonM365,
-        q5UamGovernance,
-        q6LocalKbtgLlm,
+        q5O365KnowledgeToSharepoint,
+        q6UamGovernance: effectiveQ6Uam,
+        q7LocalKbtgLlm: effectiveQ7Llm,
         variables,
         tools
       });
@@ -74,6 +82,8 @@ export default function SummaryView({
         return <Workflow className="w-6 h-6 text-purple-600" />;
       case 'athena':
         return <Cpu className="w-6 h-6 text-emerald-600" />;
+      case 'no_recommendation':
+        return <AlertTriangle className="w-6 h-6 text-rose-600" />;
       default:
         return <Sparkles className="w-6 h-6 text-indigo-600" />;
     }
@@ -85,10 +95,10 @@ export default function SummaryView({
       <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/90 border-2 border-amber-300 text-amber-950 shadow-xs space-y-1.5">
         <div className="flex items-center gap-2 font-bold text-sm sm:text-base text-amber-900">
           <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
-          <span>Important Advisory Notice • Suggestion Only (Not Final)</span>
+          <span>ข้อสังเกตและคำแนะนำสำคัญ • ข้อเสนอแนะเบื้องต้น (ยังไม่ใช่ผลสรุปสุดท้าย)</span>
         </div>
         <p className="text-xs sm:text-sm text-amber-900 leading-relaxed">
-          This recommendation is an automated decision-support suggestion based on technical criteria and cost estimation formulas. <strong>It is not final.</strong> Users and stakeholders must also evaluate <strong>time-to-market</strong>, <strong>people & skills readiness</strong>, <strong>operational maintenance capacity</strong>, and <strong>other relevant KBank enterprise governance and compliance processes</strong> together with this suggestion.
+          คำแนะนำนี้เป็นข้อเสนอแนะเพื่อสนับสนุนการตัดสินใจอัตโนมัติ โดยอิงตามเกณฑ์ทางเทคนิคและสูตรประเมินต้นทุน <strong>ไม่ใช่ผลสรุปสุดท้าย</strong> ผู้ใช้งานและผู้มีส่วนได้ส่วนเสียจำเป็นต้องประเมิน <strong>ระยะเวลาในการส่งมอบสู่ตลาด (Time-to-Market)</strong>, <strong>ความพร้อมของบุคลากรและทักษะ (People & Skills Readiness)</strong>, <strong>ความสามารถในการดูแลระบบต่อเนื่อง (Operational Maintenance Capacity)</strong> ตลอดจน <strong>กระบวนการกำกับดูแลและการปฏิบัติตามกฎเกณฑ์ที่เกี่ยวข้องของ KBank</strong> ควบคู่ไปกับคำแนะนำนี้
         </p>
       </div>
 
@@ -99,19 +109,23 @@ export default function SummaryView({
             ? 'bg-gradient-to-r from-blue-50/90 via-indigo-50/40 to-white border-blue-300'
             : recommendedToolId === 'copilot_studio'
             ? 'bg-gradient-to-r from-purple-50/90 via-indigo-50/40 to-white border-purple-300'
-            : 'bg-gradient-to-r from-emerald-50/90 via-teal-50/40 to-white border-emerald-300'
+            : recommendedToolId === 'athena'
+            ? 'bg-gradient-to-r from-emerald-50/90 via-teal-50/40 to-white border-emerald-300'
+            : 'bg-gradient-to-r from-rose-50/90 via-red-50/40 to-white border-rose-300'
         }`}>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs uppercase font-extrabold tracking-wider px-2.5 py-1 rounded bg-white shadow-2xs border border-slate-200 text-slate-800">
-                  Recommended Choice
+                  {recommendedToolId === 'no_recommendation' ? 'สถานะการประเมิน (Assessment Status)' : 'ทางเลือกที่แนะนำ (Recommended Choice)'}
                 </span>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
-                  {scores[recommendedToolId]}% Match Score
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                  recommendedToolId === 'no_recommendation' ? 'bg-rose-100 text-rose-800' : 'bg-indigo-100 text-indigo-800'
+                }`}>
+                  {recommendedToolId === 'no_recommendation' ? 'ไม่สามารถสรุปเครื่องมือได้' : `ความสอดคล้อง ${scores[recommendedToolId]}%`}
                 </span>
                 <span className="text-[11px] font-mono text-slate-500 bg-white/70 px-2 py-0.5 rounded border border-slate-200">
-                  {weightCost}% Cost / {weightFeatures}% Features Weighting
+                  สัดส่วนน้ำหนัก: ต้นทุน {weightCost}% / คุณสมบัติ {weightFeatures}%
                 </span>
               </div>
               <div className="flex items-center space-x-3">
@@ -122,7 +136,7 @@ export default function SummaryView({
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                     {recommendedTool.name}
                   </h1>
-                  <p className="text-sm font-semibold text-indigo-600">
+                  <p className={`text-sm font-semibold ${recommendedToolId === 'no_recommendation' ? 'text-rose-600' : 'text-indigo-600'}`}>
                     {recommendedTool.mode_name} • {recommendedTool.badge}
                   </p>
                 </div>
@@ -134,17 +148,26 @@ export default function SummaryView({
 
             {/* Cost Snapshot Pill */}
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs text-right shrink-0 space-y-1">
-              <div className="text-xs text-slate-500 font-medium">Estimated Solution Cost</div>
+              <div className="text-xs text-slate-500 font-medium">
+                {recommendedToolId === 'no_recommendation' ? 'สถานะผลลัพธ์' : 'ประมาณการต้นทุนโซลูชัน'}
+              </div>
               <div className="text-2xl font-black text-slate-900">
-                {recommendedToolId === 'athena' ? (
-                  <span>฿{athenaTotalCostThb.toLocaleString()}</span>
+                {recommendedToolId === 'no_recommendation' ? (
+                  <span className="text-rose-600 text-xl font-bold">ขัดแย้งเชิงสถาปัตยกรรม</span>
+                ) : recommendedToolId === 'athena' ? (
+                  <>
+                    <span>฿{athenaTotalCostThb.toLocaleString()}</span>
+                    <span className="text-xs font-normal text-slate-500 ml-1">บาท (THB)</span>
+                  </>
                 ) : (
-                  <span>{annualCostThb === 0 ? '฿0' : `฿${annualCostThb.toLocaleString()}`}</span>
+                  <>
+                    <span>{annualCostThb === 0 ? '฿0' : `฿${annualCostThb.toLocaleString()}`}</span>
+                    <span className="text-xs font-normal text-slate-500 ml-1">บาท (THB)</span>
+                  </>
                 )}
-                <span className="text-xs font-normal text-slate-500 ml-1">THB</span>
               </div>
               <span className="text-[11px] font-bold text-indigo-600 block uppercase">
-                {recommendedToolId === 'athena' ? 'Dev + Production (Gemini 3.1 Flash Lite)' : 'Microsoft License / Year'}
+                {recommendedToolId === 'no_recommendation' ? 'ต้องทบทวนความต้องการ' : recommendedToolId === 'athena' ? 'Dev + Production (Gemini 3.1 Flash Lite)' : 'ค่าสิทธิ์ Microsoft / ปี'}
               </span>
             </div>
           </div>
@@ -152,16 +175,70 @@ export default function SummaryView({
           {/* Rationale Bullet Points */}
           <div className="mt-6 pt-5 border-t border-slate-200/80">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-              Why this tool is chosen:
+              {recommendedToolId === 'no_recommendation' ? 'รายละเอียดเหตุผลและความขัดแย้ง:' : 'เหตุผลที่เลือกเครื่องมือนี้:'}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {reasoning.map((r, i) => (
-                <div key={i} className="flex items-start space-x-2 text-xs sm:text-sm text-slate-700 bg-white/70 p-2.5 rounded-lg border border-slate-200/60">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>{r}</span>
-                </div>
-              ))}
+              {reasoning.map((r, i) => {
+                const isConflictItem = r.startsWith('⚠️') || r.startsWith('[จุดขัดแย้ง]');
+                return (
+                  <div key={i} className={`flex items-start space-x-2 text-xs sm:text-sm ${
+                    isConflictItem ? 'text-rose-950 bg-rose-50/80 border-rose-200 font-medium' : 'text-slate-700 bg-white/70 border-slate-200/60'
+                  } p-2.5 rounded-lg border`}>
+                    {isConflictItem ? (
+                      <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                    ) : (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    )}
+                    <span>{r}</span>
+                  </div>
+                );
+              })}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dedicated Architectural Conflict Warning & Resolution Box */}
+      {recommendedToolId === 'no_recommendation' && evaluation.conflicts && evaluation.conflicts.length > 0 && (
+        <div className="p-5 sm:p-6 rounded-2xl bg-rose-50/90 border-2 border-rose-300 text-rose-950 shadow-xs space-y-4">
+          <div className="flex items-center gap-2.5 font-bold text-base text-rose-900 pb-2 border-b border-rose-200">
+            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
+            <span>ตรวจพบความขัดแย้งในคำตอบ ({evaluation.conflicts.length} ประเด็น) • คำอธิบายเชิงสถาปัตยกรรม</span>
+          </div>
+          <p className="text-xs sm:text-sm text-rose-900 leading-relaxed">
+            ระบบพบว่าคำตอบที่ท่านระบุมีข้อกำหนดที่ต้องการคุณสมบัติเฉพาะของโซลูชันคนละฝั่งพร้อมกัน ซึ่งในทางปฏิบัติไม่สามารถใช้เครื่องมือใดเครื่องมือหนึ่งเพื่อตอบสนองเงื่อนไขทั้งหมดได้โดยตรง จำเป็นต้องทบทวนข้อกำหนดหรือจัดการประชุมเชิงสถาปัตยกรรมร่วมกับทีม Enterprise Architecture:
+          </p>
+          <div className="space-y-3">
+            {evaluation.conflicts.map((c, idx) => (
+              <div key={idx} className="bg-white/95 p-4 rounded-xl border border-rose-200 shadow-2xs space-y-2">
+                <div className="font-bold text-sm text-rose-900 flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs shrink-0">
+                    {idx + 1}
+                  </span>
+                  <span>{c.title}</span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed pl-7">
+                  {c.description}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 pl-7 text-xs font-semibold">
+                  <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900">
+                    <span className="text-[10px] text-emerald-700 block font-normal uppercase">เงื่อนไขฝั่ง Athena:</span>
+                    {c.questionA.includes('Athena') ? c.questionA : c.questionB}
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-900">
+                    <span className="text-[10px] text-blue-700 block font-normal uppercase">เงื่อนไขฝั่ง Microsoft:</span>
+                    {c.questionA.includes('Microsoft') ? c.questionA : c.questionB}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="p-4 bg-white/90 rounded-xl border border-rose-300 text-xs text-rose-950 leading-relaxed space-y-1.5">
+            <span className="font-bold block text-rose-900 text-sm">💡 แนวทางแก้ไขข้อขัดแย้งเพื่อเลือกเครื่องมือที่เหมาะสม:</span>
+            <ul className="list-disc pl-5 space-y-1 text-slate-700">
+              <li><strong>หากต้องการเลือกโซลูชัน Microsoft:</strong> ต้องเปิดให้สามารถรวบรวมหรือจัดเก็บเอกสาร/ฐานความรู้สู่ OneDrive หรือ SharePoint ได้ (คำถามข้อ 5) และเตรียมทีมงานให้พร้อมดูแลสิทธิ์ UAM และส่งมอบ Agent (คำถามข้อ 6) รวมถึงใช้ Cloud LLM ที่รองรับบน Azure/M365</li>
+              <li><strong>หากต้องการเลือกโซลูชัน Athena:</strong> หากจำเป็นต้องเชื่อมต่อระบบภายใน (SmartServe) หรือต้องการรัน Local LLM ต้องวางแผนกระบวนการ ETL เอกสารจาก Office 365 เข้าสู่ระบบ Athena และใช้ระบบการกำกับดูแล UAM แบบรวมศูนย์ของ Athena</li>
+            </ul>
           </div>
         </div>
       )}
@@ -172,10 +249,10 @@ export default function SummaryView({
           <Sparkles className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <div className="space-y-1 text-xs sm:text-sm">
             <span className="font-bold text-amber-900 block uppercase tracking-wide text-xs">
-              Configurable Cost Threshold Override Triggered (COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = ฿{costThresholdToPickAthena.toLocaleString()} THB)
+              เงื่อนไขข้ามโหมดเนื่องจากผลต่างต้นทุนทำงาน (COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = ฿{costThresholdToPickAthena.toLocaleString()} THB)
             </span>
             <p className="leading-relaxed">
-              Although Question 1 (Advanced Builder Readiness) indicated no team members to learn multi-stage workflows (normally favoring Microsoft Copilot Easy Mode), the Microsoft solution annual licensing cost (<strong>฿{m365AnnualCostThb.toLocaleString()} THB/yr</strong>) exceeds the Athena deployment & operational cost (<strong>฿{athenaTotalCostThb.toLocaleString()} THB</strong>) by <strong>฿{costDiffM365VsAthena.toLocaleString()} THB</strong>. Because this difference surpasses the configured threshold of <strong>฿{costThresholdToPickAthena.toLocaleString()} THB</strong>, the scoring engine has prioritized <strong>Athena</strong> to deliver substantial enterprise cost savings.
+              แม้ว่าคำถามที่ 1 (ความพร้อมของทีมในการสร้าง Agent ขั้นสูง) จะระบุว่าไม่มีผู้เรียนรู้การสร้าง Workflow แบบหลายขั้นตอน (ซึ่งโดยปกติจะแนะนำ Microsoft Copilot โหมดใช้งานง่าย) แต่ต้นทุนค่าสิทธิ์รายปีของโซลูชัน Microsoft (<strong>฿{m365AnnualCostThb.toLocaleString()} บาท/ปี</strong>) สูงกว่าต้นทุนการติดตั้งและดำเนินงานของ Athena (<strong>฿{athenaTotalCostThb.toLocaleString()} บาท</strong>) ถึง <strong>฿{costDiffM365VsAthena.toLocaleString()} บาท</strong> เนื่องจากส่วนต่างนี้เกินเกณฑ์ที่กำหนดไว้ที่ <strong>฿{costThresholdToPickAthena.toLocaleString()} บาท</strong> ระบบการประเมินจึงจัดลำดับความสำคัญให้ <strong>Athena</strong> เพื่อช่วยประหยัดต้นทุนระดับองค์กรอย่างมีนัยสำคัญ
             </p>
           </div>
         </div>
@@ -186,10 +263,10 @@ export default function SummaryView({
         <div className="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-bold text-slate-900">
-              Comprehensive 3-Way Tool Comparison
+              ตารางเปรียบเทียบเชิงลึกทั้ง 3 เครื่องมือ (Comprehensive 3-Way Comparison)
             </h2>
             <p className="text-xs text-slate-500">
-              Evaluated against {weightCost}% Cost and {weightFeatures}% Features (readiness, KBank systems, UAM governance, LLM hosting).
+              ประเมินโดยใช้น้ำหนักต้นทุน {weightCost}% และคุณสมบัติ {weightFeatures}% (ความพร้อมทีม, การเชื่อมต่อระบบ KBank อื่น, การกำกับดูแล UAM, แผนโมเดล Local LLM)
             </p>
           </div>
           
@@ -200,20 +277,20 @@ export default function SummaryView({
               disabled={isExportingDocx}
               onClick={handleExportDocx}
               className="inline-flex items-center space-x-1.5 text-xs font-bold text-white bg-blue-700 hover:bg-blue-800 active:scale-95 px-3.5 py-2 rounded-lg shadow-sm transition cursor-pointer"
-              title="Download formal Word Document (.docx) report with override & stamp sections"
+              title="ดาวน์โหลดรายงานเอกสารทางการ Word (.docx) พร้อมส่วนลงนามและประทับตรา"
             >
               <FileDown className="w-4 h-4" />
-              <span>{isExportingDocx ? 'Generating Word Doc...' : 'Export Report (.docx)'}</span>
+              <span>{isExportingDocx ? 'กำลังสร้างรายงาน Word...' : 'ส่งออกรายงาน (.docx)'}</span>
             </button>
 
             <button
               type="button"
               onClick={() => window.print()}
               className="inline-flex items-center space-x-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg transition"
-              title="Print assessment summary"
+              title="พิมพ์หรือบันทึกสรุปผลเป็น PDF"
             >
               <Printer className="w-4 h-4" />
-              <span>Print</span>
+              <span>พิมพ์ / บันทึก PDF</span>
             </button>
           </div>
         </div>
@@ -223,41 +300,41 @@ export default function SummaryView({
           <div className={`p-6 space-y-4 ${recommendedToolId === 'm365_copilot' ? 'bg-blue-50/30' : ''}`}>
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase text-blue-700 bg-blue-100 px-2.5 py-0.5 rounded">
-                Easy Mode
+                โหมดใช้งานง่าย (Easy Mode)
               </span>
-              <span className="text-sm font-black text-blue-900">{scores.m365_copilot}% Score</span>
+              <span className="text-sm font-black text-blue-900">{scores.m365_copilot}% คะแนน</span>
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900">Microsoft 365 Copilot</h3>
               <p className="text-xs text-slate-500 mt-1">
-                Turnkey Office 365 assistant with zero learning curve.
+                ผู้ช่วย AI สำเร็จรูปสำหรับ Office 365 พร้อมใช้งานทันทีโดยไม่ต้องเรียนรู้การตั้งค่า
               </p>
             </div>
             <div className="space-y-2 text-xs border-t border-slate-100 pt-3">
               <div className="flex justify-between">
                 <span className="text-slate-500">Workflow Designer:</span>
                 <span className="font-semibold text-slate-800 flex items-center gap-1">
-                  <X className="w-3.5 h-3.5 text-slate-400" /> Not Required
+                  <X className="w-3.5 h-3.5 text-slate-400" /> ไม่จำเป็นต้องใช้
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">KBank Internal APIs:</span>
+                <span className="text-slate-500">APIs ภายใน KBank:</span>
                 <span className="font-semibold text-slate-800 flex items-center gap-1">
-                  <X className="w-3.5 h-3.5 text-slate-400" /> Cloud M365 Only
+                  <X className="w-3.5 h-3.5 text-slate-400" /> เฉพาะคลาวด์ M365 เท่านั้น
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">UAM Governance:</span>
-                <span className="font-semibold text-slate-800">Microsoft 365 Native</span>
+                <span className="text-slate-500">การกำกับดูแล UAM:</span>
+                <span className="font-semibold text-slate-800">มาตรฐาน Microsoft 365 Native</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Annual Est. Cost:</span>
-                <span className="font-bold text-slate-900">฿{annualCostThb.toLocaleString()} / yr</span>
+                <span className="text-slate-500">ต้นทุนประเมินรายปี:</span>
+                <span className="font-bold text-slate-900">฿{annualCostThb.toLocaleString()} / ปี</span>
               </div>
             </div>
             <div className="text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
-              <span className="font-bold text-slate-700 block mb-1">Best For:</span>
-              <span>General productivity, summarization in Teams/Word without multi-step chaining or internal core integrations.</span>
+              <span className="font-bold text-slate-700 block mb-1">เหมาะสำหรับ:</span>
+              <span>เพิ่มผลิตภาพการทำงานทั่วไป สรุปข้อมูลใน Teams/Word โดยไม่ต้องสร้างกระบวนการตัดสินใจหลายขั้นตอน หรือเชื่อมต่อระบบงานภายใน</span>
             </div>
           </div>
 
@@ -265,39 +342,39 @@ export default function SummaryView({
           <div className={`p-6 space-y-4 ${recommendedToolId === 'copilot_studio' ? 'bg-purple-50/30' : ''}`}>
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded">
-                Multi-Step Workflow
+                สร้าง Workflow หลายขั้นตอน
               </span>
-              <span className="text-sm font-black text-purple-900">{scores.copilot_studio}% Score</span>
+              <span className="text-sm font-black text-purple-900">{scores.copilot_studio}% คะแนน</span>
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900">Copilot Studio</h3>
               <p className="text-xs text-slate-500 mt-1">
-                Visual low-code designer for multi-stage agentic automation.
+                Visual Low-code Designer สำหรับสร้างระบบอัตโนมัติแบบ Multi-Stage Agentic
               </p>
             </div>
             <div className="space-y-2 text-xs border-t border-slate-100 pt-3">
               <div className="flex justify-between">
                 <span className="text-slate-500">Workflow Designer:</span>
                 <span className="font-semibold text-purple-700 flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5 text-purple-600" /> Required
+                  <Check className="w-3.5 h-3.5 text-purple-600" /> จำเป็นต้องมีผู้สร้าง
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Non-M365 Systems:</span>
-                <span className="font-semibold text-slate-800">Requires Custom Gateways</span>
+                <span className="text-slate-500">ระบบภายนอก M365:</span>
+                <span className="font-semibold text-slate-800">ต้องสร้าง Custom Gateways</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">UAM Governance:</span>
-                <span className="font-semibold text-purple-700">Decentralized / Manual</span>
+                <span className="text-slate-500">การกำกับดูแล UAM:</span>
+                <span className="font-semibold text-purple-700">ทีมจัดการเอง (Decentralized / Manual)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Annual Est. Cost:</span>
-                <span className="font-bold text-slate-900">฿{annualCostThb.toLocaleString()} / yr</span>
+                <span className="text-slate-500">ต้นทุนประเมินรายปี:</span>
+                <span className="font-bold text-slate-900">฿{annualCostThb.toLocaleString()} / ปี</span>
               </div>
             </div>
             <div className="text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
-              <span className="font-bold text-slate-700 block mb-1">Best For:</span>
-              <span>Multi-step flows confined to Microsoft 365/MDP where your team actively owns UAM audit lifecycle.</span>
+              <span className="font-bold text-slate-700 block mb-1">เหมาะสำหรับ:</span>
+              <span>โฟลว์งานหลายขั้นตอนในระบบนิเวศ Microsoft 365/MDP ซึ่งทีมมีความพร้อมรับผิดชอบการตรวจสอบสิทธิ์ UAM และการส่งต่องานด้วยตนเอง</span>
             </div>
           </div>
 
@@ -305,9 +382,9 @@ export default function SummaryView({
           <div className={`p-6 space-y-4 ${recommendedToolId === 'athena' ? 'bg-emerald-50/30' : ''}`}>
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded">
-                Internal System
+                ระบบภายในองค์กร
               </span>
-              <span className="text-sm font-black text-emerald-900">{scores.athena}% Score</span>
+              <span className="text-sm font-black text-emerald-900">{scores.athena}% คะแนน</span>
             </div>
             <div>
               <div className="flex items-center space-x-1.5">
@@ -317,34 +394,34 @@ export default function SummaryView({
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                Internal enterprise agent platform with zero per-user seat tax.
+                แพลตฟอร์ม Agent ภายในองค์กร ไม่มีต้นทุนค่าสิทธิ์ต่อผู้ใช้งาน (Zero Seat Tax)
               </p>
             </div>
             <div className="space-y-2 text-xs border-t border-slate-100 pt-3">
               <div className="flex justify-between">
-                <span className="text-slate-500">SmartServe Integration:</span>
+                <span className="text-slate-500">การเชื่อมต่อ SmartServe:</span>
                 <span className="font-semibold text-emerald-700 flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5 text-emerald-600" /> Native Internal
+                  <Check className="w-3.5 h-3.5 text-emerald-600" /> รองรับระบบภายในโดยตรง
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">UAM Governance:</span>
-                <span className="font-semibold text-emerald-700">Centralized Enterprise</span>
+                <span className="text-slate-500">การกำกับดูแล UAM:</span>
+                <span className="font-semibold text-emerald-700">กำกับดูแลแบบรวมศูนย์ระดับองค์กร</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Local / KBTG LLM:</span>
                 <span className="font-semibold text-emerald-700 flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5 text-emerald-600" /> Supported
+                  <Check className="w-3.5 h-3.5 text-emerald-600" /> รองรับ (Supported)
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Estimated Cost:</span>
+                <span className="text-slate-500">ต้นทุนประเมินรวม:</span>
                 <span className="font-bold text-emerald-800">฿{athenaTotalCostThb.toLocaleString()}</span>
               </div>
             </div>
             <div className="text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
-              <span className="font-bold text-slate-700 block mb-1">Best For:</span>
-              <span>Non-M365 KBank systems (SmartServe), centralized UAM governance, KBTG/local LLM roadmap, and avoiding per-user seat tax.</span>
+              <span className="font-bold text-slate-700 block mb-1">เหมาะสำหรับ:</span>
+              <span>เชื่อมต่อระบบงานภายใน KBank (SmartServe), การกำกับดูแล UAM รวมศูนย์, รองรับโมเดล Local/KBTG LLM และประหยัดค่าสิทธิ์รายคน</span>
             </div>
           </div>
         </div>
@@ -359,10 +436,10 @@ export default function SummaryView({
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900">
-                Formal Sign-off & Human Override Section (Included in .docx)
+                ส่วนลงนามอนุมัติและปรับเปลี่ยนผลการตัดสินใจโดยผู้บริหาร (Human Override & Official Stamp)
               </h3>
               <p className="text-xs text-slate-500">
-                The exported Word document includes dedicated sections for human assessor verification, management override, and official department stamps.
+                เอกสาร Word (.docx) ที่ส่งออกจะมีส่วนลงนามรับรองของผู้ประเมิน การปรับเปลี่ยนผลการตัดสินใจของผู้บริหาร และช่องประทับตราทางการของฝ่ายงาน
               </p>
             </div>
           </div>
@@ -374,123 +451,134 @@ export default function SummaryView({
             className="inline-flex items-center space-x-1.5 text-xs font-bold text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3.5 py-2 rounded-lg transition shrink-0"
           >
             <FileDown className="w-4 h-4" />
-            <span>Download .docx Report</span>
+            <span>ดาวน์โหลดรายงาน .docx</span>
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
             <span className="font-bold text-slate-800 block uppercase tracking-wider text-[11px]">
-              Management Override Options:
+              ทางเลือกในการปรับเปลี่ยนผลการตัดสินใจ (Management Override Options):
             </span>
             <div className="space-y-1.5 text-slate-600">
               <div className="flex items-center gap-2">
                 <span className="w-4 h-4 border border-slate-400 rounded-sm inline-block"></span>
-                <span>Accept automated recommendation ({recommendedTool ? recommendedTool.name : 'Selected'})</span>
+                <span>ยอมรับผลคำแนะนำอัตโนมัติของระบบ ({recommendedTool ? recommendedTool.name : 'เครื่องมือที่เลือก'})</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-4 h-4 border border-slate-400 rounded-sm inline-block"></span>
-                <span>Override with alternate tool: [ ] M365 Copilot  [ ] Studio  [ ] Athena</span>
+                <span>ปรับเปลี่ยนผลไปยังเครื่องมืออื่น: [ ] M365 Copilot  [ ] Studio  [ ] Athena</span>
               </div>
               <div className="pt-1 text-[11px] text-slate-400 italic">
-                * Includes 3 multi-line rows for written management justification.
+                * มีพื้นที่เขียนเหตุผลความจำเป็นในการปรับเปลี่ยน 3 บรรทัด
               </div>
             </div>
           </div>
 
           <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
             <span className="font-bold text-slate-800 block uppercase tracking-wider text-[11px]">
-              Official Stamp & Signature Box:
+              ช่องลงนามและประทับตราทางการ (Official Stamp & Signature Box):
             </span>
             <div className="flex justify-between items-center text-slate-600 pt-1">
               <div className="space-y-1">
-                <div>• Assessor Name & Title</div>
-                <div>• Department / Division</div>
-                <div>• Physical Signature & Date</div>
+                <div>• ชื่อและตำแหน่งผู้ประเมิน</div>
+                <div>• ฝ่าย / สายงาน</div>
+                <div>• ลายมือชื่อและวันที่ลงนาม</div>
               </div>
               <div className="w-28 h-20 border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center text-center p-1 bg-slate-50 text-[10px] text-slate-400 font-semibold">
-                AFFIX OFFICIAL STAMP / SEAL
+                ประทับตราทางการ / ตราสัญลักษณ์หน่วยงาน
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Inputs Review of all 6 Questions */}
+      {/* Inputs Review of all 7 Questions */}
       <div className="bg-slate-50 rounded-xl border border-slate-200 p-5 space-y-3">
         <div className="flex items-center justify-between pb-2 border-b border-slate-200">
           <span className="text-xs font-bold uppercase text-slate-700 tracking-wider">
-            All 6 Assessment Answers
+            สรุปคำตอบแบบประเมินทั้ง 7 ข้อ
           </span>
           <span className="text-xs text-slate-500 font-mono">
-            Weighting: {weightCost}% Cost • {weightFeatures}% Features
+            สัดส่วนน้ำหนัก: ต้นทุน {weightCost}% • คุณสมบัติ {weightFeatures}%
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 text-xs">
           {/* Q1 */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">1. Advanced Builder Readiness</span>
-              <button onClick={onBackToQ1} className="text-indigo-600 hover:underline text-[11px]">Edit</button>
+              <span className="font-semibold text-slate-800">1. ความพร้อมสร้าง Agent ขั้นสูง</span>
+              <button onClick={onBackToQ1} className="text-indigo-600 hover:underline text-[11px]">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              {q1AgenticWorkflow === 'yes' ? '✅ Yes (Ready to build)' : '❌ No (Turnkey needed)'}
+              {q1AgenticWorkflow === 'yes' ? '✅ ใช่ (พร้อมเรียนรู้สร้าง Workflow)' : '❌ ไม่ใช่ (ต้องการแบบพร้อมใช้ทันที)'}
             </div>
           </div>
 
           {/* Q2 */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">2. Microsoft Cost</span>
-              <button onClick={onBackToQ2} className="text-blue-600 hover:underline text-[11px]">Edit</button>
+              <span className="font-semibold text-slate-800">2. ต้นทุนโซลูชัน Microsoft</span>
+              <button onClick={onBackToQ2} className="text-blue-600 hover:underline text-[11px]">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              H: {H} • U: {U} → <strong>฿{annualCostThb.toLocaleString()} / yr</strong>
+              H: {H} • U: {U} → <strong>฿{annualCostThb.toLocaleString()} / ปี</strong>
             </div>
           </div>
 
           {/* Q3 */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">3. Athena Cost</span>
-              <button onClick={onBackToQ3} className="text-emerald-600 hover:underline text-[11px]">Edit</button>
+              <span className="font-semibold text-slate-800">3. ต้นทุนระบบ Athena</span>
+              <button onClick={onBackToQ3} className="text-emerald-600 hover:underline text-[11px]">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              Total: <strong>฿{athenaTotalCostThb.toLocaleString()}</strong> (Gemini 3.1 Flash Lite)
+              รวม: <strong>฿{athenaTotalCostThb.toLocaleString()}</strong> (Gemini 3.1 Flash Lite)
             </div>
           </div>
 
           {/* Q4 */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">4. KBank Systems (SmartServe)</span>
-              <button onClick={onBackToQ4} className="text-emerald-600 hover:underline text-[11px]">Edit</button>
+              <span className="font-semibold text-slate-800">4. เชื่อมต่อระบบ KBank อื่น (SmartServe)</span>
+              <button onClick={onBackToQ4} className="text-emerald-600 hover:underline text-[11px]">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              {q4ConnectNonM365 === 'yes' ? '✅ Yes (Need SmartServe integration)' : '❌ No (M365/MDP only)'}
+              {q4ConnectNonM365 === 'yes' ? '✅ ใช่ (จำเป็นต้องเชื่อมต่อ SmartServe)' : '❌ ไม่ใช่ (ใช้เฉพาะ M365/MDP)'}
             </div>
           </div>
 
           {/* Q5 */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">5. UAM Governance Control</span>
-              <button onClick={onBackToQ5} className="text-purple-600 hover:underline text-[11px]">Edit</button>
+              <span className="font-semibold text-slate-800">5. การรวบรวมความรู้สู่ OneDrive</span>
+              <button onClick={onBackToQ5} className="text-blue-600 hover:underline text-[11px]">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              {q5UamGovernance === 'yes' ? '✅ Yes (Team can audit UAM)' : '❌ No (Need centralized UAM)'}
+              {q5O365KnowledgeToSharepoint === 'yes' ? '✅ ใช่ (รวบรวมสู่ OneDrive/SharePoint ได้)' : '❌ ไม่ใช่ (ไม่สามารถรวบรวมได้ - แนะนำ Microsoft)'}
             </div>
           </div>
 
           {/* Q6 */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">6. Local / KBTG LLM</span>
-              <button onClick={onBackToQ6} className="text-teal-600 hover:underline text-[11px]">Edit</button>
+              <span className="font-semibold text-slate-800">6. การกำกับดูแลสิทธิ์ UAM</span>
+              <button onClick={onBackToQ6} className="text-purple-600 hover:underline text-[11px]">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              {q6LocalKbtgLlm === 'yes' ? '✅ Yes (Plan internal models)' : '❌ No (Cloud commercial LLMs)'}
+              {effectiveQ6Uam === 'yes' ? '✅ ใช่ (ทีมพร้อมตรวจสอบสิทธิ์ UAM)' : '❌ ไม่ใช่ (ต้องการ UAM รวมศูนย์)'}
+            </div>
+          </div>
+
+          {/* Q7 */}
+          <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-slate-800">7. แผนโมเดล Local / KBTG LLM</span>
+              <button onClick={onBackToQ7} className="text-teal-600 hover:underline text-[11px]">แก้ไข</button>
+            </div>
+            <div className="text-slate-600">
+              {effectiveQ7Llm === 'yes' ? '✅ ใช่ (มีแผนใช้โมเดลภายใน)' : '❌ ไม่ใช่ (ใช้ Cloud LLM เชิงพาณิชย์)'}
             </div>
           </div>
         </div>
@@ -500,11 +588,11 @@ export default function SummaryView({
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200">
         <button
           type="button"
-          onClick={onBackToQ6}
+          onClick={onBackToQ7}
           className="inline-flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Question 6 (Model Roadmap)</span>
+          <span>ย้อนกลับไปคำถามที่ 7 (แผนโมเดล Local LLM)</span>
         </button>
 
         <div className="flex items-center space-x-3">
@@ -515,7 +603,7 @@ export default function SummaryView({
             className="inline-flex items-center space-x-2 px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition"
           >
             <FileDown className="w-4 h-4" />
-            <span>Export Report (.docx)</span>
+            <span>ส่งออกรายงาน (.docx)</span>
           </button>
 
           <button
@@ -524,7 +612,7 @@ export default function SummaryView({
             className="inline-flex items-center space-x-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-sm transition"
           >
             <Sliders className="w-4 h-4 text-indigo-300" />
-            <span>Tweak Weights & SQLite Variables</span>
+            <span>ปรับแต่งน้ำหนักคะแนน & ตัวแปร SQLite</span>
           </button>
         </div>
       </div>

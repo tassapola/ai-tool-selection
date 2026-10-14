@@ -21,6 +21,7 @@ export default function QuestionThree({
   const costOther = Number(athenaInputs.COST_OF_1_OTHER ?? variables.COST_OF_1_OTHER ?? 1.4);
   const costEvalQ = Number(variables.COST_OF_1_EVAL_QUESTION ?? 1.0);
   const costProdQ = Number(variables.COST_OF_PROD_QUESTION ?? 1.0);
+  const costCloudFixedPerMonth = Number(variables.COST_OF_CLOUD_FIXED_COST_PER_MONTH ?? 12000.0);
 
   // Field values with defaults
   const DL = athenaInputs.DL ?? '';
@@ -34,9 +35,14 @@ export default function QuestionThree({
   const AD = athenaInputs.AD ?? '';
   const EVAL_Q = athenaInputs.EVAL_Q ?? '';
   const EVAL_ATTEMPTS = athenaInputs.EVAL_ATTEMPTS ?? '';
+  const DEV_POC_MONTHS = athenaInputs.DEV_POC_MONTHS !== undefined && athenaInputs.DEV_POC_MONTHS !== '' ? athenaInputs.DEV_POC_MONTHS : 2;
   const U = athenaInputs.U ?? '';
   const Q_PER_DAY = athenaInputs.Q_PER_DAY ?? '';
-  const PROD_MONTHS = athenaInputs.PROD_MONTHS ?? '';
+  const PROD_MONTHS = athenaInputs.PROD_MONTHS !== undefined && athenaInputs.PROD_MONTHS !== '' ? athenaInputs.PROD_MONTHS : 10;
+
+  const [autoReducedNotice, setAutoReducedNotice] = useState(false);
+  const totalMonths = (Number(DEV_POC_MONTHS) || 0) + (Number(PROD_MONTHS) || 0);
+  const isMonthsExceeded = totalMonths > 12;
 
   const {
     athenaTotalCostThb = 0,
@@ -45,8 +51,61 @@ export default function QuestionThree({
     athenaBreakdown = {}
   } = evaluation;
 
-  // Handle input update
+  // Handle input update with validation: PROD_MONTHS + DEV_POC_MONTHS <= 12
   const handleFieldChange = (field, value) => {
+    if (field === 'DEV_POC_MONTHS') {
+      const parsedVal = value === '' ? '' : Math.max(0, parseFloat(value) || 0);
+      const numericDevPoc = parsedVal === '' ? 0 : Math.min(12, parsedVal);
+      const currentProd = athenaInputs.PROD_MONTHS !== undefined && athenaInputs.PROD_MONTHS !== ''
+        ? parseFloat(athenaInputs.PROD_MONTHS) || 0
+        : 10;
+
+      let newProd = currentProd;
+      let wasReduced = false;
+      if (numericDevPoc + currentProd > 12) {
+        newProd = Math.max(0, 12 - numericDevPoc);
+        wasReduced = true;
+      }
+      if (wasReduced) {
+        setAutoReducedNotice(true);
+        setTimeout(() => setAutoReducedNotice(false), 4000);
+      }
+
+      onChange({
+        ...athenaInputs,
+        DEV_POC_MONTHS: parsedVal === '' ? '' : numericDevPoc,
+        PROD_MONTHS: newProd
+      });
+      return;
+    }
+
+    if (field === 'PROD_MONTHS') {
+      const parsedVal = value === '' ? '' : Math.max(0, parseFloat(value) || 0);
+      const currentDevPoc = athenaInputs.DEV_POC_MONTHS !== undefined && athenaInputs.DEV_POC_MONTHS !== ''
+        ? parseFloat(athenaInputs.DEV_POC_MONTHS) || 0
+        : 2;
+
+      let finalProd = parsedVal;
+      let wasReduced = false;
+      if (parsedVal !== '') {
+        const maxAllowedProd = Math.max(0, 12 - currentDevPoc);
+        if (parsedVal > maxAllowedProd) {
+          finalProd = maxAllowedProd;
+          wasReduced = true;
+        }
+      }
+      if (wasReduced) {
+        setAutoReducedNotice(true);
+        setTimeout(() => setAutoReducedNotice(false), 4000);
+      }
+
+      onChange({
+        ...athenaInputs,
+        PROD_MONTHS: finalProd
+      });
+      return;
+    }
+
     onChange({
       ...athenaInputs,
       [field]: value === '' ? '' : Math.max(0, parseFloat(value) || 0)
@@ -68,13 +127,13 @@ export default function QuestionThree({
               <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
                 3
               </span>
-              <span>Question 3 • Internal System Architecture</span>
+              <span>คำถามที่ 3 • สถาปัตยกรรมระบบภายใน (Internal System Architecture)</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
-              Cost estimation: Athena
+              การประเมินต้นทุน: Athena
             </h2>
             <p className="mt-1.5 text-sm text-slate-600 max-w-2xl">
-              Model the ingestion, developer evaluation, and pilot/production operational costs for the internal Athena system.
+              จำลองต้นทุนการประมวลผลเอกสารนำเข้า (Ingestion), การประเมินผลสำหรับนักพัฒนา (Evaluation) และค่าใช้จ่ายในการดำเนินงานช่วง Pilot และ Production สำหรับระบบภายใน Athena
             </p>
           </div>
 
@@ -89,7 +148,7 @@ export default function QuestionThree({
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Interactive Form
+              แบบฟอร์มคำนวณ (Interactive Form)
             </button>
             <button
               type="button"
@@ -101,7 +160,7 @@ export default function QuestionThree({
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
-              <span>Cost Calculation Example</span>
+              <span>ตัวอย่างการคำนวณต้นทุน (Example)</span>
             </button>
           </div>
         </div>
@@ -113,8 +172,8 @@ export default function QuestionThree({
               ✦
             </div>
             <div>
-              <span className="font-extrabold text-emerald-900">Model Assumption: </span>
-              <span>All calculations are based on the <strong>Gemini 3.1 Flash Lite</strong> model (fast token processing, low-latency multimodal retrieval).</span>
+              <span className="font-extrabold text-emerald-900">สมมติฐานของโมเดล: </span>
+              <span>การคำนวณทั้งหมดอ้างอิงตามโมเดล <strong>Gemini 3.1 Flash Lite</strong> (การประมวลผลโทเค็นรวดเร็ว, การสืบค้น Multimodal ความหน่วงต่ำ)</span>
             </div>
           </div>
           <span className="hidden md:inline-flex text-[11px] font-bold bg-white/80 px-2 py-0.5 rounded text-emerald-800 border border-emerald-200">
@@ -130,14 +189,14 @@ export default function QuestionThree({
             {/* Quick preset trigger */}
             <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200">
               <span className="text-xs text-slate-600">
-                Want to pre-fill with the reference baseline parameters?
+                ต้องการกรอกค่าเริ่มต้นตามข้อมูลอ้างอิงมาตรฐานหรือไม่?
               </span>
               <button
                 type="button"
                 onClick={handleLoadExample}
                 className="text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-white px-3 py-1.5 rounded-lg border border-emerald-300 shadow-2xs transition"
               >
-                Load Preset Example Data
+                โหลดชุดข้อมูลตัวอย่างอ้างอิง
               </button>
             </div>
 
@@ -147,11 +206,11 @@ export default function QuestionThree({
                 <div className="flex items-center space-x-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
                   <h3 className="text-base font-bold text-slate-900">
-                    Section 1: Dev & PoC
+                    ส่วนที่ 1: Dev & PoC
                   </h3>
                 </div>
                 <span className="text-xs text-slate-500 font-medium bg-white px-2.5 py-0.5 rounded border border-slate-200">
-                  Ingestion & Evaluation
+                  การนำเข้าเอกสารและการประเมินผล (Ingestion & Evaluation)
                 </span>
               </div>
 
@@ -159,7 +218,7 @@ export default function QuestionThree({
               <div className="space-y-4">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-emerald-600" />
-                  Section 1.1: Documents
+                  ส่วนที่ 1.1: เอกสาร (Documents)
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -167,7 +226,7 @@ export default function QuestionThree({
                   <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-semibold text-slate-800">
-                        Number of documents (docx, txt, md)
+                        จำนวนเอกสาร (docx, txt, md)
                       </label>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                         DL
@@ -178,17 +237,17 @@ export default function QuestionThree({
                       min="0"
                       value={DL}
                       onChange={(e) => handleFieldChange('DL', e.target.value)}
-                      placeholder="e.g. 1000"
+                      placeholder="เช่น 1000"
                       className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                     />
-                    <div className="text-[11px] text-slate-400">Unit rate: ฿{costDlPage} / page</div>
+                    <div className="text-[11px] text-slate-400">อัตราต่อหน่วย: ฿{costDlPage} / หน้า</div>
                   </div>
 
                   {/* DL_AVG_PAGES */}
                   <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-semibold text-slate-800">
-                        Average pages in documents (docx, txt, md)
+                        จำนวนหน้าเฉลี่ยต่อเอกสาร (docx, txt, md)
                       </label>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                         DL_AVG_PAGES
@@ -199,17 +258,17 @@ export default function QuestionThree({
                       min="0"
                       value={DL_AVG_PAGES}
                       onChange={(e) => handleFieldChange('DL_AVG_PAGES', e.target.value)}
-                      placeholder="e.g. 10"
+                      placeholder="เช่น 10"
                       className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                     />
-                    <div className="text-[11px] text-slate-400">Average page count per file</div>
+                    <div className="text-[11px] text-slate-400">จำนวนหน้าเฉลี่ยต่อไฟล์</div>
                   </div>
 
                   {/* DM */}
                   <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-semibold text-slate-800">
-                        Number of documents (pdf, pptx without images)
+                        จำนวนเอกสาร (pdf, pptx ที่ไม่มีภาพ)
                       </label>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
                         DM
@@ -220,17 +279,17 @@ export default function QuestionThree({
                       min="0"
                       value={DM}
                       onChange={(e) => handleFieldChange('DM', e.target.value)}
-                      placeholder="e.g. 100"
+                      placeholder="เช่น 100"
                       className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                     />
-                    <div className="text-[11px] text-slate-400">Unit rate: ฿{costDmPage} / page</div>
+                    <div className="text-[11px] text-slate-400">อัตราต่อหน่วย: ฿{costDmPage} / หน้า</div>
                   </div>
 
                   {/* DM_AVG_PAGES */}
                   <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-semibold text-slate-800">
-                        Average pages in documents (pdf, pptx without images)
+                        จำนวนหน้าเฉลี่ยต่อเอกสาร (pdf, pptx ที่ไม่มีภาพ)
                       </label>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
                         DM_AVG_PAGES
@@ -241,17 +300,17 @@ export default function QuestionThree({
                       min="0"
                       value={DM_AVG_PAGES}
                       onChange={(e) => handleFieldChange('DM_AVG_PAGES', e.target.value)}
-                      placeholder="e.g. 10"
+                      placeholder="เช่น 10"
                       className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                     />
-                    <div className="text-[11px] text-slate-400">Average pages for text-only PDFs/PPTs</div>
+                    <div className="text-[11px] text-slate-400">จำนวนหน้าเฉลี่ยสำหรับไฟล์ PDF/PPT ข้อความล้วน</div>
                   </div>
 
                   {/* DH */}
                   <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-semibold text-slate-800">
-                        Number of documents (pdf, pptx with images)
+                        จำนวนเอกสาร (pdf, pptx ที่มีภาพประกอบ)
                       </label>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
                         DH
@@ -262,17 +321,17 @@ export default function QuestionThree({
                       min="0"
                       value={DH}
                       onChange={(e) => handleFieldChange('DH', e.target.value)}
-                      placeholder="e.g. 10"
+                      placeholder="เช่น 10"
                       className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                     />
-                    <div className="text-[11px] text-slate-400">Unit rate: ฿{costDhPage} / page</div>
+                    <div className="text-[11px] text-slate-400">อัตราต่อหน่วย: ฿{costDhPage} / หน้า</div>
                   </div>
 
                   {/* DH_AVG_PAGES */}
                   <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-semibold text-slate-800">
-                        Average pages in documents (pdf, pptx with images)
+                        จำนวนหน้าเฉลี่ยต่อเอกสาร (pdf, pptx ที่มีภาพประกอบ)
                       </label>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
                         DH_AVG_PAGES
@@ -283,10 +342,10 @@ export default function QuestionThree({
                       min="0"
                       value={DH_AVG_PAGES}
                       onChange={(e) => handleFieldChange('DH_AVG_PAGES', e.target.value)}
-                      placeholder="e.g. 5"
+                      placeholder="เช่น 5"
                       className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                     />
-                    <div className="text-[11px] text-slate-400">Average pages for image-heavy files</div>
+                    <div className="text-[11px] text-slate-400">จำนวนหน้าเฉลี่ยสำหรับไฟล์ที่มีภาพประกอบจำนวนมาก</div>
                   </div>
 
                   {/* IMG_COUNT (Always appears, conditional on DH > 0) */}
@@ -296,7 +355,7 @@ export default function QuestionThree({
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
                         <ImageIcon className="w-3.5 h-3.5 text-amber-600" />
-                        <span>Number of images within (pptx, images)</span>
+                        <span>รวมจำนวนภาพประกอบภายในเอกสาร (pptx, รูปภาพ) รวมกันทุกไฟล์</span>
                       </label>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">
                         IMG_COUNT
@@ -307,11 +366,11 @@ export default function QuestionThree({
                       min="0"
                       value={IMG_COUNT}
                       onChange={(e) => handleFieldChange('IMG_COUNT', e.target.value)}
-                      placeholder="e.g. 10"
+                      placeholder="เช่น 10"
                       className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold bg-white"
                     />
                     <div className="text-[11px] text-slate-500">
-                      {DH > 0 ? `Active: DH > 0 (${DH} documents). Rate: ฿${costImage} / image` : 'Note: Appears for DH > 0 image counting.'}
+                      {DH > 0 ? `เปิดใช้งาน: DH > 0 (${DH} เอกสาร) อัตรา: ฿${costImage} / ภาพ` : 'หมายเหตุ: แสดงเมื่อระบุ DH > 0 สำหรับนับจำนวนรูปภาพ'}
                     </div>
                   </div>
 
@@ -319,7 +378,7 @@ export default function QuestionThree({
                   <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-semibold text-slate-800">
-                        Number of other documents
+                        จำนวนเอกสารประเภทอื่นๆ (Other Documents)
                       </label>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                         NOD
@@ -330,10 +389,10 @@ export default function QuestionThree({
                       min="0"
                       value={NOD}
                       onChange={(e) => handleFieldChange('NOD', e.target.value)}
-                      placeholder="e.g. 1"
+                      placeholder="เช่น 1"
                       className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                     />
-                    <div className="text-[11px] text-slate-400">Unit rate: ฿{costOther} / other document</div>
+                    <div className="text-[11px] text-slate-400">อัตราต่อหน่วย: ฿{costOther} / เอกสารอื่นๆ</div>
                   </div>
                 </div>
               </div>
@@ -342,12 +401,12 @@ export default function QuestionThree({
               <div className="space-y-4 pt-3 border-t border-slate-200">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                   <Users className="w-3.5 h-3.5 text-emerald-600" />
-                  Section 1.2: Agent Developer
+                  ส่วนที่ 1.2: นักพัฒนา Agent (Agent Developer)
                 </h4>
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5 max-w-md">
                   <div className="flex justify-between items-center">
                     <label className="text-xs font-semibold text-slate-800">
-                      Number of agent developers
+                      จำนวนนักพัฒนา Agent
                     </label>
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
                       AD
@@ -358,10 +417,10 @@ export default function QuestionThree({
                     min="0"
                     value={AD}
                     onChange={(e) => handleFieldChange('AD', e.target.value)}
-                    placeholder="e.g. 2"
+                    placeholder="เช่น 2"
                     className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                   />
-                  <div className="text-[11px] text-slate-400">Developers building & maintaining custom Athena agents</div>
+                  <div className="text-[11px] text-slate-400">นักพัฒนาที่สร้างและดูแล Custom Athena Agents</div>
                 </div>
               </div>
 
@@ -369,14 +428,14 @@ export default function QuestionThree({
               <div className="space-y-4 pt-3 border-t border-slate-200">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                   <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
-                  Section 1.3: Number of Evaluation Questions
+                  ส่วนที่ 1.3: จำนวนคำถามในการทดสอบและประเมินผล (Evaluation Questions)
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* EVAL_Q */}
                   <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-semibold text-slate-800">
-                        Number of evaluation questions asked
+                        จำนวนคำถามประเมินผลที่ใช้ทดสอบ
                       </label>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                         EVAL_Q
@@ -387,17 +446,17 @@ export default function QuestionThree({
                       min="0"
                       value={EVAL_Q}
                       onChange={(e) => handleFieldChange('EVAL_Q', e.target.value)}
-                      placeholder="e.g. 300"
+                      placeholder="เช่น 300"
                       className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                     />
-                    <div className="text-[11px] text-slate-400">Benchmark question set size</div>
+                    <div className="text-[11px] text-slate-400">ขนาดชุดคำถามทดสอบมาตรฐาน (Benchmark Question Set)</div>
                   </div>
 
                   {/* EVAL_ATTEMPTS */}
                   <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-semibold text-slate-800">
-                        Number of evaluation attempts you would make
+                        จำนวนรอบที่ทำการทดสอบประเมินผล (Evaluation Attempts)
                       </label>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                         EVAL_ATTEMPTS
@@ -408,10 +467,45 @@ export default function QuestionThree({
                       min="0"
                       value={EVAL_ATTEMPTS}
                       onChange={(e) => handleFieldChange('EVAL_ATTEMPTS', e.target.value)}
-                      placeholder="e.g. 10"
+                      placeholder="เช่น 10"
                       className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                     />
-                    <div className="text-[11px] text-slate-400">Total test runs / tuning iterations. Rate: ฿{costEvalQ} / question</div>
+                    <div className="text-[11px] text-slate-400">จำนวนรอบการทดสอบ / ปรับแต่งทั้งหมด (อัตรา: ฿{costEvalQ} / คำถาม)</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 1.4: Duration of Dev & PoC */}
+              <div className="space-y-4 pt-3 border-t border-slate-200">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-emerald-600" />
+                    ส่วนที่ 1.4: ระยะเวลาช่วง Dev & PoC (Duration of Dev & PoC)
+                  </h4>
+                  <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-medium">
+                    แนะนำ 2 เดือน (Hint: 2 months)
+                  </span>
+                </div>
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5 max-w-md">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-semibold text-slate-800">
+                      ระยะเวลาในช่วง Dev & PoC (เดือน)
+                    </label>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      DEV_POC_MONTHS
+                    </span>
+                  </div>
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={DEV_POC_MONTHS}
+                    onChange={(e) => handleFieldChange('DEV_POC_MONTHS', e.target.value)}
+                    placeholder="เช่น 2 (แนะนำ 2 เดือน)"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
+                  />
+                  <div className="text-[11px] text-slate-400">
+                    อัตราต้นทุนคงที่สำหรับ Cloud Compute: ฿{costCloudFixedPerMonth.toLocaleString()} บาท / เดือน
                   </div>
                 </div>
               </div>
@@ -423,11 +517,11 @@ export default function QuestionThree({
                 <div className="flex items-center space-x-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-teal-600"></span>
                   <h3 className="text-base font-bold text-slate-900">
-                    Section 2: Pilot & Production
+                    ส่วนที่ 2: ช่วงนำร่องและใช้งานจริง (Pilot & Production)
                   </h3>
                 </div>
                 <span className="text-xs text-slate-500 font-medium bg-white px-2.5 py-0.5 rounded border border-slate-200">
-                  Operational Run-Rate
+                  อัตราต้นทุนการดำเนินงานต่อเนื่อง (Operational Run-Rate)
                 </span>
               </div>
 
@@ -436,7 +530,7 @@ export default function QuestionThree({
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
                   <div className="flex justify-between items-center">
                     <label className="text-xs font-semibold text-slate-800">
-                      Number of chat users
+                      จำนวนผู้ใช้งานแชท (Chat Users)
                     </label>
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
                       U
@@ -447,17 +541,17 @@ export default function QuestionThree({
                     min="0"
                     value={U}
                     onChange={(e) => handleFieldChange('U', e.target.value)}
-                    placeholder="e.g. 400"
+                    placeholder="เช่น 400"
                     className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                   />
-                  <div className="text-[11px] text-slate-400">Total active chat end-users</div>
+                  <div className="text-[11px] text-slate-400">จำนวนผู้ใช้งานแชทจริงทั้งหมด</div>
                 </div>
 
                 {/* Q_PER_DAY */}
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
                   <div className="flex justify-between items-center">
                     <label className="text-xs font-semibold text-slate-800">
-                      Questions asked per day
+                      จำนวนคำถามต่อคนต่อวัน
                     </label>
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
                       Q_PER_DAY
@@ -469,17 +563,19 @@ export default function QuestionThree({
                     step="any"
                     value={Q_PER_DAY}
                     onChange={(e) => handleFieldChange('Q_PER_DAY', e.target.value)}
-                    placeholder="e.g. 2"
+                    placeholder="เช่น 2"
                     className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
                   />
-                  <div className="text-[11px] text-slate-400">Average queries per user / day</div>
+                  <div className="text-[11px] text-slate-400">จำนวนคำถามเฉลี่ยต่อผู้ใช้ต่อวัน</div>
                 </div>
 
                 {/* PROD_MONTHS */}
-                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
+                <div className={`p-4 rounded-xl border shadow-2xs space-y-1.5 transition-all ${
+                  isMonthsExceeded ? 'bg-amber-50/70 border-amber-300' : 'bg-white border-slate-200'
+                }`}>
                   <div className="flex justify-between items-center">
                     <label className="text-xs font-semibold text-slate-800">
-                      Months in pilot & production
+                      ระยะเวลาในการทดสอบ Pilot และ Production (เดือน)
                     </label>
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
                       PROD_MONTHS
@@ -488,13 +584,40 @@ export default function QuestionThree({
                   <input
                     type="number"
                     min="0"
+                    max={Math.max(0, 12 - (Number(DEV_POC_MONTHS) || 0))}
                     value={PROD_MONTHS}
                     onChange={(e) => handleFieldChange('PROD_MONTHS', e.target.value)}
-                    placeholder="e.g. 12"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
+                    placeholder="เช่น 10 (ค่าเริ่มต้น)"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold bg-white"
                   />
-                  <div className="text-[11px] text-slate-400">Operational timeframe (months). Rate: ฿{costProdQ}/query</div>
+                  <div className="text-[11px] text-slate-500">
+                    ค่าเริ่มต้น 10 เดือน (PROD_MONTHS + DEV_POC_MONTHS ต้องไม่เกิน 12 เดือน)
+                  </div>
                 </div>
+              </div>
+
+              {/* Auto-reduced notification */}
+              {autoReducedNotice && (
+                <div className="p-3 bg-teal-50 border border-teal-300 rounded-xl text-xs text-teal-900 flex items-start gap-2.5 shadow-2xs animate-fadeIn">
+                  <Check className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-teal-950">ระบบปรับลดค่าให้อัตโนมัติ: </span>
+                    <span>
+                      เนื่องจากระยะเวลารวมต้องไม่เกิน 12 เดือน ระบบจึงปรับลดระยะเวลาช่วง Pilot & Production (PROD_MONTHS) เหลือ <strong>{PROD_MONTHS} เดือน</strong> เพื่อให้รวมกับ Dev & PoC ({DEV_POC_MONTHS} เดือน) เท่ากับ <strong>{totalMonths} เดือน</strong> (กรอบ 1 ปี)
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Duration Summary Pill */}
+              <div className="text-[11px] text-slate-500 bg-white p-2.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <span className="flex items-center gap-1.5">
+                  <Info className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span>เกณฑ์ระยะเวลารวม: Dev & PoC ({DEV_POC_MONTHS} เดือน) + Pilot & Production ({PROD_MONTHS} เดือน)</span>
+                </span>
+                <span className="font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-xs">
+                  รวม {totalMonths} เดือน / สูงสุด 12 เดือน
+                </span>
               </div>
             </div>
 
@@ -503,10 +626,10 @@ export default function QuestionThree({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
                   <Calculator className="w-4 h-4 text-emerald-600" />
-                  Athena Cost Summary (Gemini 3.1 Flash Lite)
+                  สรุปต้นทุน Athena (Gemini 3.1 Flash Lite)
                 </span>
                 <span className="text-xs font-semibold text-emerald-700 bg-white px-2.5 py-1 rounded-full border border-emerald-200 shadow-2xs">
-                  Zero Microsoft Seat Tax
+                  ไม่มีต้นทุนค่าที่นั่งรายคนของ Microsoft (Zero Seat Tax)
                 </span>
               </div>
 
@@ -514,7 +637,7 @@ export default function QuestionThree({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono bg-white/90 p-4 rounded-xl border border-emerald-200">
                 <div className="space-y-1.5">
                   <div className="font-bold text-slate-700 font-sans uppercase tracking-wider text-[11px]">
-                    1. Dev & PoC Subtotal:
+                    1. ยอดรวม Dev & PoC:
                   </div>
                   <div className="text-slate-600">
                     DL ({DL || 0}×{DL_AVG_PAGES || 0}×฿{costDlPage}) = ฿{(athenaBreakdown.costDlTotal || 0).toLocaleString()}
@@ -526,35 +649,38 @@ export default function QuestionThree({
                     DH ({DH || 0}×{DH_AVG_PAGES || 0}×฿{costDhPage}) = ฿{(athenaBreakdown.costDhTotal || 0).toLocaleString()}
                   </div>
                   <div className="text-slate-600">
-                    Images ({IMG_COUNT || 0}×฿{costImage}) = ฿{(athenaBreakdown.costImgTotal || 0).toLocaleString()}
+                    รูปภาพ ({IMG_COUNT || 0}×฿{costImage}) = ฿{(athenaBreakdown.costImgTotal || 0).toLocaleString()}
                   </div>
                   <div className="text-slate-600">
-                    NOD ({NOD || 0}×฿{costOther}) = ฿{(athenaBreakdown.costNodTotal || 0).toLocaleString()}
+                    เอกสารอื่นๆ ({NOD || 0}×฿{costOther}) = ฿{(athenaBreakdown.costNodTotal || 0).toLocaleString()}
                   </div>
                   <div className="text-slate-600">
-                    Evaluation ({EVAL_Q || 0}×{EVAL_ATTEMPTS || 0}×฿{costEvalQ}) = ฿{(athenaBreakdown.evalCostTotal || 0).toLocaleString()}
+                    การประเมินผล ({EVAL_Q || 0}×{EVAL_ATTEMPTS || 0}×฿{costEvalQ}) = ฿{(athenaBreakdown.evalCostTotal || 0).toLocaleString()}
+                  </div>
+                  <div className="text-slate-600">
+                    Cloud Compute คงที่ ({DEV_POC_MONTHS || 0} เดือน × ฿{costCloudFixedPerMonth.toLocaleString()}) = ฿{(athenaBreakdown.costCloudFixedTotal ?? (Number(DEV_POC_MONTHS || 0) * costCloudFixedPerMonth)).toLocaleString()}
                   </div>
                   <div className="font-bold text-emerald-800 pt-1 border-t border-slate-100">
-                    Dev & PoC Total = ฿{(athenaDevPocTotal || 0).toLocaleString()}
+                    รวม Dev & PoC = ฿{(athenaDevPocTotal || 0).toLocaleString()}
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
                   <div className="font-bold text-slate-700 font-sans uppercase tracking-wider text-[11px]">
-                    2. Pilot & Production Subtotal:
+                    2. ยอดรวม Pilot & Production:
                   </div>
                   <div className="text-slate-500 text-[11px]">
-                    Formula: U × Q_PER_DAY × 30 days × PROD_MONTHS × ฿{costProdQ}
+                    สูตร: U × Q_PER_DAY × 30 วัน × PROD_MONTHS × ฿{costProdQ}
                   </div>
                   <div className="text-slate-700">
-                    = {U || 0} users × {Q_PER_DAY || 0} q/day × 30 × {PROD_MONTHS || 0} mo × ฿{costProdQ}
+                    = {U || 0} ผู้ใช้ × {Q_PER_DAY || 0} คำถาม/วัน × 30 × {PROD_MONTHS || 0} เดือน × ฿{costProdQ}
                   </div>
                   <div className="font-bold text-teal-800 pt-1 border-t border-slate-100">
-                    Production Run-Rate = ฿{(athenaPilotProdTotal || 0).toLocaleString()}
+                    ต้นทุนการใช้งานจริง Production = ฿{(athenaPilotProdTotal || 0).toLocaleString()}
                   </div>
 
                   <div className="pt-2 text-[11px] text-slate-500 font-sans">
-                    Agent Developers (AD): <strong>{AD || 0}</strong>
+                    นักพัฒนา Agent (AD): <strong>{AD || 0} คน</strong>
                   </div>
                 </div>
               </div>
@@ -562,15 +688,15 @@ export default function QuestionThree({
               {/* Total Athena Cost Display */}
               <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 pt-3 border-t border-emerald-200">
                 <span className="text-sm font-bold text-slate-800">
-                  Total Athena Estimated Cost:
+                  รวมต้นทุนประเมินของ Athena ทั้งหมด:
                 </span>
                 <div className="text-right">
                   <div className="text-3xl font-black text-slate-900 tracking-tight">
                     ฿{athenaTotalCostThb.toLocaleString()}
-                    <span className="text-sm font-normal text-slate-600 ml-1.5">Thai Baht (THB)</span>
+                    <span className="text-sm font-normal text-slate-600 ml-1.5">บาท (THB)</span>
                   </div>
                   <div className="text-xs font-semibold text-emerald-700 mt-0.5">
-                    Includes both Dev/PoC document indexing and {PROD_MONTHS || 12} months of production queries.
+                    ครอบคลุมทั้งการประมวลผลดัชนีเอกสาร Dev/PoC ({DEV_POC_MONTHS || 2} เดือน) และการสอบถามข้อมูล Production ต่อเนื่อง {PROD_MONTHS || 10} เดือน (รวม {totalMonths} เดือน)
                   </div>
                 </div>
               </div>
@@ -586,7 +712,7 @@ export default function QuestionThree({
                 <div className="flex items-center space-x-2">
                   <BookOpen className="w-5 h-5 text-emerald-700" />
                   <h3 className="text-base font-bold text-emerald-950">
-                    Worked Cost Calculation Example
+                    ตัวอย่างการคำนวณต้นทุนแบบละเอียด (Worked Cost Calculation Example)
                   </h3>
                 </div>
                 <button
@@ -595,11 +721,11 @@ export default function QuestionThree({
                   className="inline-flex items-center space-x-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Load These Parameters into Form</span>
+                  <span>โหลดพารามิเตอร์เหล่านี้ลงในแบบฟอร์ม</span>
                 </button>
               </div>
               <p className="text-xs text-emerald-900 leading-relaxed">
-                Here is the reference cost model based on <strong>Gemini 3.1 Flash Lite</strong> pricing with document indexing, automated evaluation, and 12-month pilot & production query execution.
+                นี่คือตัวอย่างโมเดลต้นทุนอ้างอิงตามราคา <strong>Gemini 3.1 Flash Lite</strong> สำหรับการทำดัชนีเอกสาร การประเมินผลอัตโนมัติ และการรันคำถามในระบบจริง 12 เดือน
               </p>
             </div>
 
@@ -608,73 +734,81 @@ export default function QuestionThree({
               {/* Dev & PoC Parameter Table */}
               <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
                 <div className="bg-slate-100 px-4 py-2.5 font-bold text-xs text-slate-700 border-b border-slate-200 uppercase tracking-wider">
-                  Dev & PoC Parameters
+                  พารามิเตอร์ช่วง Dev & PoC
                 </div>
                 <table className="w-full text-left text-xs">
                   <tbody className="divide-y divide-slate-100 font-mono">
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">DL</td>
-                      <td className="px-4 py-2 text-slate-600">1,000 documents (docx, txt, md)</td>
+                      <td className="px-4 py-2 text-slate-600">1,000 เอกสาร (docx, txt, md)</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">DL_AVG_PAGES</td>
-                      <td className="px-4 py-2 text-slate-600">10 pages / doc</td>
+                      <td className="px-4 py-2 text-slate-600">10 หน้า / เอกสาร</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">COST_OF_1_DL_PAGE</td>
-                      <td className="px-4 py-2 text-slate-600">1 THB / page</td>
+                      <td className="px-4 py-2 text-slate-600">1 THB / หน้า</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">DM</td>
-                      <td className="px-4 py-2 text-slate-600">100 documents (pdf, pptx without img)</td>
+                      <td className="px-4 py-2 text-slate-600">100 เอกสาร (pdf, pptx ไม่มีภาพ)</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">DM_AVG_PAGES</td>
-                      <td className="px-4 py-2 text-slate-600">10 pages / doc</td>
+                      <td className="px-4 py-2 text-slate-600">10 หน้า / เอกสาร</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">COST_OF_1_DM_PAGE</td>
-                      <td className="px-4 py-2 text-slate-600">1.4 THB / page</td>
+                      <td className="px-4 py-2 text-slate-600">1.4 THB / หน้า</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">DH</td>
-                      <td className="px-4 py-2 text-slate-600">10 documents (pdf, pptx with img)</td>
+                      <td className="px-4 py-2 text-slate-600">10 เอกสาร (pdf, pptx มีภาพ)</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">DH_AVG_PAGES</td>
-                      <td className="px-4 py-2 text-slate-600">5 pages / doc</td>
+                      <td className="px-4 py-2 text-slate-600">5 หน้า / เอกสาร</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">COST_OF_1_DH_PAGE</td>
-                      <td className="px-4 py-2 text-slate-600">1.4 THB / page</td>
+                      <td className="px-4 py-2 text-slate-600">1.4 THB / หน้า</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">IMG_COUNT</td>
-                      <td className="px-4 py-2 text-slate-600">10 images</td>
+                      <td className="px-4 py-2 text-slate-600">10 รูปภาพ (รวมกันทุกไฟล์)</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">COST_OF_1_IMAGE</td>
-                      <td className="px-4 py-2 text-slate-600">1.4 THB / image</td>
+                      <td className="px-4 py-2 text-slate-600">1.4 THB / รูปภาพ</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">NOD</td>
-                      <td className="px-4 py-2 text-slate-600">1 other document</td>
+                      <td className="px-4 py-2 text-slate-600">1 เอกสารอื่นๆ</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">COST_OF_1_OTHER</td>
-                      <td className="px-4 py-2 text-slate-600">1.1 THB / doc</td>
+                      <td className="px-4 py-2 text-slate-600">1.1 THB / เอกสาร</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">EVAL_Q</td>
-                      <td className="px-4 py-2 text-slate-600">300 questions</td>
+                      <td className="px-4 py-2 text-slate-600">300 คำถาม</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">EVAL_ATTEMPTS</td>
-                      <td className="px-4 py-2 text-slate-600">10 attempts</td>
+                      <td className="px-4 py-2 text-slate-600">10 รอบ</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-2 font-bold text-slate-800">COST_OF_1_EVAL_QUESTION</td>
-                      <td className="px-4 py-2 text-slate-600">1 THB / question</td>
+                      <td className="px-4 py-2 text-slate-600">1 THB / คำถาม</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 bg-emerald-50/40">
+                      <td className="px-4 py-2 font-bold text-slate-800">DEV_POC_MONTHS</td>
+                      <td className="px-4 py-2 text-slate-600">2 เดือน (ระยะเวลาช่วง Dev & PoC)</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 bg-emerald-50/40">
+                      <td className="px-4 py-2 font-bold text-slate-800">COST_OF_CLOUD_FIXED_COST_PER_MONTH</td>
+                      <td className="px-4 py-2 text-slate-600">12,000 THB / เดือน (ค่า Cloud Compute คงที่)</td>
                     </tr>
                   </tbody>
                 </table>
@@ -684,25 +818,25 @@ export default function QuestionThree({
               <div className="space-y-4">
                 <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
                   <div className="bg-slate-100 px-4 py-2.5 font-bold text-xs text-slate-700 border-b border-slate-200 uppercase tracking-wider">
-                    Pilot & Production Parameters
+                    พารามิเตอร์ช่วง Pilot & Production
                   </div>
                   <table className="w-full text-left text-xs">
                     <tbody className="divide-y divide-slate-100 font-mono">
                       <tr className="hover:bg-slate-50">
                         <td className="px-4 py-2 font-bold text-slate-800">U</td>
-                        <td className="px-4 py-2 text-slate-600">400 chat users</td>
+                        <td className="px-4 py-2 text-slate-600">400 ผู้ใช้งานแชท</td>
                       </tr>
                       <tr className="hover:bg-slate-50">
                         <td className="px-4 py-2 font-bold text-slate-800">Q_PER_DAY</td>
-                        <td className="px-4 py-2 text-slate-600">2 questions / user / day</td>
+                        <td className="px-4 py-2 text-slate-600">2 คำถาม / ผู้ใช้ / วัน</td>
                       </tr>
                       <tr className="hover:bg-slate-50">
                         <td className="px-4 py-2 font-bold text-slate-800">PROD_MONTHS</td>
-                        <td className="px-4 py-2 text-slate-600">12 months</td>
+                        <td className="px-4 py-2 text-slate-600">10 เดือน (ค่าเริ่มต้นเพื่อให้รวมกับ Dev & PoC 2 เดือน ไม่เกิน 12 เดือน)</td>
                       </tr>
                       <tr className="hover:bg-slate-50">
                         <td className="px-4 py-2 font-bold text-slate-800">COST_OF_PROD_QUESTION</td>
-                        <td className="px-4 py-2 text-slate-600">1 THB / question</td>
+                        <td className="px-4 py-2 text-slate-600">1 THB / คำถาม</td>
                       </tr>
                     </tbody>
                   </table>
@@ -711,22 +845,23 @@ export default function QuestionThree({
                 {/* Step-by-Step Math Breakdown */}
                 <div className="bg-slate-900 text-emerald-400 p-4 rounded-xl font-mono text-xs space-y-2 shadow-inner">
                   <div className="text-white font-bold pb-1 border-b border-slate-800">
-                    Step-by-Step Calculation:
+                    ขั้นตอนการคำนวณทีละขั้น:
                   </div>
-                  <div>• DL Cost: 1,000 × 10 × 1 = <strong>฿10,000</strong></div>
-                  <div>• DM Cost: 100 × 10 × 1.4 = <strong>฿1,400</strong></div>
-                  <div>• DH Cost: 10 × 5 × 1.4 = <strong>฿70</strong></div>
-                  <div>• Image Cost: 10 × 1.4 = <strong>฿14</strong></div>
-                  <div>• Other Cost: 1 × 1.1 = <strong>฿1.10</strong></div>
-                  <div>• Evaluation: 300 × 10 × 1 = <strong>฿3,000</strong></div>
+                  <div>• ค่าใช้จ่าย DL: 1,000 × 10 × 1 = <strong>฿10,000</strong></div>
+                  <div>• ค่าใช้จ่าย DM: 100 × 10 × 1.4 = <strong>฿1,400</strong></div>
+                  <div>• ค่าใช้จ่าย DH: 10 × 5 × 1.4 = <strong>฿70</strong></div>
+                  <div>• ค่าใช้จ่ายรูปภาพ: 10 × 1.4 = <strong>฿14</strong></div>
+                  <div>• ค่าใช้จ่ายอื่นๆ: 1 × 1.1 = <strong>฿1.10</strong></div>
+                  <div>• การประเมินผล: 300 × 10 × 1 = <strong>฿3,000</strong></div>
+                  <div>• ค่า Cloud Compute คงที่ (Dev & PoC): 2 × 12,000 = <strong>฿24,000</strong></div>
                   <div className="text-white pt-1">
-                    ➤ Dev & PoC Subtotal = 10,000 + 1,400 + 70 + 14 + 1.1 + 3,000 = <span className="text-emerald-300 font-bold">฿14,485.10</span>
+                    ➤ ยอดรวมช่วง Dev & PoC = 10,000 + 1,400 + 70 + 14 + 1.1 + 3,000 + 24,000 = <span className="text-emerald-300 font-bold">฿38,485.10</span>
                   </div>
                   <div className="pt-2 border-t border-slate-800 text-teal-300">
-                    ➤ Pilot & Production Subtotal = 400 × 2 × 30 × 12 × 1 = <span className="text-teal-200 font-bold">฿288,000.00</span>
+                    ➤ ยอดรวมช่วง Pilot & Production = 400 × 2 × 30 × 10 × 1 = <span className="text-teal-200 font-bold">฿240,000.00</span>
                   </div>
                   <div className="pt-2 border-t border-slate-700 text-white font-bold text-sm">
-                    ★ Total Athena Cost = ฿14,485.10 + ฿288,000 = <span className="text-emerald-400 text-base">฿302,485.10 THB</span>
+                    ★ รวมต้นทุน Athena ทั้งหมด = ฿38,485.10 + ฿240,000 = <span className="text-emerald-400 text-base">฿278,485.10 THB</span>
                   </div>
                 </div>
               </div>
@@ -742,7 +877,7 @@ export default function QuestionThree({
             className="w-full sm:w-auto inline-flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Question 2 (Microsoft)</span>
+            <span>ย้อนกลับไปคำถามที่ 2 (Microsoft)</span>
           </button>
 
           <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2">
@@ -751,10 +886,10 @@ export default function QuestionThree({
                 type="button"
                 onClick={onSkipToSummary}
                 className="w-full sm:w-auto inline-flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-200 transition"
-                title="Jump directly to final 3-way recommendation summary"
+                title="ข้ามไปยังสรุปผลคำแนะนำ 3 ทางเลือกสุดท้าย"
               >
                 <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-                <span>Jump to Final Recommendation</span>
+                <span>ข้ามไปยังผลสรุปคำแนะนำสุดท้าย</span>
               </button>
             )}
             <button
@@ -762,7 +897,7 @@ export default function QuestionThree({
               onClick={onComplete}
               className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition"
             >
-              <span>Continue to Question 4 (KBank Systems)</span>
+              <span>ต่อไปยังคำถามที่ 4 (เชื่อมต่อระบบ KBank อื่น)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

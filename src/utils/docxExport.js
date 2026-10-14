@@ -16,6 +16,8 @@ import {
  * Generates and downloads a formal .docx assessment report.
  * Includes assessment date, all questionnaire inputs, active SQLite DB parameters,
  * scoring breakdown, final decision, and a dedicated Human Override & Official Stamp section.
+ * Formatted in professional Thai language suitable for KBank IT Governance reviews,
+ * retaining English only for proper tool names and technical terms.
  */
 export async function exportAssessmentToDocx({
   evaluation,
@@ -24,19 +26,26 @@ export async function exportAssessmentToDocx({
   uUsers,
   athenaInputs = {},
   q4ConnectNonM365,
+  q5O365KnowledgeToSharepoint,
+  q6UamGovernance,
+  q7LocalKbtgLlm,
+  // backwards compatibility
   q5UamGovernance,
   q6LocalKbtgLlm,
   variables = {},
   tools = []
 }) {
+  const effectiveQ6Uam = q6UamGovernance !== undefined && q6UamGovernance !== null ? q6UamGovernance : q5UamGovernance;
+  const effectiveQ7Llm = q7LocalKbtgLlm !== undefined && q7LocalKbtgLlm !== null ? q7LocalKbtgLlm : q6LocalKbtgLlm;
+
   const currentDate = new Date();
-  const formattedDate = currentDate.toLocaleDateString('en-GB', {
+  const formattedDate = currentDate.toLocaleDateString('th-TH', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
     year: 'numeric'
   });
-  const formattedTime = currentDate.toLocaleTimeString('en-GB', {
+  const formattedTime = currentDate.toLocaleTimeString('th-TH', {
     hour: '2-digit',
     minute: '2-digit'
   });
@@ -83,6 +92,17 @@ export async function exportAssessmentToDocx({
 
   // Build document sections
   const doc = new Document({
+    styles: {
+      default: {
+        document: {
+          run: {
+            font: 'TH Sarabun New',
+            size: 24, // 12pt
+            color: '1E293B'
+          }
+        }
+      }
+    },
     sections: [
       {
         properties: {
@@ -98,7 +118,7 @@ export async function exportAssessmentToDocx({
         children: [
           // Document Header
           new Paragraph({
-            text: 'AI TOOL SELECTION ASSESSMENT REPORT',
+            text: 'รายงานผลการประเมินและคัดเลือกเครื่องมือ AI',
             heading: HeadingLevel.HEADING_1,
             alignment: AlignmentType.CENTER,
             spacing: { after: 120 }
@@ -108,10 +128,10 @@ export async function exportAssessmentToDocx({
             spacing: { after: 360 },
             children: [
               new TextRun({
-                text: 'Microsoft 365 Copilot vs Microsoft 365 Copilot Studio vs Athena',
+                text: 'Microsoft 365 Copilot  เทียบกับ  Microsoft 365 Copilot Studio  เทียบกับ  Athena',
                 bold: true,
                 color: '475569',
-                size: 22
+                size: 24
               })
             ]
           }),
@@ -126,23 +146,23 @@ export async function exportAssessmentToDocx({
                     borders: thinBorder,
                     shading: { fill: 'F8FAFC' },
                     width: { size: 25, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Assessment Date:', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'วันที่ทำการประเมิน:', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
                     width: { size: 25, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ text: `${formattedDate}` })]
+                    children: [new Paragraph({ children: [new TextRun({ text: `${formattedDate}`, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
                     shading: { fill: 'F8FAFC' },
                     width: { size: 25, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Evaluation Time:', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'เวลาที่ประเมิน:', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
                     width: { size: 25, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ text: `${formattedTime} (Local)` })]
+                    children: [new Paragraph({ children: [new TextRun({ text: `${formattedTime} น.`, size: 22 })] })]
                   })
                 ]
               }),
@@ -151,20 +171,20 @@ export async function exportAssessmentToDocx({
                   new TableCell({
                     borders: thinBorder,
                     shading: { fill: 'F8FAFC' },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Active Weighting:', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'สัดส่วนน้ำหนักคะแนน:', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
-                    children: [new Paragraph({ text: `${weightCost}% Cost / ${weightFeatures}% Features` })]
+                    children: [new Paragraph({ children: [new TextRun({ text: `ต้นทุน ${weightCost}% / ฟีเจอร์ ${weightFeatures}%`, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
                     shading: { fill: 'F8FAFC' },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Document Status:', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'สถานะเอกสาร:', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
-                    children: [new Paragraph({ text: 'Formal Decision Record' })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'บันทึกผลการตัดสินใจอย่างเป็นทางการ', size: 22 })] })]
                   })
                 ]
               })
@@ -175,7 +195,7 @@ export async function exportAssessmentToDocx({
 
           // Section 1: Executive Summary & Recommendation Decision
           new Paragraph({
-            text: '1. EXECUTIVE SUMMARY & DECISION',
+            text: '1. บทสรุปสำหรับผู้บริหารและผลการตัดสินใจ',
             heading: HeadingLevel.HEADING_2,
             spacing: { before: 240, after: 120 }
           }),
@@ -199,10 +219,10 @@ export async function exportAssessmentToDocx({
                         spacing: { before: 80, after: 60 },
                         children: [
                           new TextRun({
-                            text: 'IMPORTANT ADVISORY DISCLAIMER (NON-FINAL SUGGESTION):',
+                            text: 'ข้อความระบุสิทธิ์และคำแนะนำสำคัญ (ข้อเสนอแนะเบื้องต้น ไม่ใช่ผลสิ้นสุด):',
                             bold: true,
                             color: '92400E',
-                            size: 19
+                            size: 22
                           })
                         ]
                       }),
@@ -210,9 +230,9 @@ export async function exportAssessmentToDocx({
                         spacing: { after: 80 },
                         children: [
                           new TextRun({
-                            text: 'This automated tool recommendation is an advisory suggestion generated from technical criteria and cost estimation formulas. It is NOT final. Evaluators and project committees must also comprehensively assess Time-to-Market, Team People & Skills Readiness, Operational Maintenance Capacity, and all relevant KBank Architectural and Enterprise Governance Processes in conjunction with this suggestion before making a final commitment.',
+                            text: 'คำแนะนำเครื่องมืออัตโนมัตินี้เป็นเพียงข้อเสนอแนะเชิงที่ปรึกษาที่ประมวลผลจากเกณฑ์ทางเทคนิคและสูตรประมาณการต้นทุนเท่านั้น ยังไม่ใช่ผลการตัดสินใจขั้นสุดท้าย ผู้ประเมินและคณะกรรมการโครงการจำเป็นต้องพิจารณาปัจจัยด้านระยะเวลาในการส่งมอบสู่ตลาด (Time-to-Market), ความพร้อมของบุคลากรและทักษะในทีม (People & Skills Readiness), ขีดความสามารถในการดูแลรักษาระบบ (Maintenance Capacity) ตลอดจนกระบวนการกำกับดูแลด้านสถาปัตยกรรมและธรรมาภิบาลของ KBank ควบคู่ไปด้วยเสมอ ก่อนดำเนินการตัดสินใจขั้นเด็ดขาด',
                             color: '78350F',
-                            size: 17
+                            size: 21
                           })
                         ]
                       })
@@ -232,27 +252,27 @@ export async function exportAssessmentToDocx({
                 children: [
                   new TableCell({
                     borders: headerBorder,
-                    shading: { fill: 'EEF2FF' },
+                    shading: { fill: recommendedToolId === 'no_recommendation' ? 'FFE4E6' : 'EEF2FF' },
                     width: { size: 30, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Recommended Tool:', bold: true, size: 22 })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: recommendedToolId === 'no_recommendation' ? 'สถานะผลการประเมิน:' : 'เครื่องมือที่แนะนำ:', bold: true, size: 24 })] })]
                   }),
                   new TableCell({
                     borders: headerBorder,
-                    shading: { fill: 'EEF2FF' },
+                    shading: { fill: recommendedToolId === 'no_recommendation' ? 'FFE4E6' : 'EEF2FF' },
                     width: { size: 70, type: WidthType.PERCENTAGE },
                     children: [
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: recommendedTool ? recommendedTool.name : 'Assessment in progress',
+                            text: recommendedTool ? recommendedTool.name : 'อยู่ระหว่างการประเมิน',
                             bold: true,
-                            size: 24,
-                            color: '1E3A8A'
+                            size: 26,
+                            color: recommendedToolId === 'no_recommendation' ? 'BE123C' : '1E3A8A'
                           }),
                           new TextRun({
                             text: recommendedTool ? ` (${recommendedTool.mode_name})` : '',
                             italics: true,
-                            size: 20
+                            size: 22
                           })
                         ]
                       })
@@ -264,11 +284,16 @@ export async function exportAssessmentToDocx({
                 children: [
                   new TableCell({
                     borders: thinBorder,
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Overall Match Score:', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'คะแนนความเหมาะสมโดยรวม:', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
-                    children: [new Paragraph({ text: `${scores[recommendedToolId] || 0}% Fit (based on 60% Cost / 40% Features)` })]
+                    children: [new Paragraph({ children: [new TextRun({
+                      text: recommendedToolId === 'no_recommendation'
+                        ? `ไม่สามารถสรุปเครื่องมือได้เนื่องจากพบข้อกำหนดขัดแย้งกัน (${evaluation.conflicts?.length || 1} จุด)`
+                        : `${scores[recommendedToolId] || 0}% (คำนวณจาก ต้นทุน ${weightCost}% / ฟีเจอร์ ${weightFeatures}%)`,
+                      size: 22
+                    })] })]
                   })
                 ]
               }),
@@ -276,13 +301,18 @@ export async function exportAssessmentToDocx({
                 children: [
                   new TableCell({
                     borders: thinBorder,
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Financial Economics:', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'ข้อมูลเศรษฐศาสตร์ด้านต้นทุน:', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
                     children: [
                       new Paragraph({
-                        text: `Microsoft Annual License: ฿${annualCostThb.toLocaleString()} THB/year  |  Athena Run Cost: ฿${athenaTotalCostThb.toLocaleString()} THB (Dev + Pilot/Prod)`
+                        children: [
+                          new TextRun({
+                            text: `ค่าไลเซนส์รายปี Microsoft: ฿${annualCostThb.toLocaleString()} บาท/ปี  |  ต้นทุนดำเนินการ Athena: ฿${athenaTotalCostThb.toLocaleString()} บาท (Dev/PoC + Pilot/Production)`,
+                            size: 22
+                          })
+                        ]
                       })
                     ]
                   })
@@ -294,21 +324,21 @@ export async function exportAssessmentToDocx({
           new Paragraph({ text: '', spacing: { after: 180 } }),
 
           new Paragraph({
-            text: 'Decision Rationale & Key Drivers:',
+            text: 'เหตุผลประกอบการตัดสินใจและปัจจัยขับเคลื่อนหลัก:',
             heading: HeadingLevel.HEADING_3,
             spacing: { before: 120, after: 100 }
           }),
           ...reasoning.map(r => new Paragraph({
             bullet: { level: 0 },
             spacing: { after: 80 },
-            children: [new TextRun({ text: r })]
+            children: [new TextRun({ text: r, size: 22 })]
           })),
 
           new Paragraph({ text: '', spacing: { after: 240 } }),
 
           // Section 2: Active Parameters in SQLite Database
           new Paragraph({
-            text: '2. PARAMETERS & THRESHOLDS CONFIGURED IN DATABASE',
+            text: '2. พารามิเตอร์และเกณฑ์คะแนนที่กำหนดในฐานข้อมูล',
             heading: HeadingLevel.HEADING_2,
             spacing: { before: 240, after: 120 }
           }),
@@ -322,83 +352,90 @@ export async function exportAssessmentToDocx({
                     borders: headerBorder,
                     shading: { fill: 'F1F5F9' },
                     width: { size: 40, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Parameter Key', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'ชื่อพารามิเตอร์ (Parameter Key)', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: headerBorder,
                     shading: { fill: 'F1F5F9' },
                     width: { size: 25, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Configured Value', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'ค่าที่กำหนด', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: headerBorder,
                     shading: { fill: 'F1F5F9' },
                     width: { size: 35, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Unit / Context', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'หน่วย / คำอธิบายบริบท', bold: true, size: 22 })] })]
                   })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'weight_cost_percentage' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `${weightCost}%` })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Weight for cost economics' })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'weight_cost_percentage', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `${weightCost}%`, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'สัดส่วนน้ำหนักการประเมินด้านต้นทุน', size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'weight_features_percentage' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `${weightFeatures}%` })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Weight for architecture & features' })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'weight_features_percentage', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `${weightFeatures}%`, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'สัดส่วนน้ำหนักการประเมินด้านฟีเจอร์และสถาปัตยกรรม', size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'usd_thb_rate' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `฿${variables.usd_thb_rate ?? 35.0}` })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'THB/USD exchange rate' })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'usd_thb_rate', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `฿${variables.usd_thb_rate ?? 35.0}`, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'อัตราแลกเปลี่ยน THB/USD', size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'm365_license_monthly_usd' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `$${variables.m365_license_monthly_usd ?? 20.0}` })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'USD / user / month' })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'm365_license_monthly_usd', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `$${variables.m365_license_monthly_usd ?? 20.0}`, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'USD / ผู้ใช้ / เดือน', size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'athena_foundation_model' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Gemini 3.1 Flash Lite', bold: true })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Cost baseline model assumption' })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'athena_foundation_model', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'Gemini 3.1 Flash Lite', bold: true, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'โมเดลภาษาหลักที่ใช้เป็นฐานคิดต้นทุน', size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'COST_OF_1_DL_PAGE' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `฿${variables.COST_OF_1_DL_PAGE ?? 1.0}` })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'THB per page (docx, txt, md)' })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'COST_OF_1_DL_PAGE', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `฿${variables.COST_OF_1_DL_PAGE ?? 1.0}`, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'บาท ต่อหน้า (docx, txt, md)', size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'COST_OF_1_DM_PAGE / DH_PAGE' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `฿${variables.COST_OF_1_DM_PAGE ?? 1.4}` })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'THB per page (pdf, pptx)' })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'COST_OF_1_DM_PAGE / DH_PAGE', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `฿${variables.COST_OF_1_DM_PAGE ?? 1.4}`, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'บาท ต่อหน้า (pdf, pptx)', size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'COST_OF_PROD_QUESTION' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `฿${variables.COST_OF_PROD_QUESTION ?? 1.0}` })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'THB per production chat query' })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'COST_OF_PROD_QUESTION', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `฿${variables.COST_OF_PROD_QUESTION ?? 1.0}`, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'บาท ต่อคำถามแชทในระบบจริง (Production Query)', size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `฿${(variables.COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD ?? 500000.0).toLocaleString()}`, bold: true })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Cost difference threshold to recommend Athena over Easy Mode' })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'COST_OF_CLOUD_FIXED_COST_PER_MONTH', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `฿${(variables.COST_OF_CLOUD_FIXED_COST_PER_MONTH ?? 12000.0).toLocaleString()}`, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'บาท ต่อเดือน (ต้นทุนทรัพยากร Cloud Compute คงที่ช่วง Dev & PoC)', size: 21 })] })] })
+                ]
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `฿${(variables.COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD ?? 350000.0).toLocaleString()}`, bold: true, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'เกณฑ์ส่วนต่างต้นทุนเพื่อแนะนำ Athena แทน Easy Mode (ถ้าเลือกเลขต่ำ โอกาสเลือก Microsoft จะสูงขึ้น)', size: 21 })] })] })
                 ]
               })
             ]
@@ -408,7 +445,7 @@ export async function exportAssessmentToDocx({
 
           // Section 3: Detailed Questionnaire Inputs
           new Paragraph({
-            text: '3. QUESTIONNAIRE FORMS & RECORDED INPUTS',
+            text: '3. ข้อมูลคำตอบและแบบฟอร์มการประเมิน',
             heading: HeadingLevel.HEADING_2,
             spacing: { before: 240, after: 120 }
           }),
@@ -422,41 +459,46 @@ export async function exportAssessmentToDocx({
                     borders: headerBorder,
                     shading: { fill: 'F1F5F9' },
                     width: { size: 20, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Question', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'ข้อคำถาม', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: headerBorder,
                     shading: { fill: 'F1F5F9' },
                     width: { size: 45, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Description / Criteria', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'เกณฑ์การประเมิน / คำอธิบาย', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: headerBorder,
                     shading: { fill: 'F1F5F9' },
                     width: { size: 35, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Recorded User Response', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'คำตอบที่บันทึกไว้', bold: true, size: 22 })] })]
                   })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Question 1: Advanced Builder Readiness' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Team capacity to learn and configure multi-stage agentic workflow' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: q1AgenticWorkflow === 'yes' ? 'Yes (Workflow Capable)' : 'No (Easy Mode Required)', bold: true })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 1: ความพร้อมของทีมในการสร้าง Agent ขั้นสูง (Advanced Builder Readiness)', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ขีดความสามารถของทีมในการเรียนรู้และตั้งค่า Multi-Stage Agentic Workflow', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q1AgenticWorkflow === 'yes' ? 'พร้อม (มีผู้พร้อมเรียนรู้ Workflow)' : 'ไม่พร้อม (ต้องการ Easy Mode สำเร็จรูป)', bold: true, size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Question 2' })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 2: ประมาณการไลเซนส์ Microsoft', size: 21 })] })] }),
                   new TableCell({
                     borders: thinBorder,
-                    children: [new Paragraph({ text: 'Microsoft Solution License Estimation:\nVariable H (Existing Licenses) vs Variable U (Users Needed)' })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'การประมาณการค่าไลเซนส์โซลูชัน Microsoft:\nตัวแปร H (มีไลเซนส์อยู่แล้ว) เทียบกับ ตัวแปร U (ผู้ใช้ทั้งหมดที่ต้องการ)', size: 21 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
                     children: [
                       new Paragraph({
-                        text: `H = ${H} users | U = ${U} users\nAdditional Needed: ${additionalLicensesNeeded} seats\nCalculated Cost: ฿${annualCostThb.toLocaleString()} THB/year`
+                        children: [
+                          new TextRun({
+                            text: `H = ${H} คน | U = ${U} คน\nต้องจัดซื้อเพิ่ม: ${additionalLicensesNeeded} สิทธิ์\nต้นทุนคำนวณได้: ฿${annualCostThb.toLocaleString()} บาท/ปี`,
+                            size: 21
+                          })
+                        ]
                       })
                     ]
                   })
@@ -464,16 +506,21 @@ export async function exportAssessmentToDocx({
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Question 3' })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 3: ประมาณการต้นทุน Athena', size: 21 })] })] }),
                   new TableCell({
                     borders: thinBorder,
-                    children: [new Paragraph({ text: 'Athena Cost Modeling (Dev/PoC Ingestion + Pilot/Production Run-Rate)' })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'การจำลองต้นทุน Athena (การนำเข้าเอกสาร Dev/PoC + อัตราการใช้งาน Pilot/Production)', size: 21 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
                     children: [
                       new Paragraph({
-                        text: `DL: ${athenaInputs.DL || 0} docs (${athenaInputs.DL_AVG_PAGES || 0} pgs) | DM: ${athenaInputs.DM || 0} | DH: ${athenaInputs.DH || 0}\nEval Q: ${athenaInputs.EVAL_Q || 0} | Prod Users: ${athenaInputs.U || U}\nDev/PoC: ฿${athenaDevPocTotal.toLocaleString()} | Prod: ฿${athenaPilotProdTotal.toLocaleString()}\nTotal Athena: ฿${athenaTotalCostThb.toLocaleString()} THB`
+                        children: [
+                          new TextRun({
+                            text: `เอกสาร DL: ${athenaInputs.DL || 0} ฉบับ (${athenaInputs.DL_AVG_PAGES || 0} หน้า) | DM: ${athenaInputs.DM || 0} | DH: ${athenaInputs.DH || 0}\nคำถามทดสอบ: ${athenaInputs.EVAL_Q || 0} | Dev/PoC: ${athenaInputs.DEV_POC_MONTHS || 2} เดือน | Production: ${athenaInputs.PROD_MONTHS || 10} เดือน | ผู้ใช้งานจริง: ${athenaInputs.U || U} คน\nDev/PoC: ฿${athenaDevPocTotal.toLocaleString()} | Production: ฿${athenaPilotProdTotal.toLocaleString()}\nรวมทั้งสิ้น Athena: ฿${athenaTotalCostThb.toLocaleString()} บาท`,
+                            size: 21
+                          })
+                        ]
                       })
                     ]
                   })
@@ -481,23 +528,30 @@ export async function exportAssessmentToDocx({
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Question 4' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Need to connect to systems within KBank NOT M365/MDP (e.g. SmartServe)' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: q4ConnectNonM365 === 'yes' ? 'Yes (Requires SmartServe)' : 'No (M365 only)', bold: true })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 4: การเชื่อมต่อระบบ KBank อื่น (ไม่ใช่ M365/MDP)', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'จำเป็นต้องเชื่อมต่อกับระบบภายในของ KBank ภายนอก M365/MDP (เช่น SmartServe)', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q4ConnectNonM365 === 'yes' ? 'ใช่ (จำเป็นต้องเชื่อมต่อ SmartServe)' : 'ไม่ใช่ (ใช้งานเฉพาะ M365)', bold: true, size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Question 5' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Accountable for decentralized UAM review and agent owner handover' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: q5UamGovernance === 'yes' ? 'Yes (Team can audit UAM)' : 'No (Need centralized UAM)', bold: true })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 5: การรวบรวมความรู้สู่ OneDrive/SharePoint', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'หากใช้เฉพาะฐานความรู้ Office 365 สามารถรวบรวมหรือจัดเก็บลงใน OneDrive/SharePoint ได้หรือไม่', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q5O365KnowledgeToSharepoint === 'yes' ? 'สามารถรวบรวมได้ (จัดเก็บลง OneDrive/SharePoint ได้)' : 'ไม่สามารถรวบรวมได้ (แนะนำโซลูชัน Microsoft)', bold: true, size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Question 6' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Plan to use Local LLM or KBank/KBTG-hosted LLM in future' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: q6LocalKbtgLlm === 'yes' ? 'Yes (Private/KBTG model roadmap)' : 'No (Standard Cloud LLM)', bold: true })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 6: การกำกับดูแล UAM และการโอนย้ายสิทธิ์', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'มีความพร้อมในการรับผิดชอบทบทวนสิทธิ์ UAM และส่งมอบความเป็นเจ้าของ Agent', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: effectiveQ6Uam === 'yes' ? 'พร้อม (ทีมงานสามารถดูแล UAM เองได้)' : 'ไม่พร้อม (ต้องการ UAM รวมศูนย์ขององค์กร)', bold: true, size: 21 })] })] })
+                ]
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 7: แผนโมเดล Local LLM', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'มีแผนจะใช้งาน Local LLM หรือโมเดลที่โฮสต์บน KBank/KBTG ในอนาคต', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: effectiveQ7Llm === 'yes' ? 'มีแผน (ต้องการใช้ Private / KBTG Model)' : 'ไม่มีแผน (ใช้ Cloud LLM มาตรฐาน)', bold: true, size: 21 })] })] })
                 ]
               })
             ]
@@ -507,7 +561,7 @@ export async function exportAssessmentToDocx({
 
           // Section 4: Scoring Matrix Breakdown
           new Paragraph({
-            text: '4. SCORING MATRIX BREAKDOWN',
+            text: '4. รายละเอียดคะแนนการประเมิน',
             heading: HeadingLevel.HEADING_2,
             spacing: { before: 240, after: 120 }
           }),
@@ -521,41 +575,41 @@ export async function exportAssessmentToDocx({
                     borders: headerBorder,
                     shading: { fill: 'F1F5F9' },
                     width: { size: 35, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Tool Candidate', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'เครื่องมือที่พิจารณา', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: headerBorder,
                     shading: { fill: 'F1F5F9' },
                     width: { size: 20, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Weighted Score', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'คะแนนถ่วงน้ำหนัก', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: headerBorder,
                     shading: { fill: 'F1F5F9' },
                     width: { size: 45, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Economics & Fit Summary', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'สรุปความคุ้มค่าและความเหมาะสม', bold: true, size: 22 })] })]
                   })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Microsoft 365 Copilot (Easy Mode)' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `${scores.m365_copilot}%`, bold: true })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `Annual License: ฿${annualCostThb.toLocaleString()} THB/yr. Out-of-the-box productivity in Office 365 apps.` })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'Microsoft 365 Copilot (Easy Mode)', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `${scores.m365_copilot}%`, bold: true, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `ค่าไลเซนส์รายปี: ฿${annualCostThb.toLocaleString()} บาท/ปี เพิ่มประสิทธิภาพการทำงานทันทีบนแอปพลิเคชัน Office 365`, size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Microsoft 365 Copilot Studio' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `${scores.copilot_studio}%`, bold: true })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `Annual License: ฿${annualCostThb.toLocaleString()} THB/yr. Visual low-code multi-stage agentic builder.` })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'Microsoft 365 Copilot Studio', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `${scores.copilot_studio}%`, bold: true, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `ค่าไลเซนส์รายปี: ฿${annualCostThb.toLocaleString()} บาท/ปี เครื่องมือ Visual Low-Code สำหรับสร้าง Multi-Stage Agentic Workflow`, size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: 'Athena (Internal System)' })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `${scores.athena}%`, bold: true })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ text: `Run Cost: ฿${athenaTotalCostThb.toLocaleString()} THB (Gemini 3.1 Flash Lite). Connects SmartServe, centralized UAM, zero seat tax.` })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'Athena (ระบบภายในองค์กร)', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `${scores.athena}%`, bold: true, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `ต้นทุนดำเนินการ: ฿${athenaTotalCostThb.toLocaleString()} บาท (Gemini 3.1 Flash Lite) รองรับ SmartServe, UAM รวมศูนย์, ไม่มีค่าไลเซนส์รายคน`, size: 21 })] })] })
                 ]
               })
             ]
@@ -565,15 +619,20 @@ export async function exportAssessmentToDocx({
 
           // Section 5: Human Override, Sign-off & Official Stamp Section
           new Paragraph({
-            text: '5. HUMAN OVERRIDE, APPROVAL SIGN-OFF & OFFICIAL STAMP',
+            text: '5. การพิจารณาอนุมัติโดยผู้มีอำนาจ การปรับเปลี่ยนผล และการประทับตราทางการ',
             heading: HeadingLevel.HEADING_2,
             spacing: { before: 240, after: 120 }
           }),
 
           new Paragraph({
-            text: 'This section is designated for executive review, formal manual overrides, risk sign-offs, and department stamp validation.',
-            spacing: { after: 180 },
-            italics: true
+            children: [
+              new TextRun({
+                text: 'ส่วนนี้จัดทำขึ้นสำหรับการพิจารณาของผู้บริหาร การปรับเปลี่ยนผลโดยเจ้าหน้าที่ (Manual Override) การลงนามรับรองความเสี่ยง และการประทับตราแผนก/ฝ่ายงานอย่างเป็นทางการ',
+                italics: true,
+                size: 21
+              })
+            ],
+            spacing: { after: 180 }
           }),
 
           // Override Decision Box
@@ -586,7 +645,7 @@ export async function exportAssessmentToDocx({
                     borders: thinBorder,
                     shading: { fill: 'F8FAFC' },
                     width: { size: 30, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Management Action:', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'การตัดสินใจของผู้มีอำนาจ:', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
@@ -594,8 +653,8 @@ export async function exportAssessmentToDocx({
                     children: [
                       new Paragraph({
                         children: [
-                          new TextRun({ text: '[   ] ACCEPT AUTOMATED RECOMMENDATION' }),
-                          new TextRun({ text: '\n[   ] OVERRIDE WITH ALTERNATE TOOL' })
+                          new TextRun({ text: '[   ] ยอมรับผลการแนะนำของระบบอัตโนมัติ', size: 22 }),
+                          new TextRun({ text: '\n[   ] ขอปรับเปลี่ยนผลเป็นเครื่องมืออื่น (Override)', size: 22 })
                         ]
                       })
                     ]
@@ -607,13 +666,18 @@ export async function exportAssessmentToDocx({
                   new TableCell({
                     borders: thinBorder,
                     shading: { fill: 'F8FAFC' },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Overridden Tool (if applicable):', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'เครื่องมือที่เลือกใช้แทน (กรณีขอปรับเปลี่ยน):', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
                     children: [
                       new Paragraph({
-                        text: '[   ] Microsoft 365 Copilot (Easy)    [   ] Copilot Studio    [   ] Athena'
+                        children: [
+                          new TextRun({
+                            text: '[   ] Microsoft 365 Copilot (Easy Mode)     [   ] Microsoft 365 Copilot Studio     [   ] Athena',
+                            size: 21
+                          })
+                        ]
                       })
                     ]
                   })
@@ -624,13 +688,18 @@ export async function exportAssessmentToDocx({
                   new TableCell({
                     borders: thinBorder,
                     shading: { fill: 'F8FAFC' },
-                    children: [new Paragraph({ children: [new TextRun({ text: 'Justification for Override / Management Remarks:', bold: true })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'เหตุผลความจำเป็นในการปรับเปลี่ยน / ความเห็นของผู้บริหาร:', bold: true, size: 22 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
                     children: [
                       new Paragraph({
-                        text: '\n_________________________________________________________________________________\n\n_________________________________________________________________________________\n\n_________________________________________________________________________________\n'
+                        children: [
+                          new TextRun({
+                            text: '\n_________________________________________________________________________________\n\n_________________________________________________________________________________\n\n_________________________________________________________________________________\n',
+                            size: 20
+                          })
+                        ]
                       })
                     ]
                   })
@@ -651,12 +720,12 @@ export async function exportAssessmentToDocx({
                     borders: thinBorder,
                     width: { size: 60, type: WidthType.PERCENTAGE },
                     children: [
-                      new Paragraph({ children: [new TextRun({ text: 'Authorized Sign-off & Reviewer Details', bold: true, size: 22 })] }),
-                      new Paragraph({ text: '\nAssessor Name: ________________________________________________' }),
-                      new Paragraph({ text: '\nRole / Position: ________________________________________________' }),
-                      new Paragraph({ text: '\nDepartment / Division: _________________________________________' }),
-                      new Paragraph({ text: '\nSignature: _____________________________________________________' }),
-                      new Paragraph({ text: '\nSign-off Date: _________________________________________________\n' })
+                      new Paragraph({ children: [new TextRun({ text: 'ข้อมูลผู้ลงนามอนุมัติและรายละเอียดผู้ตรวจสอบ', bold: true, size: 23 })] }),
+                      new Paragraph({ children: [new TextRun({ text: '\nชื่อ-นามสกุล ผู้ประเมิน: ____________________________________________', size: 21 })] }),
+                      new Paragraph({ children: [new TextRun({ text: '\nบทบาท / ตำแหน่ง: ________________________________________________', size: 21 })] }),
+                      new Paragraph({ children: [new TextRun({ text: '\nฝ่ายงาน / ส่วนงาน: ______________________________________________', size: 21 })] }),
+                      new Paragraph({ children: [new TextRun({ text: '\nลายมือชื่อ: ____________________________________________________', size: 21 })] }),
+                      new Paragraph({ children: [new TextRun({ text: '\nวันที่ลงนาม: ____________________________________________________\n', size: 21 })] })
                     ]
                   }),
                   new TableCell({
@@ -668,9 +737,9 @@ export async function exportAssessmentToDocx({
                         alignment: AlignmentType.CENTER,
                         children: [
                           new TextRun({
-                            text: 'OFFICIAL DEPARTMENT STAMP',
+                            text: 'ตราประทับทางการของหน่วยงาน',
                             bold: true,
-                            size: 18,
+                            size: 21,
                             color: '64748B'
                           })
                         ]
@@ -680,9 +749,9 @@ export async function exportAssessmentToDocx({
                         spacing: { before: 400, after: 400 },
                         children: [
                           new TextRun({
-                            text: '[ AFFIX OFFICIAL STAMP / SEAL HERE ]',
+                            text: '[ ประทับตราหน่วยงาน / ส่วนงานที่นี่ ]',
                             italics: true,
-                            size: 16,
+                            size: 20,
                             color: '94A3B8'
                           })
                         ]
@@ -691,8 +760,8 @@ export async function exportAssessmentToDocx({
                         alignment: AlignmentType.CENTER,
                         children: [
                           new TextRun({
-                            text: 'Verification Stamp Validated',
-                            size: 14,
+                            text: 'ตรวจสอบความถูกต้องของตราประทับแล้ว',
+                            size: 18,
                             color: '94A3B8'
                           })
                         ]

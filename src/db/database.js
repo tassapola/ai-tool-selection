@@ -165,10 +165,51 @@ class DatabaseService {
       INSERT OR IGNORE INTO config_variables (key, value, data_type, unit, label, category, description)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `);
+    const stmtUpdateMeta = this.db.prepare(`
+      UPDATE config_variables
+      SET label = ?, description = ?, unit = ?
+      WHERE key = ?
+    `);
     for (const v of DEFAULT_CONFIG_VARIABLES) {
       stmtVar.run([v.key, v.value, v.data_type, v.unit, v.label, v.category, v.description]);
+      stmtUpdateMeta.run([v.label, v.description, v.unit, v.key]);
     }
     stmtVar.free();
+    stmtUpdateMeta.free();
+
+    // Migrate previous default of 500000 to new default 350000
+    try {
+      this.db.run(`
+        UPDATE config_variables 
+        SET value = 350000.0 
+        WHERE key = 'COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD' AND value = 500000.0;
+      `);
+    } catch (e) {}
+
+    // Sync tools metadata to latest translations
+    const stmtTool = this.db.prepare(`
+      INSERT OR REPLACE INTO tools (id, name, mode_name, badge, tagline, description, primary_color, bg_color, border_color, text_color, ideal_for, pros, cons, workflow_complexity)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    for (const t of DEFAULT_TOOLS) {
+      stmtTool.run([
+        t.id, t.name, t.mode_name, t.badge, t.tagline, t.description,
+        t.primary_color, t.bg_color, t.border_color, t.text_color,
+        t.ideal_for, t.pros, t.cons, t.workflow_complexity
+      ]);
+    }
+    stmtTool.free();
+
+    // Sync scoring rules explanations to latest translations
+    const stmtRule = this.db.prepare(`
+      INSERT OR REPLACE INTO scoring_rules (id, rule_name, condition, target_tool, score_delta, is_hard_override, reason)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    for (const r of DEFAULT_SCORING_RULES) {
+      stmtRule.run([r.id, r.rule_name, r.condition, r.target_tool, r.score_delta, r.is_hard_override, r.reason]);
+    }
+    stmtRule.free();
+
     this.persist();
   }
 

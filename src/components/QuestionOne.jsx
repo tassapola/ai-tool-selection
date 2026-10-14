@@ -17,13 +17,13 @@ export default function QuestionOne({
           <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
             1
           </span>
-          <span>Question 1 • Advanced Builder Readiness</span>
+          <span>คำถามที่ 1 • ความพร้อมของทีมในการสร้าง Agent ขั้นสูง (Advanced Builder Readiness)</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
-          Advanced Builder Readiness: Would your team have a person to learn multi-stage agentic workflow?
+          ความพร้อมของทีม: ทีมของคุณมีบุคลากรที่พร้อมเรียนรู้การสร้าง Multi-Stage Agentic Workflow หรือไม่?
         </h2>
         <p className="mt-2 text-sm text-slate-600 max-w-3xl leading-relaxed">
-          Multi-stage agentic workflows require someone on your team to design visual decision trees, configure system prompts, chain API triggers, and manage condition branches.
+          โฟลว์การทำงานอัตโนมัติแบบ Multi-Stage Agentic จำเป็นต้องมีผู้รับผิดชอบในทีมเพื่อออกแบบ Visual Decision Trees, กำหนดค่า System Prompts, เชื่อมโยง API Triggers และจัดการเงื่อนไขการแยกสาขา (Condition Branches)
         </p>
       </div>
 
@@ -33,10 +33,10 @@ export default function QuestionOne({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-2">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-700 bg-white px-2.5 py-1 rounded border border-slate-200">
-                Visual Reference
+                ภาพตัวอย่างอ้างอิง (Visual Reference)
               </span>
               <span className="text-xs text-slate-500 hidden sm:inline">
-                Microsoft Copilot Studio Workflow Designer Interface
+                หน้าจอ Workflow Designer ของ Microsoft Copilot Studio
               </span>
             </div>
             <div className="flex items-center space-x-2">
@@ -46,14 +46,14 @@ export default function QuestionOne({
                 className="inline-flex items-center space-x-1 text-xs text-indigo-600 hover:text-indigo-800 bg-white px-2.5 py-1 rounded border border-indigo-200 shadow-2xs transition"
               >
                 <ZoomIn className="w-3.5 h-3.5" />
-                <span>Zoom Image</span>
+                <span>ขยายภาพ</span>
               </button>
               <a
                 href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/workflows-experience/workflow-designer"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center space-x-1 text-xs text-slate-500 hover:text-slate-800 bg-white px-2 py-1 rounded border border-slate-200 shadow-2xs transition"
-                title="View Microsoft Learn documentation"
+                title="ดูเอกสารประกอบบน Microsoft Learn"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
@@ -74,20 +74,20 @@ export default function QuestionOne({
             <div className="absolute inset-0 bg-indigo-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <span className="bg-slate-900/80 text-white text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-sm shadow flex items-center space-x-1.5">
                 <ZoomIn className="w-3.5 h-3.5" />
-                <span>Click to expand workflow designer</span>
+                <span>คลิกเพื่อขยายดูตัวอย่าง Workflow Designer</span>
               </span>
             </div>
           </div>
 
           <p className="mt-2 text-xs text-slate-500 italic text-center">
-            Pictured: The multi-step visual canvas used to orchestrate triggers, conditional paths, generative responses, and tool calls.
+            ภาพแสดง: ผืนผ้าใบ (Visual Canvas) แบบหลายขั้นตอนสำหรับจัดลำดับ Triggers, เส้นทางตามเงื่อนไข, Generative Responses และการเรียกใช้ Tools
           </p>
         </div>
 
         {/* Answer Selection: Yes or No */}
         <div>
           <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
-            Select Your Team's Readiness
+            เลือกระดับความพร้อมของทีมคุณ
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* NO Option */}
@@ -103,7 +103,7 @@ export default function QuestionOne({
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className={`text-lg font-bold ${value === 'no' ? 'text-blue-900' : 'text-slate-900'}`}>
-                    No
+                    ไม่ใช่ (No)
                   </span>
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                     value === 'no' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'
@@ -112,14 +112,14 @@ export default function QuestionOne({
                   </div>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  We want ready-to-use AI. Our team does not have the capacity, developer bandwidth, or desire to learn node-based workflow authoring.
+                  เราต้องการ AI แบบพร้อมใช้งานทันที (Ready-to-use) ทีมไม่มีกำลังคน ทรัพยากรนักพัฒนา หรือความประสงค์ที่จะเรียนรู้การสร้าง Workflow แบบ Node-based
                 </p>
               </div>
 
               {value === 'no' && (
                 <div className="mt-3 pt-3 border-t border-blue-200/80 text-xs font-semibold text-blue-700 flex items-center space-x-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Direct recommendation: Microsoft 365 Copilot (Easy Mode)</span>
+                  <span>คำแนะนำตรง: Microsoft 365 Copilot (โหมดใช้งานง่าย - Easy Mode)</span>
                 </div>
               )}
             </button>
@@ -137,7 +137,7 @@ export default function QuestionOne({
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className={`text-lg font-bold ${value === 'yes' ? 'text-purple-900' : 'text-slate-900'}`}>
-                    Yes
+                    ใช่ (Yes)
                   </span>
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                     value === 'yes' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-400'
@@ -146,14 +146,14 @@ export default function QuestionOne({
                   </div>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Yes, we have at least one team member, business analyst, or developer willing to learn and configure multi-stage agentic workflows.
+                  ใช่ ทีมของเรามีสมาชิกอย่างน้อยหนึ่งคน ไม่ว่าจะเป็น Business Analyst หรือ Developer ที่พร้อมเรียนรู้และตั้งค่า Multi-Stage Agentic Workflows
                 </p>
               </div>
 
               {value === 'yes' && (
                 <div className="mt-3 pt-3 border-t border-purple-200/80 text-xs font-semibold text-purple-700 flex items-center space-x-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-                  <span>Unlocks Copilot Studio & Athena based on user volume and licensing cost</span>
+                  <span>เปิดพิจารณา Copilot Studio และ Athena โดยคำนวณตามจำนวนผู้ใช้งานและต้นทุนค่าสิทธิ์ (Licensing Cost)</span>
                 </div>
               )}
             </button>
@@ -165,8 +165,8 @@ export default function QuestionOne({
           <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 flex items-start space-x-3">
             <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold">Scoring Rule Triggered: </span>
-              Since no one will maintain multi-step workflows, <strong>Microsoft 365 Copilot (easy mode)</strong> is automatically chosen as your optimal solution. You can still input user numbers in Question 2 to estimate licensing costs!
+              <span className="font-bold">เงื่อนไขการประเมินทำงาน: </span>
+              เนื่องจากไม่มีผู้ดูแลระบบ Workflow แบบหลายขั้นตอน <strong>Microsoft 365 Copilot (โหมดใช้งานง่าย)</strong> จึงถูกเลือกเป็นโซลูชันที่เหมาะสมที่สุดโดยอัตโนมัติ ทั้งนี้คุณยังสามารถระบุจำนวนผู้ใช้ในคำถามที่ 2 เพื่อประเมินค่าใช้จ่ายได้!
             </div>
           </div>
         )}
@@ -176,10 +176,10 @@ export default function QuestionOne({
           <div className="text-xs text-slate-500">
             {value ? (
               <span className="text-emerald-600 font-medium flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> Answer recorded
+                <Check className="w-3.5 h-3.5" /> บันทึกคำตอบแล้ว
               </span>
             ) : (
-              'Please choose Yes or No to proceed'
+              'โปรดเลือก ใช่ หรือ ไม่ใช่ เพื่อดำเนินการต่อ'
             )}
           </div>
 
@@ -193,7 +193,7 @@ export default function QuestionOne({
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
-            <span>Continue to Question 2 (Cost estimation: Microsoft solution)</span>
+            <span>ต่อไปยังคำถามที่ 2 (การประเมินต้นทุน: โซลูชัน Microsoft)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -208,7 +208,7 @@ export default function QuestionOne({
           <div className="relative max-w-5xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl p-2" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between p-3 border-b border-slate-100">
               <span className="text-sm font-bold text-slate-900">
-                Microsoft Copilot Studio — Workflow Designer (Multi-Stage Agentic Architecture)
+                Microsoft Copilot Studio — Workflow Designer (สถาปัตยกรรม Multi-Stage Agentic)
               </span>
               <button
                 onClick={() => setIsZoomed(false)}

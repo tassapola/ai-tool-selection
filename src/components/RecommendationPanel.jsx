@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, CheckCircle2, ChevronDown, ChevronUp, Bot, Workflow, Cpu, Lock, HelpCircle } from 'lucide-react';
+import { Sparkles, CheckCircle2, ChevronDown, ChevronUp, Bot, Workflow, Cpu, Lock, HelpCircle, Info, AlertTriangle } from 'lucide-react';
 
 export default function RecommendationPanel({
   evaluation,
@@ -25,7 +25,7 @@ export default function RecommendationPanel({
     weightFeatures = 40,
     isCostThresholdOverride = false,
     costDiffM365VsAthena = 0,
-    costThresholdToPickAthena = 500000
+    costThresholdToPickAthena = 350000
   } = evaluation;
 
   // Icon mapping for tools
@@ -37,6 +37,8 @@ export default function RecommendationPanel({
         return <Workflow className="w-5 h-5 text-purple-600" />;
       case 'athena':
         return <Cpu className="w-5 h-5 text-emerald-600" />;
+      case 'no_recommendation':
+        return <AlertTriangle className="w-5 h-5 text-rose-600" />;
       default:
         return <Sparkles className="w-5 h-5 text-indigo-600" />;
     }
@@ -65,6 +67,13 @@ export default function RecommendationPanel({
           accentBorder: 'border-l-4 border-emerald-600',
           gradient: 'from-emerald-500/10 to-teal-500/5'
         };
+      case 'no_recommendation':
+        return {
+          pillBg: 'bg-rose-100 text-rose-800 border-rose-300',
+          badgeBg: 'bg-rose-600 text-white',
+          accentBorder: 'border-l-4 border-rose-600',
+          gradient: 'from-rose-500/10 to-red-500/5'
+        };
       default:
         return {
           pillBg: 'bg-slate-100 text-slate-800 border-slate-200',
@@ -91,10 +100,10 @@ export default function RecommendationPanel({
                 ? 'bg-amber-50 text-amber-800 border-amber-200'
                 : 'bg-indigo-50 text-indigo-700 border-indigo-100'
             }`}>
-              {isPendingFirstThree ? 'Assessment In Progress' : 'Live Recommendation'}
+              {isPendingFirstThree ? 'การประเมินอยู่ระหว่างดำเนินการ' : 'ผลคำแนะนำแบบเรียลไทม์'}
             </span>
             <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
-              <span>Tool Recommendation:</span>
+              <span>คำแนะนำเครื่องมือที่เหมาะสม:</span>
               {!isPendingFirstThree && recommendedTool ? (
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs sm:text-sm font-semibold border ${currentTheme.pillBg}`}>
                   {getToolIcon(recommendedToolId)}
@@ -104,7 +113,7 @@ export default function RecommendationPanel({
               ) : (
                 <span className="text-amber-700 font-medium text-xs sm:text-sm flex items-center gap-1">
                   <Lock className="w-3.5 h-3.5" />
-                  <span>Unlocks after Question 3 (Readiness & Cost)</span>
+                  <span>ปลดล็อกเมื่อตอบคำถาม 3 ข้อแรกเสร็จสิ้น (ความพร้อมและค่าใช้จ่าย)</span>
                 </span>
               )}
             </h2>
@@ -115,7 +124,7 @@ export default function RecommendationPanel({
             <div className="hidden sm:flex items-center space-x-1.5 bg-blue-50/80 border border-blue-200 px-2.5 py-1 rounded-md">
               <span className="text-blue-700 font-medium">M365:</span>
               <span className="font-bold text-slate-900">
-                {m365AnnualCostThb === 0 ? '฿0/yr' : `฿${m365AnnualCostThb.toLocaleString()}/yr`}
+                {m365AnnualCostThb === 0 ? '฿0/ปี' : `฿${m365AnnualCostThb.toLocaleString()}/ปี`}
               </span>
             </div>
 
@@ -129,9 +138,9 @@ export default function RecommendationPanel({
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               className="inline-flex items-center space-x-1 text-slate-600 hover:text-slate-900 font-medium px-2 py-1 rounded hover:bg-slate-100 transition"
-              aria-label="Toggle recommendation rationale"
+              aria-label="สลับดูเหตุผลการแนะนำ"
             >
-              <span>{isExpanded ? 'Hide' : 'Details'}</span>
+              <span>{isExpanded ? 'ซ่อนรายละเอียด' : 'ดูเหตุผล'}</span>
               {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
           </div>
@@ -149,9 +158,9 @@ export default function RecommendationPanel({
                 />
               </div>
               <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
-                <span>Core questions answered: <strong>{completedCoreCount} of 3</strong></span>
+                <span>ตอบคำถามหลักแล้ว: <strong>{completedCoreCount} จาก 3 ข้อ</strong></span>
                 <span className="font-medium text-amber-700">
-                  Tool recommendation appears once Questions 1, 2, and 3 are answered
+                  คำแนะนำเครื่องมือจะแสดงขึ้นเมื่อตอบคำถามข้อ 1, 2 และ 3 เสร็จสิ้น
                 </span>
               </div>
             </div>
@@ -212,16 +221,44 @@ export default function RecommendationPanel({
                 <div className="flex items-center space-x-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></span>
                   <span className={recommendedToolId === 'athena' ? 'font-bold text-emerald-900' : ''}>
-                    Athena (Internal): <span className="font-semibold">{scores.athena}%</span>
+                    Athena (ระบบภายใน): <span className="font-semibold">{scores.athena}%</span>
                   </span>
                 </div>
 
                 <span className="text-[10px] text-slate-400 font-mono hidden md:inline">
-                  (Weighting: {weightCost}% Cost • {weightFeatures}% Features)
+                  (ค่าน้ำหนัก: ต้นทุน {weightCost}% • ฟีเจอร์ {weightFeatures}%)
                 </span>
               </div>
+
+              {/* Conflict Notification Banner if no_recommendation */}
+              {recommendedToolId === 'no_recommendation' && (
+                <div className="mt-2 p-2 sm:p-2.5 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-between text-xs text-rose-900">
+                  <div className="flex items-center gap-1.5 font-semibold">
+                    <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span>คำตอบมีความขัดแย้งกันทางสถาปัตยกรรม ({evaluation.conflicts?.length || 1} จุด) • ไม่สามารถสรุปเครื่องมือได้</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsExpanded(true)}
+                    className="text-[11px] underline text-rose-700 font-bold hover:text-rose-900 ml-2 shrink-0 cursor-pointer"
+                  >
+                    ดูรายละเอียดข้อขัดแย้ง
+                  </button>
+                </div>
+              )}
             </>
           )}
+        </div>
+
+        {/* Microsoft Solution Favoring Policy (Appears on every screen) */}
+        <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-start gap-2 text-[11px] text-slate-600 leading-relaxed">
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold text-[10px] border border-blue-200 shrink-0 mt-0.5">
+            <Info className="w-3 h-3 text-blue-600" />
+            เกณฑ์แนะนำ
+          </span>
+          <p className="text-slate-600">
+            ถ้า Microsoft solution มีฟังก์ชันเหมาะสมกับการทำงาน และค่าใช้จ่ายแพงกว่า Athena เล็กน้อย หรือไม่เกิน <strong className="text-slate-900 font-bold">฿{Number(costThresholdToPickAthena).toLocaleString()} / ปี</strong> ระบบจะแนะนำ Microsoft solution ทั้งนี้ เพื่อให้มั่นใจว่าระบบสนับสนุนโซลูชันของ Microsoft เช่นกัน (Favor Microsoft Solution) ซึ่งมีความได้เปรียบด้านความพร้อมใช้งานทันที (Time-to-Market), การทำงานร่วมกับแอปพลิเคชัน Office 365 ได้อย่างไร้รอยต่อ และลดภาระการพัฒนาหรือดูแลรักษาโครงสร้างพื้นฐานภายในองค์กร
+          </p>
         </div>
 
         {/* Expandable Rationale Drawer */}
@@ -230,53 +267,65 @@ export default function RecommendationPanel({
             <div className="md:col-span-2 space-y-2">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                  Decision & Weighting Rationale
+                  เหตุผลประกอบการตัดสินใจและค่าน้ำหนัก
                 </h3>
                 {isCostThresholdOverride && (
                   <span className="text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full">
-                    Cost Threshold Override Active (฿{costThresholdToPickAthena.toLocaleString()} THB)
+                    เกณฑ์สลับเลือก Athena ทำงาน (฿{costThresholdToPickAthena.toLocaleString()} THB)
+                  </span>
+                )}
+                {recommendedToolId === 'no_recommendation' && (
+                  <span className="text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">
+                    พบข้อกำหนดขัดแย้งกัน ({evaluation.conflicts?.length || 1} จุด)
                   </span>
                 )}
               </div>
               <ul className="space-y-1.5">
-                {reasoning.map((r, i) => (
-                  <li key={i} className="flex items-start space-x-2 text-xs text-slate-600">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500 shrink-0 mt-0.5" />
-                    <span>{r}</span>
-                  </li>
-                ))}
+                {reasoning.map((r, i) => {
+                  const isConflictItem = r.startsWith('⚠️') || r.startsWith('[จุดขัดแย้ง]');
+                  return (
+                    <li key={i} className={`flex items-start space-x-2 text-xs ${isConflictItem ? 'text-rose-900 font-medium' : 'text-slate-600'}`}>
+                      {isConflictItem ? (
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
+                      ) : (
+                        <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500 shrink-0 mt-0.5" />
+                      )}
+                      <span>{r}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 
             <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs space-y-1.5">
               <div className="font-semibold text-slate-800 flex items-center justify-between">
-                <span>Cost Comparison</span>
-                <span className="text-[10px] text-slate-500 font-normal">Weight: {weightCost}%</span>
+                <span>เปรียบเทียบค่าใช้จ่าย</span>
+                <span className="text-[10px] text-slate-500 font-normal">ค่าน้ำหนัก: {weightCost}%</span>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>M365 License Cost:</span>
+                <span>ค่าลิขสิทธิ์ Microsoft:</span>
                 <span className="font-bold text-blue-700">
-                  {m365AnnualCostThb === 0 ? '฿0 / yr' : `฿${m365AnnualCostThb.toLocaleString()} / yr`}
+                  {m365AnnualCostThb === 0 ? '฿0 / ปี' : `฿${m365AnnualCostThb.toLocaleString()} / ปี`}
                 </span>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Athena Run Cost:</span>
+                <span>ค่าใช้จ่ายรันระบบ Athena:</span>
                 <span className="font-bold text-emerald-700">
                   ฿{athenaTotalCostThb.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between text-slate-600 border-t border-slate-200 pt-1 text-[11px]">
-                <span>Cost Difference:</span>
+                <span>ส่วนต่างค่าใช้จ่าย:</span>
                 <span className={`font-bold ${costDiffM365VsAthena > costThresholdToPickAthena ? 'text-amber-700' : 'text-slate-700'}`}>
                   {costDiffM365VsAthena > 0 ? `+฿${costDiffM365VsAthena.toLocaleString()}` : `฿${costDiffM365VsAthena.toLocaleString()}`}
                 </span>
               </div>
               <div className="flex justify-between text-slate-500 text-[10px]">
-                <span>Override Threshold:</span>
+                <span>เกณฑ์สลับเลือก Athena:</span>
                 <span className="font-mono text-slate-700">฿{costThresholdToPickAthena.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-slate-500 text-[10px] pt-1 border-t border-slate-200">
-                <span>Features Weight:</span>
+                <span>ค่าน้ำหนักฟีเจอร์:</span>
                 <span className="font-medium text-slate-700">{weightFeatures}%</span>
               </div>
             </div>

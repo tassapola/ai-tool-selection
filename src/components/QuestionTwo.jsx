@@ -27,10 +27,10 @@ export default function QuestionTwo({
 
   // Preset chips
   const presets = [
-    { label: 'Pilot (5 users, 10 licensed)', u: 5, h: 10 },
-    { label: 'Department (25 users, 5 licensed)', u: 25, h: 5 },
-    { label: 'Division (80 users, 20 licensed)', u: 80, h: 20 },
-    { label: 'Enterprise (250 users, 50 licensed)', u: 250, h: 50 },
+    { label: 'Pilot นำร่อง (5 ผู้ใช้, มีสิทธิ์ 10)', u: 5, h: 10 },
+    { label: 'ระดับฝ่าย Department (25 ผู้ใช้, มีสิทธิ์ 5)', u: 25, h: 5 },
+    { label: 'ระดับสายงาน Division (80 ผู้ใช้, มีสิทธิ์ 20)', u: 80, h: 20 },
+    { label: 'ระดับองค์กร Enterprise (250 ผู้ใช้, มีสิทธิ์ 50)', u: 250, h: 50 },
   ];
 
   return (
@@ -41,20 +41,20 @@ export default function QuestionTwo({
           <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
             2
           </span>
-          <span>Question 2 • Licensing Economics</span>
+          <span>คำถามที่ 2 • การประเมินต้นทุนค่าสิทธิ์ (Licensing Economics)</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
-          Cost estimation: Microsoft solution
+          การประเมินต้นทุน: โซลูชัน Microsoft
         </h2>
         <p className="mt-2 text-sm text-slate-600 max-w-2xl leading-relaxed">
-          Estimate the annual additional licensing cost required to equip your team with Microsoft 365 Copilot or Copilot Studio.
+          ประเมินค่าใช้จ่ายสิทธิ์การใช้งาน (License) รายปีเพิ่มเติม สำหรับทีมของคุณในการใช้งาน Microsoft 365 Copilot หรือ Copilot Studio
         </p>
       </div>
 
       <div className="p-6 sm:p-8 space-y-6">
         {/* Quick Presets */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-slate-500">Quick Presets:</span>
+          <span className="text-xs font-medium text-slate-500">ค่าที่เตรียมไว้ล่วงหน้า (Quick Presets):</span>
           {presets.map((p, idx) => (
             <button
               key={idx}
@@ -78,14 +78,14 @@ export default function QuestionTwo({
               className="text-sm font-semibold text-slate-900 flex items-center gap-2"
             >
               <Users className="w-4 h-4 text-blue-600" />
-              <span>1. Number of users who already have Microsoft 365 Advanced license</span>
+              <span>1. จำนวนผู้ใช้ที่มีสิทธิ์การใช้งาน Microsoft 365 ขั้นสูงอยู่แล้ว</span>
             </label>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-extrabold bg-blue-100 text-blue-800 border border-blue-200 self-start sm:self-auto">
-              Variable H
+              ตัวแปร H
             </span>
           </div>
           <p className="text-xs text-slate-500">
-            Active licenses currently assigned or available within your Microsoft 365 tenant.
+            สิทธิ์การใช้งานปัจจุบันที่กำหนดแล้วหรือยังว่างอยู่ใน Microsoft 365 Tenant ของคุณ
           </p>
           <div className="relative mt-2">
             <input
@@ -95,11 +95,11 @@ export default function QuestionTwo({
               step="1"
               value={hUsers === '' ? '' : hUsers}
               onChange={(e) => onHChange(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value, 10) || 0))}
-              placeholder="e.g. 10"
+              placeholder="เช่น 10"
               className="w-full pl-4 pr-16 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-semibold text-base bg-white shadow-2xs"
             />
             <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
-              users (H)
+              ผู้ใช้ (H)
             </span>
           </div>
         </div>
@@ -112,14 +112,14 @@ export default function QuestionTwo({
               className="text-sm font-semibold text-slate-900 flex items-center gap-2"
             >
               <Users className="w-4 h-4 text-indigo-600" />
-              <span>2. Number of users who need to use this AI agent</span>
+              <span>2. จำนวนผู้ใช้งานที่จำเป็นต้องใช้งาน AI Agent นี้</span>
             </label>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-extrabold bg-indigo-100 text-indigo-800 border border-indigo-200 self-start sm:self-auto">
-              Variable U
+              ตัวแปร U
             </span>
           </div>
           <p className="text-xs text-slate-500">
-            Total team members or staff who need to interact with the AI assistant or workflows.
+            จำนวนสมาชิกในทีมหรือบุคลากรทั้งหมดที่จำเป็นต้องโต้ตอบกับ AI Assistant หรือ Workflows
           </p>
           <div className="relative mt-2">
             <input
@@ -129,11 +129,11 @@ export default function QuestionTwo({
               step="1"
               value={uUsers === '' ? '' : uUsers}
               onChange={(e) => onUChange(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value, 10) || 0))}
-              placeholder="e.g. 25"
+              placeholder="เช่น 25"
               className="w-full pl-4 pr-16 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 font-semibold text-base bg-white shadow-2xs"
             />
             <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
-              users (U)
+              ผู้ใช้ (U)
             </span>
           </div>
         </div>
@@ -147,14 +147,14 @@ export default function QuestionTwo({
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
               <Calculator className="w-4 h-4 text-blue-600" />
-              Microsoft License Cost Calculation
+              การคำนวณต้นทุนสิทธิ์การใช้งาน Microsoft
             </span>
             <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
               isCovered 
                 ? 'bg-emerald-200 text-emerald-800' 
                 : 'bg-blue-200 text-blue-800'
             }`}>
-              {isCovered ? 'U ≤ H (0 Cost)' : `${extraUsers} Additional Licenses Needed`}
+              {isCovered ? 'U ≤ H (ไม่มีค่าใช้จ่ายเพิ่ม ฿0)' : `ต้องซื้อสิทธิ์เพิ่ม ${extraUsers} สิทธิ์`}
             </span>
           </div>
 
@@ -162,18 +162,18 @@ export default function QuestionTwo({
           <div className="text-xs text-slate-600 space-y-1 font-mono bg-white p-3 rounded-lg border border-slate-200 mb-4">
             {isCovered ? (
               <div className="text-emerald-700 font-semibold">
-                Condition: U ({U}) ≤ H ({H}) → Incremental License Cost = 0 THB
+                เงื่อนไข: U ({U}) ≤ H ({H}) → ต้นทุนค่าสิทธิ์เพิ่มเติม = 0 THB
               </div>
             ) : (
               <div>
                 <div className="text-slate-500 text-[11px]">
-                  Formula: (U - H) users × ${licenseMonthlyUsd}/month × {monthsPerYear} months × {usdRate} THB/USD
+                  สูตร: (U - H) ผู้ใช้ × ${licenseMonthlyUsd}/เดือน × {monthsPerYear} เดือน × {usdRate} THB/USD
                 </div>
                 <div className="text-blue-900 font-semibold pt-1">
                   = ({U} - {H}) × ${licenseMonthlyUsd} × {monthsPerYear} × ฿{usdRate}
                 </div>
                 <div className="text-slate-700 text-[11px] pt-0.5">
-                  = {extraUsers} extra licenses × ${extraUsers * licenseMonthlyUsd * monthsPerYear} USD × ฿{usdRate}
+                  = {extraUsers} สิทธิ์เพิ่มเติม × ${extraUsers * licenseMonthlyUsd * monthsPerYear} USD × ฿{usdRate}
                 </div>
               </div>
             )}
@@ -182,16 +182,16 @@ export default function QuestionTwo({
           {/* Total Display in Thai Baht with explicit annual mention */}
           <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 pt-2 border-t border-slate-200">
             <span className="text-sm font-semibold text-slate-700">
-              Calculated Microsoft Cost:
+              ต้นทุนโซลูชัน Microsoft ที่คำนวณได้:
             </span>
             <div className="text-right">
               <div className="text-3xl font-extrabold text-slate-900 tracking-tight">
                 {annualCostThb === 0 ? '฿0' : `฿${annualCostThb.toLocaleString()}`}
-                <span className="text-sm font-normal text-slate-600 ml-1.5">Thai Baht (THB)</span>
+                <span className="text-sm font-normal text-slate-600 ml-1.5">บาท (THB)</span>
               </div>
               {/* Explicit requirement: Mention this cost is for per year */}
               <div className="text-xs font-bold text-blue-700 mt-1 uppercase tracking-wider">
-                📌 Mention: This cost is for per year.
+                📌 หมายเหตุ: ค่าใช้จ่ายนี้เป็นต้นทุนต่อปี (Per Year)
               </div>
             </div>
           </div>
@@ -205,7 +205,7 @@ export default function QuestionTwo({
             className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Question 1 (Advanced Builder Readiness)</span>
+            <span>ย้อนกลับไปคำถามที่ 1 (ความพร้อมในการสร้าง Agent ขั้นสูง)</span>
           </button>
 
           <button
@@ -213,7 +213,7 @@ export default function QuestionTwo({
             onClick={onNext}
             className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition"
           >
-            <span>Continue to Question 3 (Cost estimation: Athena)</span>
+            <span>ต่อไปยังคำถามที่ 3 (การประเมินต้นทุน: Athena)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
