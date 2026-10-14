@@ -27,6 +27,71 @@ export const DEFAULT_CONFIG_VARIABLES = [
     category: 'pricing',
     description: 'Multiplier for annualizing recurring monthly license fees.'
   },
+  // Athena Cost Variables (Gemini 3.1 Flash Lite model)
+  {
+    key: 'COST_OF_1_DL_PAGE',
+    value: 1.0,
+    data_type: 'number',
+    unit: 'THB/page',
+    label: 'Cost per page (docx, txt, md)',
+    category: 'athena',
+    description: 'Processing cost per page of docx, txt, md documents for Athena indexing/chunking.'
+  },
+  {
+    key: 'COST_OF_1_DM_PAGE',
+    value: 1.4,
+    data_type: 'number',
+    unit: 'THB/page',
+    label: 'Cost per page (pdf, pptx without images)',
+    category: 'athena',
+    description: 'Processing cost per page of text-only PDF and PPTX documents.'
+  },
+  {
+    key: 'COST_OF_1_DH_PAGE',
+    value: 1.4,
+    data_type: 'number',
+    unit: 'THB/page',
+    label: 'Cost per page (pdf, pptx with images)',
+    category: 'athena',
+    description: 'Processing cost per page of image-heavy PDF and PPTX documents.'
+  },
+  {
+    key: 'COST_OF_1_IMAGE',
+    value: 1.4,
+    data_type: 'number',
+    unit: 'THB/image',
+    label: 'Cost per 1 image extraction',
+    category: 'athena',
+    description: 'Multimodal vision embedding cost per image in documents.'
+  },
+  {
+    key: 'COST_OF_1_OTHER',
+    value: 1.4,
+    data_type: 'number',
+    unit: 'THB/doc',
+    label: 'Cost per 1 other document',
+    category: 'athena',
+    description: 'Handling cost for other miscellaneous document formats.'
+  },
+  {
+    key: 'COST_OF_1_EVAL_QUESTION',
+    value: 1.0,
+    data_type: 'number',
+    unit: 'THB/eval question',
+    label: 'Cost per 1 evaluation question',
+    category: 'athena',
+    description: 'Cost for automated model evaluation question inference.'
+  },
+  {
+    key: 'COST_OF_PROD_QUESTION',
+    value: 1.0,
+    data_type: 'number',
+    unit: 'THB/chat bubble',
+    label: 'Cost per 1 production chat question',
+    category: 'athena',
+    description: 'Inference and retrieval cost per user chat bubble in pilot & production.'
+  },
+  // Thresholds & Weights
   {
     key: 'studio_readiness_weight',
     value: 40.0,
@@ -111,15 +176,15 @@ export const DEFAULT_TOOLS = [
     id: 'athena',
     name: 'Athena',
     mode_name: 'Internal Agentic Platform',
-    badge: 'Custom Enterprise System',
+    badge: 'Custom Enterprise System (Gemini 3.1 Flash Lite)',
     tagline: 'High-scale internal agent with zero per-user seat license overhead',
-    description: 'Proprietary internal agent platform engineered for deep internal system integrations, customized LLM routing, domain-specific data governance, and high-volume scalability.',
+    description: 'Proprietary internal agent platform engineered for deep internal document processing, customized LLM routing with Gemini 3.1 Flash Lite, domain-specific data governance, and high-volume scalability.',
     primary_color: '#059669', // Emerald-600
     bg_color: 'bg-emerald-50',
     border_color: 'border-emerald-300',
     text_color: 'text-emerald-700',
-    ideal_for: 'High user counts where Microsoft per-seat licenses become costly, or tasks requiring proprietary internal integrations.',
-    pros: 'Zero per-user Microsoft tax, tailored to internal databases, full source code & routing control',
+    ideal_for: 'Custom document corpora, high user counts where Microsoft per-seat licenses become costly, or proprietary internal integrations.',
+    pros: 'Zero per-user Microsoft tax, tailored to internal documents & databases, Gemini 3.1 Flash Lite cost efficiency',
     cons: 'Internal team maintenance required, separate UI from standard Office apps',
     workflow_complexity: 'Customizable / Advanced'
   }
@@ -165,10 +230,10 @@ export const DEFAULT_SCORING_RULES = [
   {
     id: 5,
     rule_name: 'high_cost_athena_pivot',
-    condition: 'q2_extra_cost >= athena_high_cost_threshold_thb',
+    condition: 'q2_extra_cost >= athena_cost',
     target_tool: 'athena',
     score_delta: 40,
     is_hard_override: 0,
-    reason: 'Annual Microsoft licensing cost exceeds THB threshold; Athena internal system delivers massive cost savings.'
+    reason: 'Annual Microsoft licensing cost exceeds Athena total deployment cost; Athena delivers superior economics.'
   }
 ];

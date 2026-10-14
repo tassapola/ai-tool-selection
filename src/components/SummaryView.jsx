@@ -1,24 +1,30 @@
 import React from 'react';
-import { ArrowLeft, CheckCircle2, Bot, Workflow, Cpu, Printer, Sparkles, AlertCircle, ExternalLink, HelpCircle, FileText, Check, X } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Bot, Workflow, Cpu, Printer, Sparkles, ExternalLink, HelpCircle, FileText, Check, X } from 'lucide-react';
 
 export default function SummaryView({
   evaluation,
   q1AgenticWorkflow,
   hUsers,
   uUsers,
+  athenaInputs = {},
   tools = [],
   variables = {},
   onBackToQ1,
   onBackToQ2,
+  onBackToQ3,
   onOpenDatabase
 }) {
   const {
     scores = {},
     recommendedToolId,
     recommendedTool,
+    m365AnnualCostThb = 0,
     annualCostThb = 0,
-    annualCostUsd = 0,
     additionalLicensesNeeded = 0,
+    athenaTotalCostThb = 0,
+    athenaDevPocTotal = 0,
+    athenaPilotProdTotal = 0,
+    athenaBreakdown = {},
     H = 0,
     U = 0,
     reasoning = []
@@ -52,7 +58,7 @@ export default function SummaryView({
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <span className="text-xs uppercase font-extrabold tracking-wider px-2.5 py-1 rounded bg-white shadow-2xs border border-slate-200 text-slate-800">
-                  Optimal Match Selected
+                  Recommended Choice
                 </span>
                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
                   {scores[recommendedToolId]}% Match Score
@@ -76,16 +82,19 @@ export default function SummaryView({
               </p>
             </div>
 
-            {/* Cost Snapshot Pill */}
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs text-right shrink-0">
-              <span className="text-xs font-medium text-slate-500 block">
-                Estimated Microsoft License Cost
-              </span>
-              <span className="text-2xl font-black text-slate-900">
-                {annualCostThb === 0 ? '฿0' : `฿${annualCostThb.toLocaleString()}`}
-              </span>
-              <span className="text-xs font-bold text-indigo-600 block uppercase">
-                Per Year ({additionalLicensesNeeded} extra seats)
+            {/* Cost Comparison Pill */}
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs text-right shrink-0 space-y-1">
+              <div className="text-xs text-slate-500 font-medium">Estimated Solution Cost</div>
+              <div className="text-xl font-black text-slate-900">
+                {recommendedToolId === 'athena' ? (
+                  <span>฿{athenaTotalCostThb.toLocaleString()}</span>
+                ) : (
+                  <span>{annualCostThb === 0 ? '฿0' : `฿${annualCostThb.toLocaleString()}`}</span>
+                )}
+                <span className="text-xs font-normal text-slate-500 ml-1">THB</span>
+              </div>
+              <span className="text-[11px] font-bold text-indigo-600 block uppercase">
+                {recommendedToolId === 'athena' ? 'Dev + Production (Gemini 3.1 Flash Lite)' : 'Microsoft License / Year'}
               </span>
             </div>
           </div>
@@ -115,7 +124,7 @@ export default function SummaryView({
               Comprehensive 3-Way Tool Comparison
             </h2>
             <p className="text-xs text-slate-500">
-              Evaluated against team agentic skills, licensing economics, and enterprise architecture.
+              Cross-evaluation between Microsoft Turnkey, Copilot Studio Workflow Designer, and Athena (Gemini 3.1 Flash Lite).
             </p>
           </div>
           <button
@@ -210,7 +219,12 @@ export default function SummaryView({
               <span className="text-sm font-black text-emerald-900">{scores.athena}% Score</span>
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">Athena Platform</h3>
+              <div className="flex items-center space-x-1.5">
+                <h3 className="text-base font-bold text-slate-900">Athena Platform</h3>
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-mono font-semibold">
+                  Gemini 3.1 Flash Lite
+                </span>
+              </div>
               <p className="text-xs text-slate-500 mt-1">
                 Internal enterprise agent platform with zero per-user seat tax.
               </p>
@@ -223,59 +237,65 @@ export default function SummaryView({
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">License Fee:</span>
+                <span className="text-slate-500">Microsoft Seat Tax:</span>
                 <span className="font-semibold text-emerald-700">฿0 / user seat</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Annual Seat Tax:</span>
-                <span className="font-bold text-emerald-600">฿0 (Save ฿{annualCostThb.toLocaleString()})</span>
+                <span className="text-slate-500">Estimated Total Cost:</span>
+                <span className="font-bold text-emerald-800">฿{athenaTotalCostThb.toLocaleString()}</span>
+              </div>
+              <div className="text-[11px] text-slate-500 flex justify-between">
+                <span>• Dev & PoC: ฿{athenaDevPocTotal.toLocaleString()}</span>
+                <span>• Pilot/Prod: ฿{athenaPilotProdTotal.toLocaleString()}</span>
               </div>
             </div>
             <div className="text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
               <span className="font-bold text-slate-700 block mb-1">Best For:</span>
-              <span>Large user counts (50+ users), proprietary data security, tailored LLM routing, avoiding recurring Microsoft license overhead.</span>
+              <span>Large user cohorts, proprietary documents, customized LLM routing with Gemini 3.1 Flash Lite without recurring per-seat fees.</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Your Evaluation Inputs Review */}
-      <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
-        <div className="flex items-center justify-between mb-3">
+      {/* Inputs Review */}
+      <div className="bg-slate-50 rounded-xl border border-slate-200 p-5 space-y-3">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-200">
           <span className="text-xs font-bold uppercase text-slate-700 tracking-wider">
-            Evaluation Inputs Recorded
+            Inputs Summary Recorded
           </span>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={onBackToQ1}
-              className="text-xs text-indigo-600 hover:underline font-medium"
-            >
-              Edit Question 1
+          <div className="flex items-center space-x-2 text-xs">
+            <button onClick={onBackToQ1} className="text-indigo-600 hover:underline font-medium">
+              Edit Q1
             </button>
             <span className="text-slate-300">•</span>
-            <button
-              onClick={onBackToQ2}
-              className="text-xs text-indigo-600 hover:underline font-medium"
-            >
-              Edit Question 2
+            <button onClick={onBackToQ2} className="text-blue-600 hover:underline font-medium">
+              Edit Q2 (Microsoft)
+            </button>
+            <span className="text-slate-300">•</span>
+            <button onClick={onBackToQ3} className="text-emerald-600 hover:underline font-medium">
+              Edit Q3 (Athena)
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           <div className="bg-white p-3 rounded-lg border border-slate-200">
-            <span className="text-slate-500 block">Q1 Agentic Learner Available:</span>
-            <span className="font-bold text-slate-900 capitalize text-sm">
+            <span className="text-slate-500 block">Q1 Agentic Learner:</span>
+            <span className="font-bold text-slate-900 capitalize">
               {q1AgenticWorkflow === 'yes' ? 'Yes (Workflow Capable)' : 'No (Requires Easy Mode)'}
             </span>
           </div>
           <div className="bg-white p-3 rounded-lg border border-slate-200">
-            <span className="text-slate-500 block">Variable H (Existing Licenses):</span>
-            <span className="font-bold text-slate-900 text-sm">{H} licenses</span>
+            <span className="text-slate-500 block">Q2 Microsoft Licenses:</span>
+            <span className="font-bold text-slate-900">
+              H: {H} existing • U: {U} users (฿{annualCostThb.toLocaleString()} / yr)
+            </span>
           </div>
           <div className="bg-white p-3 rounded-lg border border-slate-200">
-            <span className="text-slate-500 block">Variable U (Users Needed):</span>
-            <span className="font-bold text-slate-900 text-sm">{U} users</span>
+            <span className="text-slate-500 block">Q3 Athena Modeling:</span>
+            <span className="font-bold text-slate-900">
+              Total: ฿{athenaTotalCostThb.toLocaleString()} (Gemini 3.1 Flash Lite)
+            </span>
           </div>
         </div>
       </div>
@@ -284,11 +304,11 @@ export default function SummaryView({
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200">
         <button
           type="button"
-          onClick={onBackToQ2}
+          onClick={onBackToQ3}
           className="inline-flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Cost Estimation (Q2)</span>
+          <span>Back to Athena Cost (Q3)</span>
         </button>
 
         <button

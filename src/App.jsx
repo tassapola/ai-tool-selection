@@ -5,9 +5,10 @@ import Navbar from './components/Navbar';
 import RecommendationPanel from './components/RecommendationPanel';
 import QuestionOne from './components/QuestionOne';
 import QuestionTwo from './components/QuestionTwo';
+import QuestionThree from './components/QuestionThree';
 import SummaryView from './components/SummaryView';
 import DatabaseModal from './components/DatabaseModal';
-import { Sparkles, Database, Shield, Zap, ExternalLink } from 'lucide-react';
+import { Sparkles, Database } from 'lucide-react';
 
 export default function App() {
   const [isDbReady, setIsDbReady] = useState(false);
@@ -15,11 +16,33 @@ export default function App() {
   const [tools, setTools] = useState([]);
   const [isDatabaseOpen, setIsDatabaseOpen] = useState(false);
 
-  // Questionnaire State
-  const [currentStep, setCurrentStep] = useState(1); // 1 = Q1, 2 = Q2, 3 = Summary
+  // Questionnaire Steps: 1 = Q1, 2 = Q2 (Microsoft), 3 = Q3 (Athena), 4 = Summary
+  const [currentStep, setCurrentStep] = useState(1);
+  
+  // Q1 State
   const [q1AgenticWorkflow, setQ1AgenticWorkflow] = useState(null); // 'yes' | 'no' | null
+  
+  // Q2 State (Microsoft)
   const [hUsers, setHUsers] = useState(0); // Existing licenses (Variable H)
   const [uUsers, setUUsers] = useState(0); // Users needed (Variable U)
+
+  // Q3 State (Athena)
+  const [athenaInputs, setAthenaInputs] = useState({
+    DL: '',
+    DL_AVG_PAGES: '',
+    DM: '',
+    DM_AVG_PAGES: '',
+    DH: '',
+    DH_AVG_PAGES: '',
+    IMG_COUNT: '',
+    NOD: '',
+    AD: '',
+    EVAL_Q: '',
+    EVAL_ATTEMPTS: '',
+    U: '',
+    Q_PER_DAY: '',
+    PROD_MONTHS: ''
+  });
 
   // Reload data from SQLite database
   const refreshDbState = useCallback(() => {
@@ -58,16 +81,54 @@ export default function App() {
       q1AgenticWorkflow,
       hUsers,
       uUsers,
+      athenaInputs,
       variables,
       tools
     });
-  }, [q1AgenticWorkflow, hUsers, uUsers, variables, tools]);
+  }, [q1AgenticWorkflow, hUsers, uUsers, athenaInputs, variables, tools]);
+
+  // Apply the specified example parameters for Question 3
+  const handleApplyAthenaExample = () => {
+    setAthenaInputs({
+      DL: 1000,
+      DL_AVG_PAGES: 10,
+      DM: 100,
+      DM_AVG_PAGES: 10,
+      DH: 10,
+      DH_AVG_PAGES: 5,
+      IMG_COUNT: 10,
+      NOD: 1,
+      COST_OF_1_OTHER: 1.1,
+      AD: 2,
+      EVAL_Q: 300,
+      EVAL_ATTEMPTS: 10,
+      U: 400,
+      Q_PER_DAY: 2,
+      PROD_MONTHS: 12
+    });
+  };
 
   // Reset assessment state
   const handleResetAssessment = () => {
     setQ1AgenticWorkflow(null);
     setHUsers(0);
     setUUsers(0);
+    setAthenaInputs({
+      DL: '',
+      DL_AVG_PAGES: '',
+      DM: '',
+      DM_AVG_PAGES: '',
+      DH: '',
+      DH_AVG_PAGES: '',
+      IMG_COUNT: '',
+      NOD: '',
+      AD: '',
+      EVAL_Q: '',
+      EVAL_ATTEMPTS: '',
+      U: '',
+      Q_PER_DAY: '',
+      PROD_MONTHS: ''
+    });
     setCurrentStep(1);
   };
 
@@ -78,12 +139,12 @@ export default function App() {
         q1WorkflowReady: q1AgenticWorkflow === 'yes',
         hUsers: parseInt(hUsers, 10) || 0,
         uUsers: parseInt(uUsers, 10) || 0,
-        costUsd: evaluation.annualCostUsd,
-        costThb: evaluation.annualCostThb,
+        costUsd: evaluation.m365AnnualCostUsd,
+        costThb: evaluation.m365AnnualCostThb,
         recommendedTool: evaluation.recommendedToolId
       });
     }
-    setCurrentStep(3);
+    setCurrentStep(4);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -103,7 +164,7 @@ export default function App() {
       {/* 2. Top Sticky Tool Recommendation Panel (Always visible when scrolling) */}
       <RecommendationPanel
         evaluation={evaluation}
-        onNavigateToSummary={() => setCurrentStep(3)}
+        onNavigateToSummary={() => setCurrentStep(4)}
         currentStep={currentStep}
       />
 
@@ -113,12 +174,13 @@ export default function App() {
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Step {currentStep} of 3:
+              Step {currentStep} of 4:
             </span>
             <span className="text-sm font-bold text-slate-800">
               {currentStep === 1 && "Agentic Workflow Capacity"}
-              {currentStep === 2 && "License & Cost Estimation"}
-              {currentStep === 3 && "Final Recommendation & Comparison"}
+              {currentStep === 2 && "Cost estimation: Microsoft solution"}
+              {currentStep === 3 && "Cost estimation: Athena (Gemini 3.1 Flash Lite)"}
+              {currentStep === 4 && "Final Recommendation & Comparison"}
             </span>
           </div>
 
@@ -128,22 +190,30 @@ export default function App() {
               className={`w-3 h-3 rounded-full transition-all ${
                 currentStep === 1 ? 'bg-indigo-600 scale-125' : q1AgenticWorkflow ? 'bg-emerald-500' : 'bg-slate-300'
               }`}
-              title="Question 1"
+              title="Question 1: Agentic Readiness"
             />
             <button
               onClick={() => q1AgenticWorkflow && setCurrentStep(2)}
               disabled={!q1AgenticWorkflow}
               className={`w-3 h-3 rounded-full transition-all ${
-                currentStep === 2 ? 'bg-indigo-600 scale-125' : uUsers || hUsers ? 'bg-emerald-500' : 'bg-slate-300'
+                currentStep === 2 ? 'bg-blue-600 scale-125' : uUsers || hUsers ? 'bg-emerald-500' : 'bg-slate-300'
               }`}
-              title="Question 2"
+              title="Question 2: Cost: Microsoft"
             />
             <button
-              onClick={() => setCurrentStep(3)}
+              onClick={() => q1AgenticWorkflow && setCurrentStep(3)}
+              disabled={!q1AgenticWorkflow}
               className={`w-3 h-3 rounded-full transition-all ${
-                currentStep === 3 ? 'bg-indigo-600 scale-125' : 'bg-slate-300'
+                currentStep === 3 ? 'bg-emerald-600 scale-125' : evaluation.athenaTotalCostThb > 0 ? 'bg-emerald-500' : 'bg-slate-300'
               }`}
-              title="Summary"
+              title="Question 3: Cost: Athena"
+            />
+            <button
+              onClick={() => setCurrentStep(4)}
+              className={`w-3 h-3 rounded-full transition-all ${
+                currentStep === 4 ? 'bg-indigo-600 scale-125' : 'bg-slate-300'
+              }`}
+              title="Step 4: Summary"
             />
           </div>
         </div>
@@ -170,17 +240,36 @@ export default function App() {
               setCurrentStep(1);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onComplete={handleCompleteQuestionnaire}
+            onNext={() => {
+              setCurrentStep(3);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             variables={variables}
           />
         )}
 
         {currentStep === 3 && (
+          <QuestionThree
+            athenaInputs={athenaInputs}
+            onChange={(val) => setAthenaInputs(val)}
+            onApplyExample={handleApplyAthenaExample}
+            onBack={() => {
+              setCurrentStep(2);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onComplete={handleCompleteQuestionnaire}
+            variables={variables}
+            evaluation={evaluation}
+          />
+        )}
+
+        {currentStep === 4 && (
           <SummaryView
             evaluation={evaluation}
             q1AgenticWorkflow={q1AgenticWorkflow}
             hUsers={hUsers}
             uUsers={uUsers}
+            athenaInputs={athenaInputs}
             tools={tools}
             variables={variables}
             onBackToQ1={() => {
@@ -189,6 +278,10 @@ export default function App() {
             }}
             onBackToQ2={() => {
               setCurrentStep(2);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onBackToQ3={() => {
+              setCurrentStep(3);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onOpenDatabase={() => setIsDatabaseOpen(true)}

@@ -46,6 +46,8 @@ class DatabaseService {
           try {
             const binary = this._base64ToUint8Array(savedData);
             this.db = new this.SQL.Database(binary);
+            this._bootstrapSchema();
+            this._seedMissingVariables();
             this.isInitialized = true;
             return this.db;
           } catch (err) {
@@ -155,6 +157,19 @@ class DatabaseService {
       stmtRule.run([r.id, r.rule_name, r.condition, r.target_tool, r.score_delta, r.is_hard_override, r.reason]);
     }
     stmtRule.free();
+  }
+
+  _seedMissingVariables() {
+    // Insert any newly added config variables if they do not exist
+    const stmtVar = this.db.prepare(`
+      INSERT OR IGNORE INTO config_variables (key, value, data_type, unit, label, category, description)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    for (const v of DEFAULT_CONFIG_VARIABLES) {
+      stmtVar.run([v.key, v.value, v.data_type, v.unit, v.label, v.category, v.description]);
+    }
+    stmtVar.free();
+    this.persist();
   }
 
   persist() {

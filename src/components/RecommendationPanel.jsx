@@ -97,11 +97,18 @@ export default function RecommendationPanel({
           </div>
 
           {/* Quick Metrics & Toggle */}
-          <div className="flex items-center space-x-3 text-xs">
-            <div className="flex items-center space-x-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md">
-              <span className="text-slate-500">M365 Cost:</span>
-              <span className={`font-bold ${annualCostThb === 0 ? 'text-emerald-600' : 'text-slate-900'}`}>
-                {annualCostThb === 0 ? '฿0 / year' : `฿${annualCostThb.toLocaleString()} / year`}
+          <div className="flex items-center space-x-2 sm:space-x-3 text-xs">
+            <div className="hidden sm:flex items-center space-x-1.5 bg-blue-50/80 border border-blue-200 px-2.5 py-1 rounded-md">
+              <span className="text-blue-700 font-medium">M365:</span>
+              <span className="font-bold text-slate-900">
+                {annualCostThb === 0 ? '฿0/yr' : `฿${annualCostThb.toLocaleString()}/yr`}
+              </span>
+            </div>
+
+            <div className="flex items-center space-x-1.5 bg-emerald-50/80 border border-emerald-200 px-2.5 py-1 rounded-md">
+              <span className="text-emerald-700 font-medium">Athena:</span>
+              <span className="font-bold text-emerald-900">
+                {(evaluation.athenaTotalCostThb || 0) === 0 ? '฿0' : `฿${(evaluation.athenaTotalCostThb || 0).toLocaleString()}`}
               </span>
             </div>
 
@@ -110,7 +117,7 @@ export default function RecommendationPanel({
               className="inline-flex items-center space-x-1 text-slate-600 hover:text-slate-900 font-medium px-2 py-1 rounded hover:bg-slate-100 transition"
               aria-label="Toggle recommendation rationale"
             >
-              <span>{isExpanded ? 'Hide Details' : 'Why this tool?'}</span>
+              <span>{isExpanded ? 'Hide' : 'Details'}</span>
               {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
           </div>
@@ -197,22 +204,24 @@ export default function RecommendationPanel({
 
             <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs space-y-1.5">
               <div className="font-semibold text-slate-800 flex items-center justify-between">
-                <span>Cost Summary</span>
-                <span className="text-[10px] text-slate-500 font-normal">Per Year</span>
+                <span>Cost Comparison</span>
+                <span className="text-[10px] text-slate-500 font-normal">Annual / Operational</span>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Users needing AI (U):</span>
-                <span className="font-semibold">{U}</span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>Existing Licenses (H):</span>
-                <span className="font-semibold">{H}</span>
-              </div>
-              <div className="flex justify-between text-slate-600 pt-1 border-t border-slate-200">
-                <span>Annual Total (THB):</span>
-                <span className="font-bold text-indigo-700">
-                  {annualCostThb === 0 ? '฿0 / year' : `฿${annualCostThb.toLocaleString()} / year`}
+                <span>M365 License Cost:</span>
+                <span className="font-bold text-blue-700">
+                  {annualCostThb === 0 ? '฿0 / yr' : `฿${annualCostThb.toLocaleString()} / yr`}
                 </span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>Athena Run Cost:</span>
+                <span className="font-bold text-emerald-700">
+                  ฿{(evaluation.athenaTotalCostThb || 0).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-500 text-[10px] pt-1 border-t border-slate-200">
+                <span>Model Base:</span>
+                <span className="font-medium text-slate-700">Gemini 3.1 Flash Lite</span>
               </div>
             </div>
           </div>

@@ -38,38 +38,50 @@ export default function Navbar({
           <nav className="hidden lg:flex items-center space-x-1 bg-slate-100 p-1 rounded-lg">
             <button
               onClick={() => onSelectStep(1)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center space-x-1.5 ${
+              className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all flex items-center space-x-1.5 ${
                 currentStep === 1
                   ? 'bg-white text-indigo-600 shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <span className="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-700">1</span>
-              <span>Agentic Readiness</span>
+              <span>Readiness</span>
             </button>
             <ArrowRight className="w-3 h-3 text-slate-400" />
             <button
               onClick={() => onSelectStep(2)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center space-x-1.5 ${
+              className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all flex items-center space-x-1.5 ${
                 currentStep === 2
-                  ? 'bg-white text-indigo-600 shadow-sm'
+                  ? 'bg-white text-blue-600 shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <span className="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-700">2</span>
-              <span>Cost Estimation</span>
+              <span>Cost: Microsoft</span>
             </button>
             <ArrowRight className="w-3 h-3 text-slate-400" />
             <button
               onClick={() => onSelectStep(3)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center space-x-1.5 ${
+              className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all flex items-center space-x-1.5 ${
                 currentStep === 3
-                  ? 'bg-white text-indigo-600 shadow-sm'
+                  ? 'bg-white text-emerald-600 shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <span className="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-700">3</span>
-              <span>Full Comparison</span>
+              <span>Cost: Athena</span>
+            </button>
+            <ArrowRight className="w-3 h-3 text-slate-400" />
+            <button
+              onClick={() => onSelectStep(4)}
+              className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all flex items-center space-x-1.5 ${
+                currentStep === 4
+                  ? 'bg-white text-indigo-600 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span className="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-700">4</span>
+              <span>Comparison</span>
             </button>
           </nav>
 
