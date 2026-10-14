@@ -38,6 +38,9 @@ export function calculateEvaluation({
   const costEvalQ = Number(variables.COST_OF_1_EVAL_QUESTION ?? 1.0);
   const costProdQ = Number(variables.COST_OF_PROD_QUESTION ?? 1.0);
 
+  // Configurable cost threshold to override Easy Mode to Athena (default 500,000 THB)
+  const costThresholdToPickAthena = Number(variables.COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD ?? 500000.0);
+
   // -------------------------------------------------------------
   // QUESTION 2: Microsoft Cost Calculation
   // -------------------------------------------------------------
@@ -218,11 +221,33 @@ export function calculateEvaluation({
   // D. DECISIVE RULES & OVERRIDES
   let primaryRecommendationId = 'm365_copilot';
 
-  // Rule 1: Q1 == 'no' -> Microsoft 365 Copilot (Easy Mode)
+  // Rule 1: Q1 == 'no' -> Normally Microsoft 365 Copilot (Easy Mode)
+  // HOWEVER: Even though question 1 recommends Microsoft copilot easy mode, if cost difference between
+  // Microsoft and Athena is over 500,000 THB in the fashion of Microsoft is more expensive,
+  // should recommend Athena. Configurable via COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = 500000.
+  let isCostThresholdOverride = false;
+  const costDiffM365VsAthena = m365AnnualCostThb - athenaTotalCostThb;
+
   if (q1AgenticWorkflow === 'no') {
-    primaryRecommendationId = 'm365_copilot';
-    rawWeightedScores = { m365_copilot: 92, copilot_studio: 4, athena: 4 };
-    reasoning.push('Team does not have a member to learn multi-stage workflows; Microsoft 365 Copilot (Easy Mode) is recommended as the turnkey solution.');
+    if (costDiffM365VsAthena > costThresholdToPickAthena) {
+      isCostThresholdOverride = true;
+      primaryRecommendationId = 'athena';
+      rawWeightedScores = { m365_copilot: 22, copilot_studio: 6, athena: 72 };
+      reasoning.push(
+        `Cost Threshold Override: Even though Question 1 (Advanced Builder Readiness) recommended Microsoft Copilot Easy Mode, Microsoft annual cost (฿${m365AnnualCostThb.toLocaleString()}) exceeds Athena cost (฿${athenaTotalCostThb.toLocaleString()}) by ฿${costDiffM365VsAthena.toLocaleString()} THB. Because this exceeds the configured threshold of ฿${costThresholdToPickAthena.toLocaleString()} THB (COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = ${costThresholdToPickAthena.toLocaleString()}), Athena is recommended instead to capture substantial enterprise cost savings.`
+      );
+    } else {
+      primaryRecommendationId = 'm365_copilot';
+      rawWeightedScores = { m365_copilot: 92, copilot_studio: 4, athena: 4 };
+      reasoning.push(
+        'Team does not have a member to learn multi-stage workflows (Advanced Builder Readiness: No); Microsoft 365 Copilot (Easy Mode) is recommended as the turnkey solution.'
+      );
+      if (m365AnnualCostThb > 0) {
+        reasoning.push(
+          `Cost difference of ฿${Math.max(0, costDiffM365VsAthena).toLocaleString()} THB is within the allowed threshold of ฿${costThresholdToPickAthena.toLocaleString()} THB (COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = ${costThresholdToPickAthena.toLocaleString()}); Easy Mode recommendation stands.`
+        );
+      }
+    }
   }
   // Rule 2, 3, 4: Athena decisive criteria (Q4=yes, Q5=no, Q6=yes)
   else if (q4ConnectNonM365 === 'yes' || q5UamGovernance === 'no' || q6LocalKbtgLlm === 'yes') {
@@ -307,6 +332,9 @@ export function calculateEvaluation({
     },
     reasoning,
     isDecisive: true,
-    isPendingFirstThree: false
+    isPendingFirstThree: false,
+    isCostThresholdOverride,
+    costDiffM365VsAthena,
+    costThresholdToPickAthena
   };
 }

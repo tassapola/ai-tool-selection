@@ -17,10 +17,10 @@ export default function QuestionOne({
           <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
             1
           </span>
-          <span>Question 1 of 2 • Agentic Workflow Readiness</span>
+          <span>Question 1 • Advanced Builder Readiness</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
-          Would your team have a person to learn multi-stage agentic workflow?
+          Advanced Builder Readiness: Would your team have a person to learn multi-stage agentic workflow?
         </h2>
         <p className="mt-2 text-sm text-slate-600 max-w-3xl leading-relaxed">
           Multi-stage agentic workflows require someone on your team to design visual decision trees, configure system prompts, chain API triggers, and manage condition branches.

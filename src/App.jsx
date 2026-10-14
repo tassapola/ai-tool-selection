@@ -13,31 +13,43 @@ import SummaryView from './components/SummaryView';
 import DatabaseModal from './components/DatabaseModal';
 import { Sparkles, Database } from 'lucide-react';
 
+const SESSION_STORAGE_KEY = 'antigravity_assessment_draft_v1';
+
+const getSavedAssessment = () => {
+  try {
+    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return null;
+};
+
 export default function App() {
+  const savedState = getSavedAssessment();
+
   const [isDbReady, setIsDbReady] = useState(false);
   const [variables, setVariables] = useState({});
   const [tools, setTools] = useState([]);
   const [isDatabaseOpen, setIsDatabaseOpen] = useState(false);
 
   // Questionnaire Steps:
-  // 1 = Q1 (Readiness)
+  // 1 = Q1 (Advanced Builder Readiness)
   // 2 = Q2 (Cost: Microsoft)
   // 3 = Q3 (Cost: Athena)
   // 4 = Q4 (KBank Systems / SmartServe)
   // 5 = Q5 (UAM Governance)
   // 6 = Q6 (Model Roadmap: Local/KBTG LLM)
   // 7 = Summary & 3-Way Comparison
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(savedState?.currentStep || 1);
   
-  // Q1 State: Workflow learning readiness
-  const [q1AgenticWorkflow, setQ1AgenticWorkflow] = useState(null); // 'yes' | 'no' | null
+  // Q1 State: Advanced Builder Readiness
+  const [q1AgenticWorkflow, setQ1AgenticWorkflow] = useState(savedState?.q1AgenticWorkflow ?? null); // 'yes' | 'no' | null
   
   // Q2 State: Microsoft solution
-  const [hUsers, setHUsers] = useState(0); // Existing licenses (Variable H)
-  const [uUsers, setUUsers] = useState(0); // Users needed (Variable U)
+  const [hUsers, setHUsers] = useState(savedState?.hUsers ?? 0); // Existing licenses (Variable H)
+  const [uUsers, setUUsers] = useState(savedState?.uUsers ?? 0); // Users needed (Variable U)
 
   // Q3 State: Athena Dev/PoC & Pilot/Prod parameters
-  const [athenaInputs, setAthenaInputs] = useState({
+  const [athenaInputs, setAthenaInputs] = useState(savedState?.athenaInputs || {
     DL: '',
     DL_AVG_PAGES: '',
     DM: '',
@@ -55,16 +67,16 @@ export default function App() {
   });
 
   // Track if first 3 questions have been completed
-  const [hasCompletedFirstThree, setHasCompletedFirstThree] = useState(false);
+  const [hasCompletedFirstThree, setHasCompletedFirstThree] = useState(savedState?.hasCompletedFirstThree ?? false);
 
   // Q4 State: Non-M365/MDP KBank systems (e.g. SmartServe)
-  const [q4ConnectNonM365, setQ4ConnectNonM365] = useState(null); // 'yes' | 'no' | null
+  const [q4ConnectNonM365, setQ4ConnectNonM365] = useState(savedState?.q4ConnectNonM365 ?? null); // 'yes' | 'no' | null
 
   // Q5 State: UAM governance & ownership accountability
-  const [q5UamGovernance, setQ5UamGovernance] = useState(null); // 'yes' | 'no' | null
+  const [q5UamGovernance, setQ5UamGovernance] = useState(savedState?.q5UamGovernance ?? null); // 'yes' | 'no' | null
 
   // Q6 State: Local LLM or KBank/KBTG-hosted LLM
-  const [q6LocalKbtgLlm, setQ6LocalKbtgLlm] = useState(null); // 'yes' | 'no' | null
+  const [q6LocalKbtgLlm, setQ6LocalKbtgLlm] = useState(savedState?.q6LocalKbtgLlm ?? null); // 'yes' | 'no' | null
 
   // Reload data from SQLite database
   const refreshDbState = useCallback(() => {
@@ -124,6 +136,34 @@ export default function App() {
     tools
   ]);
 
+  // Save assessment draft to sessionStorage whenever state changes
+  useEffect(() => {
+    try {
+      const draft = {
+        currentStep,
+        q1AgenticWorkflow,
+        hUsers,
+        uUsers,
+        athenaInputs,
+        hasCompletedFirstThree,
+        q4ConnectNonM365,
+        q5UamGovernance,
+        q6LocalKbtgLlm
+      };
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(draft));
+    } catch (e) {}
+  }, [
+    currentStep,
+    q1AgenticWorkflow,
+    hUsers,
+    uUsers,
+    athenaInputs,
+    hasCompletedFirstThree,
+    q4ConnectNonM365,
+    q5UamGovernance,
+    q6LocalKbtgLlm
+  ]);
+
   // Apply the specified example parameters for Question 3
   const handleApplyAthenaExample = () => {
     setAthenaInputs({
@@ -147,6 +187,9 @@ export default function App() {
 
   // Reset assessment state
   const handleResetAssessment = () => {
+    try {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    } catch (e) {}
     setQ1AgenticWorkflow(null);
     setHUsers(0);
     setUUsers(0);
@@ -171,6 +214,7 @@ export default function App() {
     setQ5UamGovernance(null);
     setQ6LocalKbtgLlm(null);
     setCurrentStep(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleFinishQuestionThree = () => {
@@ -196,7 +240,7 @@ export default function App() {
 
   // Step descriptions map
   const stepTitles = {
-    1: "Question 1: Agentic Workflow Capacity",
+    1: "Question 1: Advanced Builder Readiness",
     2: "Question 2: Cost estimation: Microsoft solution",
     3: "Question 3: Cost estimation: Athena (Gemini 3.1 Flash Lite)",
     4: "Question 4: Non-M365/MDP Systems (SmartServe)",
@@ -211,8 +255,9 @@ export default function App() {
       <Navbar
         currentStep={currentStep}
         onSelectStep={(step) => {
-          if (step > 3 && !hasCompletedFirstThree && !q1AgenticWorkflow) return;
+          if (step > 3 && !hasCompletedFirstThree) return;
           setCurrentStep(step);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenDatabase={() => setIsDatabaseOpen(true)}
         onReset={handleResetAssessment}
@@ -224,7 +269,10 @@ export default function App() {
       {/* 2. Top Sticky Tool Recommendation Panel (Holds off recommendation until first 3 questions are completed) */}
       <RecommendationPanel
         evaluation={evaluation}
-        onNavigateToSummary={() => setCurrentStep(7)}
+        onNavigateToSummary={() => {
+          setCurrentStep(7);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
         currentStep={currentStep}
       />
 
@@ -246,9 +294,11 @@ export default function App() {
             {[1, 2, 3, 4, 5, 6, 7].map((num) => (
               <button
                 key={num}
+                type="button"
                 onClick={() => {
-                  if (num > 3 && !hasCompletedFirstThree && !q1AgenticWorkflow) return;
+                  if (num > 3 && !hasCompletedFirstThree) return;
                   setCurrentStep(num);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 className={`w-3 h-3 rounded-full transition-all ${
                   currentStep === num
@@ -313,6 +363,11 @@ export default function App() {
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onComplete={handleFinishQuestionThree}
+            onSkipToSummary={() => {
+              setHasCompletedFirstThree(true);
+              setCurrentStep(7);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             variables={variables}
             evaluation={evaluation}
           />

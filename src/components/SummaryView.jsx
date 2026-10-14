@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, CheckCircle2, Bot, Workflow, Cpu, Printer, Sparkles, ExternalLink, HelpCircle, FileText, Check, X, Shield, Server, Building2, Sliders, FileDown, Stamp } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Bot, Workflow, Cpu, Printer, Sparkles, ExternalLink, HelpCircle, FileText, Check, X, Shield, Server, Building2, Sliders, FileDown, Stamp, AlertTriangle } from 'lucide-react';
 import { exportAssessmentToDocx } from '../utils/docxExport';
 
 export default function SummaryView({
@@ -35,6 +35,9 @@ export default function SummaryView({
     athenaPilotProdTotal = 0,
     weightCost = 60,
     weightFeatures = 40,
+    isCostThresholdOverride = false,
+    costDiffM365VsAthena = 0,
+    costThresholdToPickAthena = 500000,
     H = 0,
     U = 0,
     reasoning = []
@@ -77,7 +80,18 @@ export default function SummaryView({
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="space-y-6 sm:space-y-8 animate-fadeIn">
+      {/* Prominent Non-Final Advisory Disclaimer Banner */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/90 border-2 border-amber-300 text-amber-950 shadow-xs space-y-1.5">
+        <div className="flex items-center gap-2 font-bold text-sm sm:text-base text-amber-900">
+          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+          <span>Important Advisory Notice • Suggestion Only (Not Final)</span>
+        </div>
+        <p className="text-xs sm:text-sm text-amber-900 leading-relaxed">
+          This recommendation is an automated decision-support suggestion based on technical criteria and cost estimation formulas. <strong>It is not final.</strong> Users and stakeholders must also evaluate <strong>time-to-market</strong>, <strong>people & skills readiness</strong>, <strong>operational maintenance capacity</strong>, and <strong>other relevant KBank enterprise governance and compliance processes</strong> together with this suggestion.
+        </p>
+      </div>
+
       {/* Top Banner: Primary Recommended Tool */}
       {recommendedTool && (
         <div className={`rounded-2xl border-2 p-6 sm:p-8 shadow-sm transition-all ${
@@ -148,6 +162,21 @@ export default function SummaryView({
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cost Threshold Override Notice */}
+      {isCostThresholdOverride && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-950 flex items-start gap-3 shadow-xs">
+          <Sparkles className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="space-y-1 text-xs sm:text-sm">
+            <span className="font-bold text-amber-900 block uppercase tracking-wide text-xs">
+              Configurable Cost Threshold Override Triggered (COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = ฿{costThresholdToPickAthena.toLocaleString()} THB)
+            </span>
+            <p className="leading-relaxed">
+              Although Question 1 (Advanced Builder Readiness) indicated no team members to learn multi-stage workflows (normally favoring Microsoft Copilot Easy Mode), the Microsoft solution annual licensing cost (<strong>฿{m365AnnualCostThb.toLocaleString()} THB/yr</strong>) exceeds the Athena deployment & operational cost (<strong>฿{athenaTotalCostThb.toLocaleString()} THB</strong>) by <strong>฿{costDiffM365VsAthena.toLocaleString()} THB</strong>. Because this difference surpasses the configured threshold of <strong>฿{costThresholdToPickAthena.toLocaleString()} THB</strong>, the scoring engine has prioritized <strong>Athena</strong> to deliver substantial enterprise cost savings.
+            </p>
           </div>
         </div>
       )}
@@ -402,7 +431,7 @@ export default function SummaryView({
           {/* Q1 */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">1. Workflow Learner</span>
+              <span className="font-semibold text-slate-800">1. Advanced Builder Readiness</span>
               <button onClick={onBackToQ1} className="text-indigo-600 hover:underline text-[11px]">Edit</button>
             </div>
             <div className="text-slate-600">

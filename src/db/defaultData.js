@@ -155,6 +155,15 @@ export const DEFAULT_CONFIG_VARIABLES = [
     label: 'Athena Scale Threshold',
     category: 'threshold',
     description: 'Minimum user volume where internal system Athena delivers superior ROI.'
+  },
+  {
+    key: 'COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD',
+    value: 500000.0,
+    data_type: 'number',
+    unit: 'THB',
+    label: 'Cost Threshold to Pick Athena Instead',
+    category: 'threshold',
+    description: 'When Q1 (Advanced Builder Readiness) chooses Easy Mode, if Microsoft annual cost exceeds Athena total cost by more than this amount, Athena is recommended instead.'
   }
 ];
 

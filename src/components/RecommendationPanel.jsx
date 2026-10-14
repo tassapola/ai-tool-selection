@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, CheckCircle2, ChevronDown, ChevronUp, Bot, Workflow, Cpu, Lock, HelpCircle, ArrowRight } from 'lucide-react';
+import { Sparkles, CheckCircle2, ChevronDown, ChevronUp, Bot, Workflow, Cpu, Lock, HelpCircle, ArrowRight, AlertTriangle } from 'lucide-react';
 
 export default function RecommendationPanel({
   evaluation,
@@ -22,7 +22,10 @@ export default function RecommendationPanel({
     isPendingFirstThree = false,
     completedCoreCount = 0,
     weightCost = 60,
-    weightFeatures = 40
+    weightFeatures = 40,
+    isCostThresholdOverride = false,
+    costDiffM365VsAthena = 0,
+    costThresholdToPickAthena = 500000
   } = evaluation;
 
   // Icon mapping for tools
@@ -221,13 +224,40 @@ export default function RecommendationPanel({
           )}
         </div>
 
+        {/* Advisory Notice & Quick Summary Jump */}
+        <div className="mt-2.5 py-1.5 px-3 rounded-lg bg-amber-50/90 border border-amber-200/80 text-[11px] text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5">
+            <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+            <span>
+              <strong>Advisory Suggestion (Not Final):</strong> Users and teams should also evaluate time-to-market, people readiness, and relevant governance processes together with this suggestion.
+            </span>
+          </div>
+          {currentStep < 7 && onNavigateToSummary && !isPendingFirstThree && (
+            <button
+              type="button"
+              onClick={onNavigateToSummary}
+              className="inline-flex items-center space-x-1 text-[11px] font-bold text-indigo-700 hover:text-indigo-900 hover:underline shrink-0 self-end sm:self-auto"
+            >
+              <span>View Full 3-Way Summary</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+
         {/* Expandable Rationale Drawer */}
         {isExpanded && (
           <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-3 animate-fadeIn">
             <div className="md:col-span-2 space-y-2">
-              <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                Decision & Weighting Rationale
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                  Decision & Weighting Rationale
+                </h3>
+                {isCostThresholdOverride && (
+                  <span className="text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full">
+                    Cost Threshold Override Active (฿{costThresholdToPickAthena.toLocaleString()} THB)
+                  </span>
+                )}
+              </div>
               <ul className="space-y-1.5">
                 {reasoning.map((r, i) => (
                   <li key={i} className="flex items-start space-x-2 text-xs text-slate-600">
@@ -254,6 +284,16 @@ export default function RecommendationPanel({
                 <span className="font-bold text-emerald-700">
                   ฿{athenaTotalCostThb.toLocaleString()}
                 </span>
+              </div>
+              <div className="flex justify-between text-slate-600 border-t border-slate-200 pt-1 text-[11px]">
+                <span>Cost Difference:</span>
+                <span className={`font-bold ${costDiffM365VsAthena > costThresholdToPickAthena ? 'text-amber-700' : 'text-slate-700'}`}>
+                  {costDiffM365VsAthena > 0 ? `+฿${costDiffM365VsAthena.toLocaleString()}` : `฿${costDiffM365VsAthena.toLocaleString()}`}
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-500 text-[10px]">
+                <span>Override Threshold:</span>
+                <span className="font-mono text-slate-700">฿{costThresholdToPickAthena.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-slate-500 text-[10px] pt-1 border-t border-slate-200">
                 <span>Features Weight:</span>

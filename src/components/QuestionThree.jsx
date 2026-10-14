@@ -7,6 +7,7 @@ export default function QuestionThree({
   onApplyExample,
   onBack,
   onComplete,
+  onSkipToSummary,
   variables = {},
   evaluation
 }) {
@@ -734,24 +735,37 @@ export default function QuestionThree({
         )}
 
         {/* Bottom Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
+            className="w-full sm:w-auto inline-flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Question 2 (Microsoft)</span>
           </button>
 
-          <button
-            type="button"
-            onClick={onComplete}
-            className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition"
-          >
-            <span>View Full 3-Way Recommendation</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2">
+            {onSkipToSummary && (
+              <button
+                type="button"
+                onClick={onSkipToSummary}
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-200 transition"
+                title="Jump directly to final 3-way recommendation summary"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Jump to Final Recommendation</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onComplete}
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition"
+            >
+              <span>Continue to Question 4 (KBank Systems)</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
