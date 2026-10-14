@@ -119,26 +119,11 @@ export default function App() {
     };
   }, [refreshDbState]);
 
-  // Screen size check for stage navigation bar visibility (< 1280px)
+  // Only auto-close if user explicitly opened the modal and then expanded the window >= 1280px
   useEffect(() => {
-    const checkWidth = () => {
-      if (typeof window !== 'undefined') {
-        const isDismissed = sessionStorage.getItem('dismiss_screen_size_alert') === 'true';
-        if (window.innerWidth < 1280 && !isDismissed) {
-          setIsScreenAlertOpen(true);
-        }
-      }
-    };
-    checkWidth();
-
     const handleResize = () => {
-      if (typeof window !== 'undefined') {
-        const isDismissed = sessionStorage.getItem('dismiss_screen_size_alert') === 'true';
-        if (window.innerWidth >= 1280) {
-          setIsScreenAlertOpen(false);
-        } else if (!isDismissed) {
-          setIsScreenAlertOpen(true);
-        }
+      if (typeof window !== 'undefined' && window.innerWidth >= 1280) {
+        setIsScreenAlertOpen(false);
       }
     };
 

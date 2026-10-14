@@ -71,17 +71,18 @@ export default function Navbar({
             ))}
           </div>
 
-          {/* Compact Stage Indicator with Screen Size Alert Trigger (Visible on screens < 1280px) */}
+          {/* Compact Stage Indicator with Screen Size / Laptop Hint (Visible on screens < 1280px) */}
           <div className="flex xl:hidden items-center space-x-2 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 shrink-0">
             <span className="text-xs font-bold text-indigo-700">ข้อ {currentStep}/8</span>
             <button
               type="button"
               onClick={onOpenScreenSizeAlert}
               className="inline-flex items-center space-x-1 text-[11px] font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded border border-amber-300 transition cursor-pointer shadow-2xs"
-              title="หน้าต่างเล็กเกินไป คลิกเพื่อดูคำแนะนำการขยายหน้าจอเพื่อแสดงแถบขั้นตอนทั้งหมด"
+              title="คลิกเพื่อดูคำแนะนำการขยายหน้าจอหรือการใช้งานบนคอมพิวเตอร์"
             >
               <Maximize2 className="w-3 h-3 text-amber-600" />
-              <span>แนะนำเปิดบน Laptop</span>
+              <span className="hidden sm:inline">แนะนำขยายจอเพื่อดูขั้นตอน</span>
+              <span className="sm:hidden">แนะนำขยายจอ</span>
             </button>
           </div>
 
