@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, CheckCircle2, ChevronDown, ChevronUp, Bot, Workflow, Cpu, Lock, HelpCircle, ArrowRight, AlertTriangle } from 'lucide-react';
+import { Sparkles, CheckCircle2, ChevronDown, ChevronUp, Bot, Workflow, Cpu, Lock, HelpCircle } from 'lucide-react';
 
 export default function RecommendationPanel({
   evaluation,
@@ -221,26 +221,6 @@ export default function RecommendationPanel({
                 </span>
               </div>
             </>
-          )}
-        </div>
-
-        {/* Advisory Notice & Quick Summary Jump */}
-        <div className="mt-2.5 py-1.5 px-3 rounded-lg bg-amber-50/90 border border-amber-200/80 text-[11px] text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-            <span>
-              <strong>Advisory Suggestion (Not Final):</strong> Users and teams should also evaluate time-to-market, people readiness, and relevant governance processes together with this suggestion.
-            </span>
-          </div>
-          {currentStep < 7 && onNavigateToSummary && !isPendingFirstThree && (
-            <button
-              type="button"
-              onClick={onNavigateToSummary}
-              className="inline-flex items-center space-x-1 text-[11px] font-bold text-indigo-700 hover:text-indigo-900 hover:underline shrink-0 self-end sm:self-auto"
-            >
-              <span>View Full 3-Way Summary</span>
-              <ArrowRight className="w-3 h-3" />
-            </button>
           )}
         </div>
 
