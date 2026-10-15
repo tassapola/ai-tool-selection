@@ -3,6 +3,7 @@ import { dbService } from './db/database';
 import { calculateEvaluation } from './utils/scoringEngine';
 import Navbar from './components/Navbar';
 import RecommendationPanel from './components/RecommendationPanel';
+import UseCaseInfo from './components/UseCaseInfo';
 import QuestionOne from './components/QuestionOne';
 import QuestionTwo from './components/QuestionTwo';
 import QuestionThree from './components/QuestionThree';
@@ -37,16 +38,21 @@ export default function App() {
   const [isScreenAlertOpen, setIsScreenAlertOpen] = useState(false);
 
   // Questionnaire Steps:
-  // 1 = Q1 (Advanced Builder Readiness)
-  // 2 = Q2 (Cost: Microsoft)
-  // 3 = Q3 (Cost: Athena)
-  // 4 = Q4 (KBank Systems / SmartServe)
-  // 5 = Q5 (O365 Knowledge to OneDrive/SharePoint)
-  // 6 = Q6 (UAM Governance)
-  // 7 = Q7 (Model Roadmap: Local/KBTG LLM)
-  // 8 = Summary & 3-Way Comparison
+  // 1 = Use-case info (Use-case ชื่ออะไร, ของฝ่ายงานไหน)
+  // 2 = Q1 (Advanced Builder Readiness)
+  // 3 = Q2 (Cost: Microsoft)
+  // 4 = Q3 (Cost: Athena)
+  // 5 = Q4 (KBank Systems / SmartServe)
+  // 6 = Q5 (O365 Knowledge to OneDrive/SharePoint)
+  // 7 = Q6 (UAM Governance)
+  // 8 = Q7 (Model Roadmap: Local/KBTG LLM)
+  // 9 = Summary & 3-Way Comparison
   const [currentStep, setCurrentStep] = useState(savedState?.currentStep || 1);
   
+  // Use-case Info State (Stage 1)
+  const [useCaseName, setUseCaseName] = useState(savedState?.useCaseName || '');
+  const [departmentName, setDepartmentName] = useState(savedState?.departmentName || '');
+
   // Q1 State: Advanced Builder Readiness
   const [q1AgenticWorkflow, setQ1AgenticWorkflow] = useState(savedState?.q1AgenticWorkflow ?? null); // 'yes' | 'no' | null
   
@@ -166,6 +172,8 @@ export default function App() {
     try {
       const draft = {
         currentStep,
+        useCaseName,
+        departmentName,
         q1AgenticWorkflow,
         hUsers,
         uUsers,
@@ -180,6 +188,8 @@ export default function App() {
     } catch (e) {}
   }, [
     currentStep,
+    useCaseName,
+    departmentName,
     q1AgenticWorkflow,
     hUsers,
     uUsers,
@@ -219,6 +229,8 @@ export default function App() {
     try {
       sessionStorage.removeItem(SESSION_STORAGE_KEY);
     } catch (e) {}
+    setUseCaseName('');
+    setDepartmentName('');
     setQ1AgenticWorkflow(null);
     setHUsers(0);
     setUUsers(0);
@@ -251,7 +263,7 @@ export default function App() {
 
   const handleFinishQuestionThree = () => {
     setHasCompletedFirstThree(true);
-    setCurrentStep(4);
+    setCurrentStep(5);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -266,20 +278,21 @@ export default function App() {
         recommendedTool: evaluation.recommendedToolId
       });
     }
-    setCurrentStep(8);
+    setCurrentStep(9);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Step descriptions map in Thai
+  // Step descriptions map in Thai (9 stages)
   const stepTitles = {
-    1: "ข้อที่ 1: ความพร้อมสร้าง Agent ขั้นสูง (Advanced Builder Readiness)",
-    2: "ข้อที่ 2: ประมาณการค่าใช้จ่าย: โซลูชัน Microsoft (Cost estimation: Microsoft solution)",
-    3: "ข้อที่ 3: ประมาณการค่าใช้จ่าย: Athena (Gemini 3.1 Flash Lite)",
-    4: "ข้อที่ 4: การเชื่อมต่อระบบภายใน KBank อื่นหรือใช้ UI ในระบบ KBank อื่น (นอกเหนือจาก M365/MDP)",
-    5: "ข้อที่ 5: การรวบรวมความรู้สู่ OneDrive / SharePoint (Knowledge Consolidation)",
-    6: "ข้อที่ 6: การกำกับดูแลสิทธิ์ UAM และการโอนย้ายความเป็นเจ้าของ Agent",
-    7: "ข้อที่ 7: แผนการใช้งานโมเดล Local LLM หรือ LLM ภายใน KBank/KBTG",
-    8: "สรุปผลการประเมินและเปรียบเทียบทั้ง 3 โซลูชัน (Final Recommendation & Comparison)"
+    1: "ข้อมูล Use-case และฝ่ายงาน (Use-case info)",
+    2: "ข้อที่ 1: ความพร้อมสร้าง Agent ขั้นสูง (Advanced Builder Readiness)",
+    3: "ข้อที่ 2: ประมาณการค่าใช้จ่าย: โซลูชัน Microsoft (Cost estimation: Microsoft solution)",
+    4: "ข้อที่ 3: ประมาณการค่าใช้จ่าย: Athena (Gemini 3.1 Flash Lite)",
+    5: "ข้อที่ 4: การเชื่อมต่อระบบภายใน KBank อื่นหรือใช้ UI ในระบบ KBank อื่น (นอกเหนือจาก M365/MDP)",
+    6: "ข้อที่ 5: การรวบรวมความรู้สู่ OneDrive / SharePoint (Knowledge Consolidation)",
+    7: "ข้อที่ 6: การกำกับดูแลสิทธิ์ UAM และการโอนย้ายความเป็นเจ้าของ Agent",
+    8: "ข้อที่ 7: แผนการใช้งานโมเดล Local LLM หรือ LLM ภายใน KBank/KBTG",
+    9: "สรุปผลการประเมินและเปรียบเทียบทั้ง 3 โซลูชัน (Final Recommendation & Comparison)"
   };
 
   return (
@@ -288,7 +301,7 @@ export default function App() {
       <Navbar
         currentStep={currentStep}
         onSelectStep={(step) => {
-          if (step > 3 && !hasCompletedFirstThree) return;
+          if (step > 4 && !hasCompletedFirstThree) return;
           setCurrentStep(step);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
@@ -307,7 +320,7 @@ export default function App() {
           <div className="flex items-center space-x-2 text-amber-900 min-w-0">
             <Laptop className="w-4 h-4 text-amber-700 shrink-0" />
             <span className="text-[11px] sm:text-xs truncate">
-              <strong className="text-amber-950 font-bold">แนะนำเปิดบน Laptop:</strong> เพื่อดูแถบขั้นตอน 8 สเตจและตารางเปรียบเทียบเต็มรูปแบบ
+              <strong className="text-amber-950 font-bold">แนะนำเปิดบน Laptop:</strong> เพื่อดูแถบขั้นตอน 9 สเตจและตารางเปรียบเทียบเต็มรูปแบบ
             </span>
           </div>
           <button
@@ -324,7 +337,7 @@ export default function App() {
       <RecommendationPanel
         evaluation={evaluation}
         onNavigateToSummary={() => {
-          setCurrentStep(8);
+          setCurrentStep(9);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         currentStep={currentStep}
@@ -336,7 +349,7 @@ export default function App() {
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              ขั้นตอนที่ {currentStep} จาก 8:
+              ขั้นตอนที่ {currentStep} จาก 9:
             </span>
             <span className="text-sm font-bold text-slate-900">
               {stepTitles[currentStep]}
@@ -345,31 +358,33 @@ export default function App() {
 
           {/* Step dots */}
           <div className="flex items-center space-x-1.5 self-start sm:self-auto">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
               <button
                 key={num}
                 type="button"
                 onClick={() => {
-                  if (num > 3 && !hasCompletedFirstThree) return;
+                  if (num > 4 && !hasCompletedFirstThree) return;
                   setCurrentStep(num);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 className={`w-3 h-3 rounded-full transition-all ${
                   currentStep === num
                     ? 'bg-indigo-600 scale-125'
-                    : num === 1 && q1AgenticWorkflow
+                    : num === 1 && (useCaseName || departmentName)
                     ? 'bg-emerald-500'
-                    : num === 2 && (uUsers || hUsers)
+                    : num === 2 && q1AgenticWorkflow
                     ? 'bg-emerald-500'
-                    : num === 3 && evaluation.athenaTotalCostThb > 0
+                    : num === 3 && (uUsers || hUsers)
                     ? 'bg-emerald-500'
-                    : num === 4 && q4ConnectNonM365
+                    : num === 4 && evaluation.athenaTotalCostThb > 0
                     ? 'bg-emerald-500'
-                    : num === 5 && q5O365KnowledgeToSharepoint
+                    : num === 5 && q4ConnectNonM365
                     ? 'bg-emerald-500'
-                    : num === 6 && q6UamGovernance
+                    : num === 6 && q5O365KnowledgeToSharepoint
                     ? 'bg-emerald-500'
-                    : num === 7 && q7LocalKbtgLlm
+                    : num === 7 && q6UamGovernance
+                    ? 'bg-emerald-500'
+                    : num === 8 && q7LocalKbtgLlm
                     ? 'bg-emerald-500'
                     : 'bg-slate-300'
                 }`}
@@ -379,11 +394,13 @@ export default function App() {
           </div>
         </div>
 
-        {/* View Switching */}
+        {/* View Switching (9 Stages) */}
         {currentStep === 1 && (
-          <QuestionOne
-            value={q1AgenticWorkflow}
-            onChange={(val) => setQ1AgenticWorkflow(val)}
+          <UseCaseInfo
+            useCaseName={useCaseName}
+            departmentName={departmentName}
+            onUseCaseNameChange={(val) => setUseCaseName(val)}
+            onDepartmentNameChange={(val) => setDepartmentName(val)}
             onNext={() => {
               setCurrentStep(2);
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -392,11 +409,9 @@ export default function App() {
         )}
 
         {currentStep === 2 && (
-          <QuestionTwo
-            hUsers={hUsers}
-            uUsers={uUsers}
-            onHChange={(val) => setHUsers(val)}
-            onUChange={(val) => setUUsers(val)}
+          <QuestionOne
+            value={q1AgenticWorkflow}
+            onChange={(val) => setQ1AgenticWorkflow(val)}
             onBack={() => {
               setCurrentStep(1);
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -405,23 +420,40 @@ export default function App() {
               setCurrentStep(3);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            variables={variables}
           />
         )}
 
         {currentStep === 3 && (
+          <QuestionTwo
+            hUsers={hUsers}
+            uUsers={uUsers}
+            onHChange={(val) => setHUsers(val)}
+            onUChange={(val) => setUUsers(val)}
+            onBack={() => {
+              setCurrentStep(2);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onNext={() => {
+              setCurrentStep(4);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            variables={variables}
+          />
+        )}
+
+        {currentStep === 4 && (
           <QuestionThree
             athenaInputs={athenaInputs}
             onChange={(val) => setAthenaInputs(val)}
             onApplyExample={handleApplyAthenaExample}
             onBack={() => {
-              setCurrentStep(2);
+              setCurrentStep(3);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onComplete={handleFinishQuestionThree}
             onSkipToSummary={() => {
               setHasCompletedFirstThree(true);
-              setCurrentStep(8);
+              setCurrentStep(9);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             variables={variables}
@@ -429,25 +461,10 @@ export default function App() {
           />
         )}
 
-        {currentStep === 4 && (
+        {currentStep === 5 && (
           <QuestionFour
             value={q4ConnectNonM365}
             onChange={(val) => setQ4ConnectNonM365(val)}
-            onBack={() => {
-              setCurrentStep(3);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onNext={() => {
-              setCurrentStep(5);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
-        )}
-
-        {currentStep === 5 && (
-          <QuestionFive
-            value={q5O365KnowledgeToSharepoint}
-            onChange={(val) => setQ5O365KnowledgeToSharepoint(val)}
             onBack={() => {
               setCurrentStep(4);
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -460,9 +477,9 @@ export default function App() {
         )}
 
         {currentStep === 6 && (
-          <QuestionSix
-            value={q6UamGovernance}
-            onChange={(val) => setQ6UamGovernance(val)}
+          <QuestionFive
+            value={q5O365KnowledgeToSharepoint}
+            onChange={(val) => setQ5O365KnowledgeToSharepoint(val)}
             onBack={() => {
               setCurrentStep(5);
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -475,20 +492,37 @@ export default function App() {
         )}
 
         {currentStep === 7 && (
+          <QuestionSix
+            value={q6UamGovernance}
+            onChange={(val) => setQ6UamGovernance(val)}
+            onBack={() => {
+              setCurrentStep(6);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onNext={() => {
+              setCurrentStep(8);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        )}
+
+        {currentStep === 8 && (
           <QuestionSeven
             value={q7LocalKbtgLlm}
             onChange={(val) => setQ7LocalKbtgLlm(val)}
             onBack={() => {
-              setCurrentStep(6);
+              setCurrentStep(7);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onComplete={handleCompleteQuestionnaire}
           />
         )}
 
-        {currentStep === 8 && (
+        {currentStep === 9 && (
           <SummaryView
             evaluation={evaluation}
+            useCaseName={useCaseName}
+            departmentName={departmentName}
             q1AgenticWorkflow={q1AgenticWorkflow}
             hUsers={hUsers}
             uUsers={uUsers}
@@ -499,32 +533,36 @@ export default function App() {
             q7LocalKbtgLlm={q7LocalKbtgLlm}
             tools={tools}
             variables={variables}
-            onBackToQ1={() => {
+            onBackToUseCaseInfo={() => {
               setCurrentStep(1);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onBackToQ2={() => {
+            onBackToQ1={() => {
               setCurrentStep(2);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onBackToQ3={() => {
+            onBackToQ2={() => {
               setCurrentStep(3);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onBackToQ4={() => {
+            onBackToQ3={() => {
               setCurrentStep(4);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onBackToQ5={() => {
+            onBackToQ4={() => {
               setCurrentStep(5);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onBackToQ6={() => {
+            onBackToQ5={() => {
               setCurrentStep(6);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onBackToQ7={() => {
+            onBackToQ6={() => {
               setCurrentStep(7);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onBackToQ7={() => {
+              setCurrentStep(8);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onOpenDatabase={() => setIsDatabaseOpen(true)}

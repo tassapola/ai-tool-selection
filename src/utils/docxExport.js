@@ -21,6 +21,8 @@ import {
  */
 export async function exportAssessmentToDocx({
   evaluation,
+  useCaseName = '',
+  departmentName = '',
   q1AgenticWorkflow,
   hUsers,
   uUsers,
@@ -140,6 +142,32 @@ export async function exportAssessmentToDocx({
           new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
             rows: [
+              new TableRow({
+                children: [
+                  new TableCell({
+                    borders: thinBorder,
+                    shading: { fill: 'F8FAFC' },
+                    width: { size: 25, type: WidthType.PERCENTAGE },
+                    children: [new Paragraph({ children: [new TextRun({ text: 'ชื่อ Use-case:', bold: true, size: 22 })] })]
+                  }),
+                  new TableCell({
+                    borders: thinBorder,
+                    width: { size: 25, type: WidthType.PERCENTAGE },
+                    children: [new Paragraph({ children: [new TextRun({ text: `${useCaseName || 'ไม่ระบุ'}`, bold: true, size: 22 })] })]
+                  }),
+                  new TableCell({
+                    borders: thinBorder,
+                    shading: { fill: 'F8FAFC' },
+                    width: { size: 25, type: WidthType.PERCENTAGE },
+                    children: [new Paragraph({ children: [new TextRun({ text: 'ฝ่ายงาน / ส่วนงาน:', bold: true, size: 22 })] })]
+                  }),
+                  new TableCell({
+                    borders: thinBorder,
+                    width: { size: 25, type: WidthType.PERCENTAGE },
+                    children: [new Paragraph({ children: [new TextRun({ text: `${departmentName || 'ไม่ระบุ'}`, bold: true, size: 22 })] })]
+                  })
+                ]
+              }),
               new TableRow({
                 children: [
                   new TableCell({
@@ -484,6 +512,13 @@ export async function exportAssessmentToDocx({
               }),
               new TableRow({
                 children: [
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อมูล Use-case (Use-case info)', bold: true, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อมูลพื้นฐานของ Use-case และฝ่ายงานที่รับผิดชอบ', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `ชื่อ Use-case: ${useCaseName || 'ไม่ระบุ'}\nฝ่ายงาน: ${departmentName || 'ไม่ระบุ'}`, bold: true, size: 21 })] })] })
+                ]
+              }),
+              new TableRow({
+                children: [
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 1: ความพร้อมของทีมในการสร้าง Agent ขั้นสูง (Advanced Builder Readiness)', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ขีดความสามารถของทีมในการเรียนรู้และตั้งค่า Multi-Stage Agentic Workflow', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q1AgenticWorkflow === 'yes' ? 'พร้อม (มีผู้พร้อมเรียนรู้ Workflow)' : 'ไม่พร้อม (ต้องการ Microsoft 365 Copilot (Easy mode) Advanced license allow share สำเร็จรูป)', bold: true, size: 21 })] })] })
@@ -744,7 +779,7 @@ export async function exportAssessmentToDocx({
                       new Paragraph({ children: [new TextRun({ text: 'ข้อมูลผู้ลงนามอนุมัติและรายละเอียดผู้ตรวจสอบ', bold: true, size: 23 })] }),
                       new Paragraph({ children: [new TextRun({ text: '\nชื่อ-นามสกุล ผู้ประเมิน: ____________________________________________', size: 21 })] }),
                       new Paragraph({ children: [new TextRun({ text: '\nบทบาท / ตำแหน่ง: ________________________________________________', size: 21 })] }),
-                      new Paragraph({ children: [new TextRun({ text: '\nฝ่ายงาน / ส่วนงาน: ______________________________________________', size: 21 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `\nฝ่ายงาน / ส่วนงาน: ${departmentName ? departmentName : '______________________________________________'}`, size: 21 })] }),
                       new Paragraph({ children: [new TextRun({ text: '\nลายมือชื่อ: ____________________________________________________', size: 21 })] }),
                       new Paragraph({ children: [new TextRun({ text: '\nวันที่ลงนาม: ____________________________________________________\n', size: 21 })] })
                     ]

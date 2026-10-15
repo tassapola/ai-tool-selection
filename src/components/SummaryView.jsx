@@ -4,6 +4,8 @@ import { exportAssessmentToDocx } from '../utils/docxExport';
 
 export default function SummaryView({
   evaluation,
+  useCaseName = '',
+  departmentName = '',
   q1AgenticWorkflow,
   hUsers,
   uUsers,
@@ -17,6 +19,7 @@ export default function SummaryView({
   q6LocalKbtgLlm,
   tools = [],
   variables = {},
+  onBackToUseCaseInfo,
   onBackToQ1,
   onBackToQ2,
   onBackToQ3,
@@ -56,6 +59,8 @@ export default function SummaryView({
     try {
       await exportAssessmentToDocx({
         evaluation,
+        useCaseName,
+        departmentName,
         q1AgenticWorkflow,
         hUsers,
         uUsers,
@@ -101,6 +106,32 @@ export default function SummaryView({
         <p className="text-xs sm:text-sm text-amber-900 leading-relaxed">
           คำแนะนำนี้เป็นข้อเสนอแนะเพื่อสนับสนุนการตัดสินใจอัตโนมัติ โดยอิงตามเกณฑ์ทางเทคนิคและสูตรประเมินต้นทุน <strong>ไม่ใช่ผลสรุปสุดท้าย</strong> ผู้ใช้งานและผู้มีส่วนได้ส่วนเสียจำเป็นต้องประเมิน <strong>ระยะเวลาในการส่งมอบสู่ตลาด (Time-to-Market)</strong>, <strong>ความพร้อมของบุคลากรและทักษะ (People & Skills Readiness)</strong>, <strong>ความสามารถในการดูแลระบบต่อเนื่อง (Operational Maintenance Capacity)</strong> ตลอดจน <strong>กระบวนการกำกับดูแลและการปฏิบัติตามกฎเกณฑ์ที่เกี่ยวข้องของ KBank</strong> ควบคู่ไปกับคำแนะนำนี้
         </p>
+      </div>
+
+      {/* Use-case Info Header Box */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-indigo-50/70 border border-indigo-200/90 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 bg-white px-2.5 py-0.5 rounded border border-indigo-200 shadow-3xs">
+              Use-case Info
+            </span>
+            <span className="text-base sm:text-lg font-bold text-slate-900">
+              {useCaseName || 'ยังไม่ได้ระบุชื่อ Use-case'}
+            </span>
+          </div>
+          <div className="text-xs text-slate-600">
+            <strong className="text-slate-700">ฝ่ายงานที่รับผิดชอบ:</strong> {departmentName || 'ยังไม่ได้ระบุฝ่ายงาน'}
+          </div>
+        </div>
+        {onBackToUseCaseInfo && (
+          <button
+            type="button"
+            onClick={onBackToUseCaseInfo}
+            className="text-xs font-semibold text-indigo-700 hover:text-indigo-900 bg-white hover:bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-200 transition shadow-2xs cursor-pointer print:hidden shrink-0"
+          >
+            แก้ไขข้อมูล Use-case
+          </button>
+        )}
       </div>
 
       {/* Top Banner: Primary Recommended Tool */}
@@ -498,7 +529,7 @@ export default function SummaryView({
       <div className="bg-slate-50 rounded-xl border border-slate-200 p-5 space-y-3">
         <div className="flex items-center justify-between pb-2 border-b border-slate-200">
           <span className="text-xs font-bold uppercase text-slate-700 tracking-wider">
-            สรุปคำตอบแบบประเมินทั้ง 7 ข้อ
+            สรุปข้อมูล Use-case และคำตอบแบบประเมินทั้งหมด
           </span>
           <span className="text-xs text-slate-500 font-mono">
             สัดส่วนน้ำหนัก: ต้นทุน {weightCost}% • คุณสมบัติ {weightFeatures}%
@@ -506,6 +537,20 @@ export default function SummaryView({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 text-xs">
+          {/* Use-case Info */}
+          <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-slate-800">Use-case & ฝ่ายงาน</span>
+              {onBackToUseCaseInfo && (
+                <button onClick={onBackToUseCaseInfo} className="text-indigo-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
+              )}
+            </div>
+            <div className="text-slate-600 space-y-0.5">
+              <div className="truncate"><strong>ชื่อ:</strong> {useCaseName || 'ไม่ระบุ'}</div>
+              <div className="truncate"><strong>ฝ่าย:</strong> {departmentName || 'ไม่ระบุ'}</div>
+            </div>
+          </div>
+
           {/* Q1 */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">

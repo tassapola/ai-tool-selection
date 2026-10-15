@@ -126,7 +126,7 @@ export default function ScreenSizeAlert({
             /* PHONE-SPECIFIC CONTENT */
             <div className="mt-4 space-y-4">
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                ระบบนี้ถูกออกแบบสำหรับการเปรียบเทียบสถาปัตยกรรมเครื่องมือ AI, กราฟค่าน้ำหนัก, ตารางคำนวณต้นทุนเชิงลึก และแถบนำทาง 8 ขั้นตอน ซึ่งจะแสดงผลได้อย่างครบถ้วนและสะดวกสบายที่สุดบนหน้าจอ <strong className="text-slate-900 font-semibold">คอมพิวเตอร์หรือแล็ปท็อป (PC / Mac / Laptop)</strong>
+                ระบบนี้ถูกออกแบบสำหรับการเปรียบเทียบสถาปัตยกรรมเครื่องมือ AI, กราฟค่าน้ำหนัก, ตารางคำนวณต้นทุนเชิงลึก และแถบนำทาง 9 ขั้นตอน ซึ่งจะแสดงผลได้อย่างครบถ้วนและสะดวกสบายที่สุดบนหน้าจอ <strong className="text-slate-900 font-semibold">คอมพิวเตอร์หรือแล็ปท็อป (PC / Mac / Laptop)</strong>
               </p>
 
               {/* Copy Link to Laptop Box */}
