@@ -383,7 +383,7 @@ export default function DatabaseModal({
                         เกณฑ์ส่วนต่างต้นทุนเพื่อเปลี่ยนเป็น Athena (`COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD`)
                       </h4>
                       <p className="text-xs text-slate-500">
-                        เมื่อคำถามข้อ 1 เลือก Easy Mode หากต้นทุนรายปีของ Microsoft สูงกว่า Athena เกินจำนวนนี้ ระบบจะแนะนำ Athena แทน ถ้าเลือกเลขต่ำ โอกาสเลือก Microsoft จะสูงขึ้น
+                        เมื่อคำถามข้อ 1 เลือก Microsoft 365 Copilot (Easy mode) Advanced license allow share หากต้นทุนรายปีของ Microsoft สูงกว่า Athena เกินจำนวนนี้ ระบบจะแนะนำ Athena แทน ถ้าเลือกเลขต่ำ โอกาสเลือก Microsoft จะสูงขึ้น
                       </p>
                     </div>
                   </div>
@@ -581,9 +581,11 @@ export default function DatabaseModal({
                   <div key={t.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-slate-900 text-sm">{t.name}</span>
-                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-white border border-slate-200">
-                        {t.mode_name}
-                      </span>
+                      {t.mode_name ? (
+                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-white border border-slate-200">
+                          {t.mode_name}
+                        </span>
+                      ) : null}
                     </div>
                     <p className="text-xs text-slate-600">{t.description}</p>
                     <div className="text-[11px] text-slate-500 pt-2 border-t border-slate-200 space-y-1">

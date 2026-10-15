@@ -1,7 +1,7 @@
 # AI Tool Selection Advisor: Microsoft 365 Copilot vs Copilot Studio vs Athena
 
 A modern, responsive single-page web application to evaluate and select the optimal AI tool between:
-1. **Microsoft 365 Copilot (Easy Mode)**: Turnkey out-of-the-box productivity for general users.
+1. **Microsoft 365 Copilot (Easy mode) Advanced license allow share**: Turnkey out-of-the-box productivity for general users.
 2. **Microsoft 365 Copilot Studio (Builder Multi-Step Workflow)**: Low-code visual canvas for multi-stage agentic automation.
 3. **Athena (Internal System)**: Custom enterprise platform with tailored LLM routing and zero per-user seat tax.
 
@@ -20,7 +20,7 @@ A modern, responsive single-page web application to evaluate and select the opti
   - Question: *"Would your team have a person to learn multi-stage agentic workflow?"*
   - Includes the official Microsoft workflow designer diagram: `https://learn.microsoft.com/en-us/microsoft-copilot-studio/workflows-experience/media/flow-designer/workflow-designer.png`
   - Answers: **Yes** or **No**.
-  - **Rule**: If the answer is **No**, tool recommendation is strictly **Microsoft 365 (easy mode)**.
+  - **Rule**: If the answer is **No**, tool recommendation is strictly **Microsoft 365 Copilot (Easy mode) Advanced license allow share**.
 - **Question 2: Cost Estimation & Scale**
   - **Left-Hand Side**: Microsoft License Cost Calculator:
     - Variable **H**: Number of users who already have Microsoft 365 Advanced license.

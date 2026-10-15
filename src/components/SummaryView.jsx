@@ -138,7 +138,7 @@ export default function SummaryView({
                     {recommendedTool.name}
                   </h1>
                   <p className={`text-sm font-semibold ${recommendedToolId === 'no_recommendation' ? 'text-rose-600' : 'text-indigo-600'}`}>
-                    {recommendedTool.mode_name} • {recommendedTool.badge}
+                    {recommendedTool.mode_name ? `${recommendedTool.mode_name} • ` : ''}{recommendedTool.badge}
                   </p>
                 </div>
               </div>
@@ -297,7 +297,7 @@ export default function SummaryView({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-          {/* Card 1: Microsoft 365 Copilot (Easy Mode) */}
+          {/* Card 1: Microsoft 365 Copilot (Easy mode) Advanced license allow share */}
           <div className={`p-6 space-y-4 ${recommendedToolId === 'm365_copilot' ? 'bg-blue-50/30' : ''}`}>
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase text-blue-700 bg-blue-100 px-2.5 py-0.5 rounded">
@@ -306,7 +306,7 @@ export default function SummaryView({
               <span className="text-sm font-black text-blue-900">{scores.m365_copilot}% คะแนน</span>
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">Microsoft 365 Copilot</h3>
+              <h3 className="text-base font-bold text-slate-900">Microsoft 365 Copilot (Easy mode) Advanced license allow share</h3>
               <p className="text-xs text-slate-500 mt-1">
                 ผู้ช่วย AI สำเร็จรูปสำหรับ Office 365 พร้อมใช้งานทันทีโดยไม่ต้องเรียนรู้การตั้งค่า
               </p>
@@ -468,7 +468,7 @@ export default function SummaryView({
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-4 h-4 border border-slate-400 rounded-sm inline-block"></span>
-                <span>ปรับเปลี่ยนผลไปยังเครื่องมืออื่น: [ ] M365 Copilot  [ ] Studio  [ ] Athena</span>
+                <span>ปรับเปลี่ยนผลไปยังเครื่องมืออื่น: [ ] M365 Copilot (Easy mode) Advanced license allow share  [ ] Studio  [ ] Athena</span>
               </div>
               <div className="pt-1 text-[11px] text-slate-400 italic">
                 * มีพื้นที่เขียนเหตุผลความจำเป็นในการปรับเปลี่ยน 3 บรรทัด

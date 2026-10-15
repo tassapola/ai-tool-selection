@@ -152,9 +152,9 @@ export const DEFAULT_CONFIG_VARIABLES = [
     value: 30.0,
     data_type: 'number',
     unit: 'คะแนน',
-    label: 'คะแนนหักลด Easy Mode เมื่อต้องการความซับซ้อน',
+    label: 'คะแนนหักลด Microsoft 365 Copilot (Easy mode) Advanced license allow share เมื่อต้องการความซับซ้อน',
     category: 'scoring',
-    description: 'คะแนนที่หักลดสำหรับ Easy Mode เมื่อจำเป็นต้องใช้ Multi-Stage Agentic Workflow'
+    description: 'คะแนนที่หักลดสำหรับ Microsoft 365 Copilot (Easy mode) Advanced license allow share เมื่อจำเป็นต้องใช้ Multi-Stage Agentic Workflow'
   },
   {
     key: 'athena_high_cost_threshold_thb',
@@ -179,17 +179,17 @@ export const DEFAULT_CONFIG_VARIABLES = [
     value: 350000.0,
     data_type: 'number',
     unit: 'บาท',
-    label: 'เกณฑ์ส่วนต่างต้นทุนเพื่อเปลี่ยนเป็น Athena แทน Easy Mode',
+    label: 'เกณฑ์ส่วนต่างต้นทุนเพื่อเปลี่ยนเป็น Athena แทน Microsoft 365 Copilot (Easy mode) Advanced license allow share',
     category: 'threshold',
-    description: 'เมื่อข้อ 1 (ความพร้อมในการสร้าง Agent ขั้นสูง) เลือก Easy Mode หากต้นทุนรายปีของ Microsoft สูงกว่าต้นทุนรวมของ Athena เกินกว่าจำนวนนี้ ระบบจะแนะนำ Athena แทน ถ้าเลือกเลขต่ำ โอกาสเลือก Microsoft จะสูงขึ้น'
+    description: 'เมื่อข้อ 1 (ความพร้อมในการสร้าง Agent ขั้นสูง) เลือก Microsoft 365 Copilot (Easy mode) Advanced license allow share หากต้นทุนรายปีของ Microsoft สูงกว่าต้นทุนรวมของ Athena เกินกว่าจำนวนนี้ ระบบจะแนะนำ Athena แทน ถ้าเลือกเลขต่ำ โอกาสเลือก Microsoft จะสูงขึ้น'
   }
 ];
 
 export const DEFAULT_TOOLS = [
   {
     id: 'm365_copilot',
-    name: 'Microsoft 365 Copilot',
-    mode_name: 'Easy Mode',
+    name: 'Microsoft 365 Copilot (Easy mode) Advanced license allow share',
+    mode_name: '',
     badge: 'Turnkey • ไม่ต้องใช้เวลาเรียนรู้',
     tagline: 'เพิ่มผลผลิตและแชทระดับองค์กรได้ทันทีแบบสำเร็จรูป',
     description: 'ระบบ AI ที่ผสานการทำงานโดยตรงกับ Microsoft 365 บน Word, Excel, Teams และ Outlook เหมาะอย่างยิ่งสำหรับการเริ่มใช้งานทันทีโดยไม่จำเป็นต้องมีทีมพัฒนา Workflow',
@@ -260,7 +260,7 @@ export const DEFAULT_SCORING_RULES = [
     target_tool: 'm365_copilot',
     score_delta: 100,
     is_hard_override: 1,
-    reason: 'ทีมงานยังไม่มีบุคลากรพร้อมเรียนรู้ Multi-Stage Workflows; Easy Mode คือโซลูชันสำเร็จรูปที่จำเป็น (Turnkey)'
+    reason: 'ทีมงานยังไม่มีบุคลากรพร้อมเรียนรู้ Multi-Stage Workflows; Microsoft 365 Copilot (Easy mode) Advanced license allow share คือโซลูชันสำเร็จรูปที่จำเป็น (Turnkey)'
   },
   {
     id: 2,

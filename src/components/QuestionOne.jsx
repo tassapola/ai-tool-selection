@@ -119,7 +119,7 @@ export default function QuestionOne({
               {value === 'no' && (
                 <div className="mt-3 pt-3 border-t border-blue-200/80 text-xs font-semibold text-blue-700 flex items-center space-x-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                  <span>คำแนะนำตรง: Microsoft 365 Copilot (โหมดใช้งานง่าย - Easy Mode)</span>
+                  <span>คำแนะนำตรง: Microsoft 365 Copilot (Easy mode) Advanced license allow share</span>
                 </div>
               )}
             </button>

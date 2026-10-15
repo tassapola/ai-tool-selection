@@ -108,7 +108,9 @@ export default function RecommendationPanel({
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs sm:text-sm font-semibold border ${currentTheme.pillBg}`}>
                   {getToolIcon(recommendedToolId)}
                   <span>{recommendedTool.name}</span>
-                  <span className="text-[11px] opacity-80 font-normal">({recommendedTool.mode_name})</span>
+                  {recommendedTool.mode_name ? (
+                    <span className="text-[11px] opacity-80 font-normal">({recommendedTool.mode_name})</span>
+                  ) : null}
                 </span>
               ) : (
                 <span className="text-amber-700 font-medium text-xs sm:text-sm flex items-center gap-1">
@@ -176,7 +178,7 @@ export default function RecommendationPanel({
                       ? 'bg-blue-600'
                       : 'bg-blue-400/80'
                   }`}
-                  title={`Microsoft 365 Copilot: ${scores.m365_copilot}%`}
+                  title={`Microsoft 365 Copilot (Easy mode) Advanced license allow share: ${scores.m365_copilot}%`}
                 />
 
                 {/* Copilot Studio Segment (Purple) */}
@@ -207,7 +209,7 @@ export default function RecommendationPanel({
                 <div className="flex items-center space-x-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span>
                   <span className={recommendedToolId === 'm365_copilot' ? 'font-bold text-blue-900' : ''}>
-                    M365 Copilot (Easy): <span className="font-semibold">{scores.m365_copilot}%</span>
+                    M365 Copilot (Easy mode - Adv Share): <span className="font-semibold">{scores.m365_copilot}%</span>
                   </span>
                 </div>
 

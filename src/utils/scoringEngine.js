@@ -364,12 +364,12 @@ export function calculateEvaluation({
       primaryRecommendationId = 'm365_copilot';
       rawWeightedScores = { m365_copilot: 90, copilot_studio: 5, athena: 5 };
       reasoning.push(
-        'ไม่สามารถรวบรวมฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้ (คำถามข้อ 5: ไม่ใช่) และทีมงานยังไม่มีบุคลากรพร้อมสร้าง Workflow (คำถามข้อ 1: ไม่พร้อม); แนะนำ Microsoft 365 Copilot (Easy Mode) ซึ่งเข้าถึงข้อมูล Office 365 ได้โดยตรงแบบสำเร็จรูป (Turnkey)'
+        'ไม่สามารถรวบรวมฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้ (คำถามข้อ 5: ไม่ใช่) และทีมงานยังไม่มีบุคลากรพร้อมสร้าง Workflow (คำถามข้อ 1: ไม่พร้อม); แนะนำ Microsoft 365 Copilot (Easy mode) Advanced license allow share ซึ่งเข้าถึงข้อมูล Office 365 ได้โดยตรงแบบสำเร็จรูป (Turnkey)'
       );
     }
   }
-  // Rule 1: Q1 == 'no' -> Normally Microsoft 365 Copilot (Easy Mode)
-  // HOWEVER: Even though question 1 recommends Microsoft copilot easy mode, if cost difference between
+  // Rule 1: Q1 == 'no' -> Normally Microsoft 365 Copilot (Easy mode) Advanced license allow share
+  // HOWEVER: Even though question 1 recommends Microsoft 365 Copilot (Easy mode) Advanced license allow share, if cost difference between
   // Microsoft and Athena is over 350,000 THB in the fashion of Microsoft is more expensive,
   // should recommend Athena. Configurable via COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = 350000.
   else if (q1AgenticWorkflow === 'no') {
@@ -378,13 +378,13 @@ export function calculateEvaluation({
       primaryRecommendationId = 'athena';
       rawWeightedScores = { m365_copilot: 22, copilot_studio: 6, athena: 72 };
       reasoning.push(
-        `การปรับเปลี่ยนตามเกณฑ์ต้นทุน (Cost Threshold Override): แม้ว่าคำถามข้อ 1 (Advanced Builder Readiness) จะแนะนำ Microsoft Copilot Easy Mode แต่เนื่องจากต้นทุนรายปีของ Microsoft (฿${m365AnnualCostThb.toLocaleString()}) สูงกว่าต้นทุน Athena (฿${athenaTotalCostThb.toLocaleString()}) ถึง ฿${costDiffM365VsAthena.toLocaleString()} บาท ซึ่งเกินกว่าเกณฑ์ที่กำหนดไว้ ฿${costThresholdToPickAthena.toLocaleString()} บาท (COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = ${costThresholdToPickAthena.toLocaleString()}) จึงแนะนำให้เลือก Athena แทน เพื่อประหยัดต้นทุนองค์กรได้อย่างมีนัยสำคัญ`
+        `การปรับเปลี่ยนตามเกณฑ์ต้นทุน (Cost Threshold Override): แม้ว่าคำถามข้อ 1 (Advanced Builder Readiness) จะแนะนำ Microsoft 365 Copilot (Easy mode) Advanced license allow share แต่เนื่องจากต้นทุนรายปีของ Microsoft (฿${m365AnnualCostThb.toLocaleString()}) สูงกว่าต้นทุน Athena (฿${athenaTotalCostThb.toLocaleString()}) ถึง ฿${costDiffM365VsAthena.toLocaleString()} บาท ซึ่งเกินกว่าเกณฑ์ที่กำหนดไว้ ฿${costThresholdToPickAthena.toLocaleString()} บาท (COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = ${costThresholdToPickAthena.toLocaleString()}) จึงแนะนำให้เลือก Athena แทน เพื่อประหยัดต้นทุนองค์กรได้อย่างมีนัยสำคัญ`
       );
     } else {
       primaryRecommendationId = 'm365_copilot';
       rawWeightedScores = { m365_copilot: 92, copilot_studio: 4, athena: 4 };
       reasoning.push(
-        'ทีมงานยังไม่มีบุคลากรพร้อมเรียนรู้ Multi-Stage Workflows (Advanced Builder Readiness: ไม่พร้อม); แนะนำให้ใช้ Microsoft 365 Copilot (Easy Mode) ซึ่งเป็นโซลูชันสำเร็จรูปพร้อมใช้งานทันที (Turnkey)'
+        'ทีมงานยังไม่มีบุคลากรพร้อมเรียนรู้ Multi-Stage Workflows (Advanced Builder Readiness: ไม่พร้อม); แนะนำให้ใช้ Microsoft 365 Copilot (Easy mode) Advanced license allow share ซึ่งเป็นโซลูชันสำเร็จรูปพร้อมใช้งานทันที (Turnkey)'
       );
       if (m365AnnualCostThb > 0) {
         reasoning.push(

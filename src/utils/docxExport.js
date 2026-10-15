@@ -270,7 +270,7 @@ export async function exportAssessmentToDocx({
                             color: recommendedToolId === 'no_recommendation' ? 'BE123C' : '1E3A8A'
                           }),
                           new TextRun({
-                            text: recommendedTool ? ` (${recommendedTool.mode_name})` : '',
+                            text: recommendedTool && recommendedTool.mode_name ? ` (${recommendedTool.mode_name})` : '',
                             italics: true,
                             size: 22
                           })
@@ -442,7 +442,7 @@ export async function exportAssessmentToDocx({
                 children: [
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `฿${(variables.COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD ?? 350000.0).toLocaleString()}`, bold: true, size: 21 })] })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'เกณฑ์ส่วนต่างต้นทุนเพื่อแนะนำ Athena แทน Easy Mode (ถ้าเลือกเลขต่ำ โอกาสเลือก Microsoft จะสูงขึ้น)', size: 21 })] })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'เกณฑ์ส่วนต่างต้นทุนเพื่อแนะนำ Athena แทน Microsoft 365 Copilot (Easy mode) Advanced license allow share (ถ้าเลือกเลขต่ำ โอกาสเลือก Microsoft จะสูงขึ้น)', size: 21 })] })] })
                 ]
               })
             ]
@@ -486,7 +486,7 @@ export async function exportAssessmentToDocx({
                 children: [
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 1: ความพร้อมของทีมในการสร้าง Agent ขั้นสูง (Advanced Builder Readiness)', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ขีดความสามารถของทีมในการเรียนรู้และตั้งค่า Multi-Stage Agentic Workflow', size: 21 })] })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q1AgenticWorkflow === 'yes' ? 'พร้อม (มีผู้พร้อมเรียนรู้ Workflow)' : 'ไม่พร้อม (ต้องการ Easy Mode สำเร็จรูป)', bold: true, size: 21 })] })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q1AgenticWorkflow === 'yes' ? 'พร้อม (มีผู้พร้อมเรียนรู้ Workflow)' : 'ไม่พร้อม (ต้องการ Microsoft 365 Copilot (Easy mode) Advanced license allow share สำเร็จรูป)', bold: true, size: 21 })] })] })
                 ]
               }),
               new TableRow({
@@ -614,7 +614,7 @@ export async function exportAssessmentToDocx({
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'Microsoft 365 Copilot (Easy Mode)', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'Microsoft 365 Copilot (Easy mode) Advanced license allow share', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `${scores.m365_copilot}%`, bold: true, size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `ค่าไลเซนส์รายปี: ฿${annualCostThb.toLocaleString()} บาท/ปี เพิ่มประสิทธิภาพการทำงานทันทีบนแอปพลิเคชัน Office 365`, size: 21 })] })] })
                 ]
@@ -695,7 +695,7 @@ export async function exportAssessmentToDocx({
                       new Paragraph({
                         children: [
                           new TextRun({
-                            text: '[   ] Microsoft 365 Copilot (Easy Mode)     [   ] Microsoft 365 Copilot Studio     [   ] Athena',
+                            text: '[   ] Microsoft 365 Copilot (Easy mode) Advanced license allow share     [   ] Microsoft 365 Copilot Studio     [   ] Athena',
                             size: 21
                           })
                         ]
