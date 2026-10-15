@@ -78,15 +78,12 @@ export default function QuestionTwo({
               className="text-sm font-semibold text-slate-900 flex items-center gap-2"
             >
               <Users className="w-4 h-4 text-blue-600" />
-              <span>1. จำนวนผู้ใช้ที่มีสิทธิ์การใช้งาน Microsoft 365 ขั้นสูงอยู่แล้ว</span>
+              <span>1. จำนวนผู้ใช้ที่มีสิทธิ์การใช้งาน Microsoft 365 <u className="underline underline-offset-2">ขั้นสูง (Advanced license)</u> อยู่แล้ว</span>
             </label>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-extrabold bg-blue-100 text-blue-800 border border-blue-200 self-start sm:self-auto">
               ตัวแปร H
             </span>
           </div>
-          <p className="text-xs text-slate-500">
-            สิทธิ์การใช้งานปัจจุบันที่กำหนดแล้วหรือยังว่างอยู่ใน Microsoft 365 Tenant ของคุณ
-          </p>
           <div className="relative mt-2">
             <input
               id="h-variable-input"
@@ -112,7 +109,7 @@ export default function QuestionTwo({
               className="text-sm font-semibold text-slate-900 flex items-center gap-2"
             >
               <Users className="w-4 h-4 text-indigo-600" />
-              <span>2. จำนวนผู้ใช้งานที่จำเป็นต้องใช้งาน AI Agent นี้</span>
+              <span>2. จำนวนผู้ใช้งานที่<u className="underline underline-offset-2">จำเป็นต้องใช้</u>งาน AI Agent นี้ รวม users ทั้งหมดที่ต้อง share ออกไปหา</span>
             </label>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-extrabold bg-indigo-100 text-indigo-800 border border-indigo-200 self-start sm:self-auto">
               ตัวแปร U

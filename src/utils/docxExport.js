@@ -529,7 +529,7 @@ export async function exportAssessmentToDocx({
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 2: ประมาณการไลเซนส์ Microsoft', size: 21 })] })] }),
                   new TableCell({
                     borders: thinBorder,
-                    children: [new Paragraph({ children: [new TextRun({ text: 'การประมาณการค่าไลเซนส์โซลูชัน Microsoft:\nตัวแปร H (มีไลเซนส์อยู่แล้ว) เทียบกับ ตัวแปร U (ผู้ใช้ทั้งหมดที่ต้องการ)', size: 21 })] })]
+                    children: [new Paragraph({ children: [new TextRun({ text: 'การประมาณการค่าไลเซนส์โซลูชัน Microsoft:\nตัวแปร H (มีสิทธิ์การใช้งาน Microsoft 365 ขั้นสูง (Advanced license) อยู่แล้ว) เทียบกับ ตัวแปร U (ผู้ใช้งานที่จำเป็นต้องใช้งาน AI Agent นี้ รวม users ทั้งหมดที่ต้อง share ออกไปหา)', size: 21 })] })]
                   }),
                   new TableCell({
                     borders: thinBorder,
