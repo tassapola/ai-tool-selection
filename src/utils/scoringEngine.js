@@ -44,6 +44,7 @@ export function calculateEvaluation({
   const costEvalQ = Number(variables.COST_OF_1_EVAL_QUESTION ?? 1.0);
   const costProdQ = Number(variables.COST_OF_PROD_QUESTION ?? 1.0);
   const costCloudFixedPerMonth = Number(variables.COST_OF_CLOUD_FIXED_COST_PER_MONTH ?? 12000.0);
+  const costAgentDoctorPerManday = Number(variables.COST_OF_AGENT_DOCTOR_PER_MANDAY ?? 16000.0);
 
   // Configurable cost threshold to override Easy Mode to Athena (default 350,000 THB)
   const costThresholdToPickAthena = Number(variables.COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD ?? 350000.0);
@@ -78,6 +79,9 @@ export function calculateEvaluation({
     : 2;
   const DEV_POC_MONTHS = Math.min(12, rawDevPoc);
 
+  // Section 1.5: Agent Doctor Help on implementation
+  const AGENT_DOCTOR_MANDAYS = Math.max(0, parseFloat(athenaInputs.AGENT_DOCTOR_MANDAYS) || 0);
+
   // Section 2: Pilot & Production
   const U_PROD = athenaInputs.U !== undefined && athenaInputs.U !== ''
     ? Math.max(0, parseInt(athenaInputs.U, 10) || 0)
@@ -102,9 +106,13 @@ export function calculateEvaluation({
   const docsCostTotal = costDlTotal + costDmTotal + costDhTotal + costImgTotal + costNodTotal;
 
   const evalCostTotal = EVAL_Q * EVAL_ATTEMPTS * costEvalQ;
-  const costCloudFixedTotal = DEV_POC_MONTHS * costCloudFixedPerMonth;
-  const athenaDevPocTotal = docsCostTotal + evalCostTotal + costCloudFixedTotal;
-  const athenaPilotProdTotal = U_PROD * Q_PER_DAY * 30 * PROD_MONTHS * costProdQ;
+  const costCloudFixedDevPoc = DEV_POC_MONTHS * costCloudFixedPerMonth;
+  const costAgentDoctorTotal = AGENT_DOCTOR_MANDAYS * costAgentDoctorPerManday;
+  const athenaDevPocTotal = docsCostTotal + evalCostTotal + costCloudFixedDevPoc + costAgentDoctorTotal;
+
+  const costProdUsageTotal = U_PROD * Q_PER_DAY * 30 * PROD_MONTHS * costProdQ;
+  const costCloudFixedProd = PROD_MONTHS * costCloudFixedPerMonth;
+  const athenaPilotProdTotal = costProdUsageTotal + costCloudFixedProd;
   const athenaTotalCostThb = athenaDevPocTotal + athenaPilotProdTotal;
 
   // -------------------------------------------------------------
@@ -143,22 +151,46 @@ export function calculateEvaluation({
       athenaDevPocTotal,
       athenaPilotProdTotal,
       athenaBreakdown: {
+        DL,
+        DL_AVG_PAGES,
         costDlTotal,
+        DM,
+        DM_AVG_PAGES,
         costDmTotal,
+        DH,
+        DH_AVG_PAGES,
         costDhTotal,
+        IMG_COUNT,
         costImgTotal,
+        NOD,
         costNodTotal,
         docsCostTotal,
+        AD,
+        EVAL_Q,
+        EVAL_ATTEMPTS,
         evalCostTotal,
         DEV_POC_MONTHS,
+        AGENT_DOCTOR_MANDAYS,
+        costAgentDoctorPerManday,
+        costAgentDoctorTotal,
         costCloudFixedPerMonth,
-        costCloudFixedTotal,
+        costCloudFixedDevPoc,
+        costCloudFixedProd,
+        costCloudFixedTotal: costCloudFixedDevPoc + costCloudFixedProd,
         athenaDevPocTotal,
-        athenaPilotProdTotal,
-        athenaTotalCostThb,
         U_PROD,
         Q_PER_DAY,
-        PROD_MONTHS
+        PROD_MONTHS,
+        costProdUsageTotal,
+        athenaPilotProdTotal,
+        athenaTotalCostThb,
+        costDlPage,
+        costDmPage,
+        costDhPage,
+        costImage,
+        effectiveCostOther,
+        costEvalQ,
+        costProdQ
       },
       reasoning: [
         `การประเมินกำลังดำเนินการ (ตอบแล้ว ${completedCount} จาก 3 คำถามหลัก)`,
@@ -254,13 +286,13 @@ export function calculateEvaluation({
   // D. CONFLICT DETECTION (Conflicting Requirements)
   const conflicts = [];
 
-  // Conflict 1 (User Example 1): Q4 = 'yes' (Need non-M365/SmartServe -> Athena) AND Q5 = 'no' (Cannot move O365 knowledge -> Microsoft)
+  // Conflict 1 (User Example 1): Q4 = 'yes' (Need non-M365/RQ/SmartServe -> Athena) AND Q5 = 'no' (Cannot move O365 knowledge -> Microsoft)
   if (q4ConnectNonM365 === 'yes' && q5O365KnowledgeToSharepoint === 'no') {
     conflicts.push({
       id: 'conflict_smartserve_vs_cannot_move_o365',
-      title: 'ความขัดแย้งระหว่างการเชื่อมต่อระบบภายใน KBank กับข้อจำกัดการรวบรวมความรู้สู่ OneDrive',
-      description: 'คำถามข้อ 4 ระบุว่าจำเป็นต้องเชื่อมต่อกับระบบภายใน KBank ที่ไม่ใช่ Microsoft 365 หรือ MDP (เช่น SmartServe) ซึ่งรองรับเฉพาะ Athena แต่คำถามข้อ 5 ระบุว่าไม่สามารถรวบรวมหรือจัดเก็บฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้ ซึ่งจำเป็นต้องใช้โซลูชัน Microsoft เพื่อเข้าถึงข้อมูลได้โดยตรงแบบ In-Place Access',
-      questionA: 'ข้อ 4 (ระบบภายใน KBank / SmartServe) = ใช่ [แนะนำ Athena]',
+      title: 'ความขัดแย้งระหว่างการเชื่อมต่อระบบภายใน KBank อื่น กับข้อจำกัดการรวบรวมความรู้สู่ OneDrive',
+      description: 'คำถามข้อ 4 ระบุว่าจำเป็นต้องเชื่อมต่อกับระบบภายใน KBank อื่นหรือใช้ UI ในระบบ KBank อื่น (เช่น ระบบ RQ, SmartServe) ซึ่งรองรับเฉพาะ Athena แต่คำถามข้อ 5 ระบุว่าไม่สามารถรวบรวมหรือจัดเก็บฐานความรู้ลงใน OneDrive/SharePoint ได้ (หรือต้องการใช้ Knowledge นอก Office 365 ซึ่งต้องติดต่อ KBTG EA ก่อนกรอกเนื่องจากเป็นโครงการ IT customized)',
+      questionA: 'ข้อ 4 (ระบบภายใน KBank อื่น / ระบบ RQ / SmartServe) = ใช่ [แนะนำ Athena]',
       questionB: 'ข้อ 5 (รวบรวมความรู้สู่ OneDrive) = ทำไม่ได้ [แนะนำ Microsoft]'
     });
   }
@@ -449,22 +481,46 @@ export function calculateEvaluation({
     athenaDevPocTotal,
     athenaPilotProdTotal,
     athenaBreakdown: {
+      DL,
+      DL_AVG_PAGES,
       costDlTotal,
+      DM,
+      DM_AVG_PAGES,
       costDmTotal,
+      DH,
+      DH_AVG_PAGES,
       costDhTotal,
+      IMG_COUNT,
       costImgTotal,
+      NOD,
       costNodTotal,
       docsCostTotal,
+      AD,
+      EVAL_Q,
+      EVAL_ATTEMPTS,
       evalCostTotal,
       DEV_POC_MONTHS,
+      AGENT_DOCTOR_MANDAYS,
+      costAgentDoctorPerManday,
+      costAgentDoctorTotal,
       costCloudFixedPerMonth,
-      costCloudFixedTotal,
+      costCloudFixedDevPoc,
+      costCloudFixedProd,
+      costCloudFixedTotal: costCloudFixedDevPoc + costCloudFixedProd,
       athenaDevPocTotal,
-      athenaPilotProdTotal,
-      athenaTotalCostThb,
       U_PROD,
       Q_PER_DAY,
-      PROD_MONTHS
+      PROD_MONTHS,
+      costProdUsageTotal,
+      athenaPilotProdTotal,
+      athenaTotalCostThb,
+      costDlPage,
+      costDmPage,
+      costDhPage,
+      costImage,
+      effectiveCostOther,
+      costEvalQ,
+      costProdQ
     },
     reasoning,
     isDecisive: true,

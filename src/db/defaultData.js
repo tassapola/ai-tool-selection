@@ -117,7 +117,16 @@ export const DEFAULT_CONFIG_VARIABLES = [
     unit: 'บาท/เดือน',
     label: 'ต้นทุนคงที่สำหรับ Cloud Compute ต่อเดือน (Fixed Cloud Compute Cost)',
     category: 'athena',
-    description: 'ค่าบริการ Cloud Compute คงที่ต่อเดือนสำหรับ Athena ในช่วง Dev & PoC'
+    description: 'ค่าบริการ Cloud Compute คงที่ต่อเดือนสำหรับ Athena (คิดทั้งช่วง Dev & PoC และช่วง Pilot & Production)'
+  },
+  {
+    key: 'COST_OF_AGENT_DOCTOR_PER_MANDAY',
+    value: 16000.0,
+    data_type: 'number',
+    unit: 'บาท/manday',
+    label: 'ต้นทุน Agent Doctor ต่อ 1 Manday (Agent Doctor Support Rate)',
+    category: 'athena',
+    description: 'ต้นทุนค่าบริการผู้เชี่ยวชาญ Agent Doctor ในการช่วยสนับสนุนการ Implement ระบบ Athena ต่อ 1 Manday (ค่าเริ่มต้น 16,000 บาท/manday)'
   },
   // Thresholds & Weights
   {

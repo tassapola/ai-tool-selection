@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, CheckCircle2, Bot, Workflow, Cpu, Printer, Sparkles, ExternalLink, HelpCircle, FileText, Check, X, Shield, Server, Building2, Sliders, FileDown, Stamp, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Bot, Workflow, Cpu, Printer, Sparkles, Check, X, Sliders, FileDown, Stamp, AlertTriangle } from 'lucide-react';
 import { exportAssessmentToDocx } from '../utils/docxExport';
 
 export default function SummaryView({
@@ -40,6 +40,7 @@ export default function SummaryView({
     athenaTotalCostThb = 0,
     athenaDevPocTotal = 0,
     athenaPilotProdTotal = 0,
+    athenaBreakdown = {},
     weightCost = 60,
     weightFeatures = 40,
     isCostThresholdOverride = false,
@@ -523,7 +524,7 @@ export default function SummaryView({
               <button onClick={onBackToQ2} className="text-blue-600 hover:underline text-[11px]">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              H: {H} • U: {U} → <strong>฿{annualCostThb.toLocaleString()} / ปี</strong>
+              H: {H} • U: {U} (ซื้อเพิ่ม {additionalLicensesNeeded} สิทธิ์) → <strong>฿{annualCostThb.toLocaleString()} / ปี</strong>
             </div>
           </div>
 
@@ -531,32 +532,32 @@ export default function SummaryView({
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
               <span className="font-semibold text-slate-800">3. ต้นทุนระบบ Athena</span>
-              <button onClick={onBackToQ3} className="text-emerald-600 hover:underline text-[11px]">แก้ไข</button>
+              <button onClick={onBackToQ3} className="text-emerald-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              รวม: <strong>฿{athenaTotalCostThb.toLocaleString()}</strong> (Gemini 3.1 Flash Lite)
+              รวม: <strong>฿{athenaTotalCostThb.toLocaleString()}</strong> (Dev: ฿{athenaDevPocTotal.toLocaleString()} + Prod: ฿{athenaPilotProdTotal.toLocaleString()})
             </div>
           </div>
 
           {/* Q4 */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">4. เชื่อมต่อระบบ KBank อื่น (SmartServe)</span>
-              <button onClick={onBackToQ4} className="text-emerald-600 hover:underline text-[11px]">แก้ไข</button>
+              <span className="font-semibold text-slate-800">4. เชื่อมต่อระบบ KBank อื่น / UI อื่น</span>
+              <button onClick={onBackToQ4} className="text-emerald-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              {q4ConnectNonM365 === 'yes' ? '✅ ใช่ (จำเป็นต้องเชื่อมต่อ SmartServe)' : '❌ ไม่ใช่ (ใช้เฉพาะ M365/MDP)'}
+              {q4ConnectNonM365 === 'yes' ? '✅ ใช่ (มี) - จำเป็นต้องต่อระบบ RQ / SmartServe / ภายใน' : '❌ ไม่ใช่ (ใช้เฉพาะ M365/MDP)'}
             </div>
           </div>
 
           {/* Q5 */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">5. การรวบรวมความรู้สู่ OneDrive</span>
-              <button onClick={onBackToQ5} className="text-blue-600 hover:underline text-[11px]">แก้ไข</button>
+              <span className="font-semibold text-slate-800">5. รวมความรู้สู่ OneDrive</span>
+              <button onClick={onBackToQ5} className="text-blue-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              {q5O365KnowledgeToSharepoint === 'yes' ? '✅ ใช่ (รวบรวมสู่ OneDrive/SharePoint ได้)' : '❌ ไม่ใช่ (ไม่สามารถรวบรวมได้ - แนะนำ Microsoft)'}
+              {q5O365KnowledgeToSharepoint === 'yes' ? '✅ ใช่ (รวบรวมสู่ OneDrive/SharePoint ได้)' : '❌ ไม่ได้ (ไม่สามารถรวบรวมได้ หรือใช้ Knowledge นอก O365 ซึ่งต้องติดต่อ KBTG EA)'}
             </div>
           </div>
 
@@ -564,7 +565,7 @@ export default function SummaryView({
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
               <span className="font-semibold text-slate-800">6. การกำกับดูแลสิทธิ์ UAM</span>
-              <button onClick={onBackToQ6} className="text-purple-600 hover:underline text-[11px]">แก้ไข</button>
+              <button onClick={onBackToQ6} className="text-purple-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
               {effectiveQ6Uam === 'yes' ? '✅ ใช่ (ทีมพร้อมตรวจสอบสิทธิ์ UAM)' : '❌ ไม่ใช่ (ต้องการ UAM รวมศูนย์)'}
@@ -575,10 +576,63 @@ export default function SummaryView({
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
               <span className="font-semibold text-slate-800">7. แผนโมเดล Local / KBTG LLM</span>
-              <button onClick={onBackToQ7} className="text-teal-600 hover:underline text-[11px]">แก้ไข</button>
+              <button onClick={onBackToQ7} className="text-teal-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
               {effectiveQ7Llm === 'yes' ? '✅ ใช่ (มีแผนใช้โมเดลภายใน)' : '❌ ไม่ใช่ (ใช้ Cloud LLM เชิงพาณิชย์)'}
+            </div>
+          </div>
+        </div>
+
+        {/* Detailed Athena Questionnaire Form Inputs Table (All forms filled) */}
+        <div className="mt-4 pt-4 border-t border-slate-200 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <Cpu className="w-3.5 h-3.5 text-emerald-600" />
+              <span>รายละเอียดแบบฟอร์มคำนวณต้นทุน Athena ทั้งหมด (All Athena Form Inputs & Breakdown):</span>
+            </span>
+            <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200 font-mono">
+              โมเดล: Gemini 3.1 Flash Lite
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            {/* Dev & PoC Box */}
+            <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between pb-1.5 border-b border-slate-100 font-bold text-slate-800">
+                <span className="text-emerald-800">ส่วนที่ 1: Dev & PoC (นำเข้าเอกสาร & ประเมินผล)</span>
+                <span className="text-emerald-700 font-mono font-bold">฿{athenaDevPocTotal.toLocaleString()}</span>
+              </div>
+              <div className="space-y-1 text-slate-600 text-[11px] font-mono">
+                <div>• DL (docx, txt, md): {athenaBreakdown.DL ?? athenaInputs.DL ?? 0} ฉบับ × {athenaBreakdown.DL_AVG_PAGES ?? athenaInputs.DL_AVG_PAGES ?? 0} หน้า = ฿{(athenaBreakdown.costDlTotal || 0).toLocaleString()}</div>
+                <div>• DM (pdf, pptx ไม่มีภาพ): {athenaBreakdown.DM ?? athenaInputs.DM ?? 0} ฉบับ × {athenaBreakdown.DM_AVG_PAGES ?? athenaInputs.DM_AVG_PAGES ?? 0} หน้า = ฿{(athenaBreakdown.costDmTotal || 0).toLocaleString()}</div>
+                <div>• DH (pdf, pptx มีภาพ): {athenaBreakdown.DH ?? athenaInputs.DH ?? 0} ฉบับ × {athenaBreakdown.DH_AVG_PAGES ?? athenaInputs.DH_AVG_PAGES ?? 0} หน้า = ฿{(athenaBreakdown.costDhTotal || 0).toLocaleString()}</div>
+                <div>• IMG_COUNT (ภาพประกอบ): {athenaBreakdown.IMG_COUNT ?? athenaInputs.IMG_COUNT ?? 0} ภาพ = ฿{(athenaBreakdown.costImgTotal || 0).toLocaleString()}</div>
+                <div>• NOD (เอกสารอื่นๆ): {athenaBreakdown.NOD ?? athenaInputs.NOD ?? 0} ฉบับ = ฿{(athenaBreakdown.costNodTotal || 0).toLocaleString()}</div>
+                <div>• AD (นักพัฒนา Agent): {athenaBreakdown.AD ?? athenaInputs.AD ?? 0} คน</div>
+                <div>• การประเมินผล (EVAL_Q): {athenaBreakdown.EVAL_Q ?? athenaInputs.EVAL_Q ?? 0} คำถาม × {athenaBreakdown.EVAL_ATTEMPTS ?? athenaInputs.EVAL_ATTEMPTS ?? 0} รอบ = ฿{(athenaBreakdown.evalCostTotal || 0).toLocaleString()}</div>
+                <div>• ระยะเวลา Dev & PoC: {athenaBreakdown.DEV_POC_MONTHS ?? athenaInputs.DEV_POC_MONTHS ?? 2} เดือน (Cloud Compute: ฿{(athenaBreakdown.costCloudFixedDevPoc ?? 24000).toLocaleString()})</div>
+                <div>• ความช่วยเหลือ Agent Doctor: {athenaBreakdown.AGENT_DOCTOR_MANDAYS ?? athenaInputs.AGENT_DOCTOR_MANDAYS ?? 0} mandays = ฿{(athenaBreakdown.costAgentDoctorTotal || 0).toLocaleString()}</div>
+              </div>
+            </div>
+
+            {/* Pilot & Production Box */}
+            <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between pb-1.5 border-b border-slate-100 font-bold text-slate-800">
+                <span className="text-teal-800">ส่วนที่ 2: ช่วงนำร่องและใช้งานจริง (Pilot & Production)</span>
+                <span className="text-teal-700 font-mono font-bold">฿{athenaPilotProdTotal.toLocaleString()}</span>
+              </div>
+              <div className="space-y-1 text-slate-600 text-[11px] font-mono">
+                <div>• ผู้ใช้งานแชทจริง (U): {athenaBreakdown.U_PROD ?? athenaInputs.U ?? U ?? 0} คน</div>
+                <div>• คำถามเฉลี่ยต่อวัน (Q_PER_DAY): {athenaBreakdown.Q_PER_DAY ?? athenaInputs.Q_PER_DAY ?? 0} คำถาม / คน / วัน</div>
+                <div>• ระยะเวลาใช้งานจริง (PROD_MONTHS): {athenaBreakdown.PROD_MONTHS ?? athenaInputs.PROD_MONTHS ?? 10} เดือน</div>
+                <div>• ต้นทุนคำถาม Production: ฿{(athenaBreakdown.costProdUsageTotal || 0).toLocaleString()} บาท</div>
+                <div>• Cloud Compute คงที่ Pilot & Prod: ฿{(athenaBreakdown.costCloudFixedProd ?? 120000).toLocaleString()} บาท</div>
+                <div className="pt-2 text-slate-900 font-sans font-bold text-xs border-t border-slate-100 flex justify-between">
+                  <span>รวมต้นทุนประเมิน Athena ทั้งหมด:</span>
+                  <span className="text-emerald-700 font-mono text-sm">฿{athenaTotalCostThb.toLocaleString()} บาท</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

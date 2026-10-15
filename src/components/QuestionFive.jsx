@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, ArrowRight, FolderSync, Check, X, Sparkles, FolderUp, Cloud, Info } from 'lucide-react';
+import { ArrowLeft, ArrowRight, FolderSync, Check, X, Sparkles, FolderUp, Cloud, Info, AlertCircle } from 'lucide-react';
 
 export default function QuestionFive({
   value, // 'yes' | 'no' | null
@@ -23,6 +23,15 @@ export default function QuestionFive({
         <p className="mt-2 text-sm text-slate-600 max-w-2xl leading-relaxed">
           <em>If you use only Office 365 knowledge, can you move your knowledge into OneDrive/Sharepoint?</em> (โครงการที่ประสบความสำเร็จสามารถทำได้ / Successful project cases could do.)
         </p>
+
+        {/* Notice for Knowledge outside Office 365 */}
+        <div className="mt-3.5 p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-950 flex items-start gap-2.5 shadow-2xs">
+          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="leading-relaxed">
+            <span className="font-bold text-amber-900">ข้อควรระวังสำคัญ: </span>
+            ถ้าคุณต้องการใช้ knowledge นอก Office 365, ให้ตอบว่า <strong>ไม่ได้</strong> และติดต่อ KBTG EA ก่อนกรอก เนื่องจากมีความเป็นไปได้โครงการ IT customized
+          </div>
+        </div>
       </div>
 
       <div className="p-6 sm:p-8 space-y-6">
@@ -86,7 +95,7 @@ export default function QuestionFive({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className={`text-lg font-bold ${value === 'no' ? 'text-indigo-900' : 'text-slate-900'}`}>
-                  ไม่ใช่ (No)
+                  ไม่ใช่ (ทำไม่ได้ / No)
                 </span>
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                   value === 'no' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'
@@ -95,14 +104,14 @@ export default function QuestionFive({
                 </div>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                ไม่ใช่ ไม่สามารถรวบรวมความรู้สู่ OneDrive หรือ SharePoint ได้ ข้อมูลกระจายอยู่ตามบริการต่างๆ ของ Office 365
+                ไม่ใช่ ไม่สามารถรวบรวมความรู้สู่ OneDrive หรือ SharePoint ได้ (หรือ<strong>ต้องการใช้ knowledge นอก Office 365</strong> ซึ่งให้ตอบว่า ไม่ได้ และติดต่อ KBTG EA ก่อนกรอก เนื่องจากมีความเป็นไปได้โครงการ IT customized)
               </p>
             </div>
 
             {value === 'no' && (
               <div className="mt-3 pt-3 border-t border-indigo-200 text-xs font-semibold text-indigo-800 flex items-center space-x-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                <span>แนะนำโซลูชัน Microsoft: เข้าถึงและประมวลผลข้อมูล Office 365 ได้โดยตรงแบบ In-Place</span>
+                <span>แนะนำโซลูชัน Microsoft (หากเป็น O365) หรือติดต่อ KBTG EA (หากเป็น Knowledge นอก Office 365)</span>
               </div>
             )}
           </button>

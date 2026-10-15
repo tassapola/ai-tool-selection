@@ -428,7 +428,14 @@ export async function exportAssessmentToDocx({
                 children: [
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'COST_OF_CLOUD_FIXED_COST_PER_MONTH', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `฿${(variables.COST_OF_CLOUD_FIXED_COST_PER_MONTH ?? 12000.0).toLocaleString()}`, size: 21 })] })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'บาท ต่อเดือน (ต้นทุนทรัพยากร Cloud Compute คงที่ช่วง Dev & PoC)', size: 21 })] })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'บาท ต่อเดือน (ต้นทุนทรัพยากร Cloud Compute คงที่ ทั้งช่วง Dev & PoC และช่วง Pilot & Production)', size: 21 })] })] })
+                ]
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'COST_OF_AGENT_DOCTOR_PER_MANDAY', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: `฿${(variables.COST_OF_AGENT_DOCTOR_PER_MANDAY ?? 16000.0).toLocaleString()}`, size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'บาท ต่อ manday (อัตราค่าบริการ Agent Doctor ในการ Implement)', size: 21 })] })] })
                 ]
               }),
               new TableRow({
@@ -506,38 +513,52 @@ export async function exportAssessmentToDocx({
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 3: ประมาณการต้นทุน Athena', size: 21 })] })] }),
-                  new TableCell({
-                    borders: thinBorder,
-                    children: [new Paragraph({ children: [new TextRun({ text: 'การจำลองต้นทุน Athena (การนำเข้าเอกสาร Dev/PoC + อัตราการใช้งาน Pilot/Production)', size: 21 })] })]
-                  }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 3: ประมาณการต้นทุน Athena (Dev/PoC และ Pilot/Production)', size: 21, bold: true })] })] }),
                   new TableCell({
                     borders: thinBorder,
                     children: [
                       new Paragraph({
-                        children: [
-                          new TextRun({
-                            text: `เอกสาร DL: ${athenaInputs.DL || 0} ฉบับ (${athenaInputs.DL_AVG_PAGES || 0} หน้า) | DM: ${athenaInputs.DM || 0} | DH: ${athenaInputs.DH || 0}\nคำถามทดสอบ: ${athenaInputs.EVAL_Q || 0} | Dev/PoC: ${athenaInputs.DEV_POC_MONTHS || 2} เดือน | Production: ${athenaInputs.PROD_MONTHS || 10} เดือน | ผู้ใช้งานจริง: ${athenaInputs.U || U} คน\nDev/PoC: ฿${athenaDevPocTotal.toLocaleString()} | Production: ฿${athenaPilotProdTotal.toLocaleString()}\nรวมทั้งสิ้น Athena: ฿${athenaTotalCostThb.toLocaleString()} บาท`,
-                            size: 21
-                          })
-                        ]
+                        children: [new TextRun({ text: 'แบบฟอร์มการจำลองต้นทุน Athena อย่างละเอียด (Gemini 3.1 Flash Lite):\n• ส่วนที่ 1: Dev & PoC (เอกสาร Ingestion, นักพัฒนา AD, คำถามประเมินผล, Cloud Compute คงที่, Agent Doctor)\n• ส่วนที่ 2: Pilot & Production (ผู้ใช้งานจริง, คำถามต่อวัน, ระยะเวลาใช้งาน, Cloud Compute คงที่)', size: 20 })]
                       })
+                    ]
+                  }),
+                  new TableCell({
+                    borders: thinBorder,
+                    children: [
+                      new Paragraph({ children: [new TextRun({ text: '【ส่วนที่ 1: Dev & PoC】', bold: true, size: 21, color: '065F46' })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• 1.1 เอกสาร DL (docx/txt/md): ${athenaBreakdown.DL ?? athenaInputs.DL ?? 0} ฉบับ (เฉลี่ย ${athenaBreakdown.DL_AVG_PAGES ?? athenaInputs.DL_AVG_PAGES ?? 0} หน้า) = ฿${(athenaBreakdown.costDlTotal || 0).toLocaleString()}`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• 1.1 เอกสาร DM (pdf/pptx ไม่มีภาพ): ${athenaBreakdown.DM ?? athenaInputs.DM ?? 0} ฉบับ (เฉลี่ย ${athenaBreakdown.DM_AVG_PAGES ?? athenaInputs.DM_AVG_PAGES ?? 0} หน้า) = ฿${(athenaBreakdown.costDmTotal || 0).toLocaleString()}`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• 1.1 เอกสาร DH (pdf/pptx มีภาพ): ${athenaBreakdown.DH ?? athenaInputs.DH ?? 0} ฉบับ (เฉลี่ย ${athenaBreakdown.DH_AVG_PAGES ?? athenaInputs.DH_AVG_PAGES ?? 0} หน้า) = ฿${(athenaBreakdown.costDhTotal || 0).toLocaleString()}`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• 1.1 รูปภาพ (pptx/images): ${athenaBreakdown.IMG_COUNT ?? athenaInputs.IMG_COUNT ?? 0} ภาพ = ฿${(athenaBreakdown.costImgTotal || 0).toLocaleString()}`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• 1.1 เอกสารอื่นๆ (NOD): ${athenaBreakdown.NOD ?? athenaInputs.NOD ?? 0} ฉบับ = ฿${(athenaBreakdown.costNodTotal || 0).toLocaleString()}`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• 1.2 นักพัฒนา Agent (AD): ${athenaBreakdown.AD ?? athenaInputs.AD ?? 0} คน`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• 1.3 คำถามประเมินผล (EVAL_Q): ${athenaBreakdown.EVAL_Q ?? athenaInputs.EVAL_Q ?? 0} ข้อ × ${athenaBreakdown.EVAL_ATTEMPTS ?? athenaInputs.EVAL_ATTEMPTS ?? 0} รอบ = ฿${(athenaBreakdown.evalCostTotal || 0).toLocaleString()}`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• 1.4 ระยะเวลา Dev & PoC: ${athenaBreakdown.DEV_POC_MONTHS ?? athenaInputs.DEV_POC_MONTHS ?? 2} เดือน (Cloud Compute: ฿${(athenaBreakdown.costCloudFixedDevPoc ?? (Number(athenaInputs.DEV_POC_MONTHS || 2) * 12000)).toLocaleString()})`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• 1.5 Agent Doctor Help: ${athenaBreakdown.AGENT_DOCTOR_MANDAYS ?? athenaInputs.AGENT_DOCTOR_MANDAYS ?? 0} mandays = ฿${(athenaBreakdown.costAgentDoctorTotal || 0).toLocaleString()}`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `➤ รวม Dev & PoC = ฿${athenaDevPocTotal.toLocaleString()} บาท`, bold: true, size: 21, color: '065F46' })] }),
+                      new Paragraph({ children: [new TextRun({ text: '【ส่วนที่ 2: Pilot & Production】', bold: true, size: 21, color: '0F766E' })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• ผู้ใช้งานแชท (U): ${athenaBreakdown.U_PROD ?? athenaInputs.U ?? U ?? 0} คน | คำถามต่อวัน (Q_PER_DAY): ${athenaBreakdown.Q_PER_DAY ?? athenaInputs.Q_PER_DAY ?? 0} คำถาม`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• ระยะเวลา Production: ${athenaBreakdown.PROD_MONTHS ?? athenaInputs.PROD_MONTHS ?? 10} เดือน`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• ค่าคำถาม Production: ฿${(athenaBreakdown.costProdUsageTotal || 0).toLocaleString()} บาท`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• Cloud Compute คงที่ (Pilot & Prod): ฿${(athenaBreakdown.costCloudFixedProd ?? (Number(athenaInputs.PROD_MONTHS || 10) * 12000)).toLocaleString()} บาท`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `➤ รวม Pilot & Production = ฿${athenaPilotProdTotal.toLocaleString()} บาท`, bold: true, size: 21, color: '0F766E' })] }),
+                      new Paragraph({ children: [new TextRun({ text: `★ รวมต้นทุน Athena ทั้งหมด = ฿${athenaTotalCostThb.toLocaleString()} บาท`, bold: true, size: 22, color: '047857' })] })
                     ]
                   })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 4: การเชื่อมต่อระบบ KBank อื่น (ไม่ใช่ M365/MDP)', size: 21 })] })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'จำเป็นต้องเชื่อมต่อกับระบบภายในของ KBank ภายนอก M365/MDP (เช่น SmartServe)', size: 21 })] })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q4ConnectNonM365 === 'yes' ? 'ใช่ (จำเป็นต้องเชื่อมต่อ SmartServe)' : 'ไม่ใช่ (ใช้งานเฉพาะ M365)', bold: true, size: 21 })] })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 4: การเชื่อมต่อระบบภายใน KBank อื่นหรือใช้งานผ่าน UI ในระบบ KBank อื่น', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'คุณหรือ users จำเป็นต้องเชื่อมต่อกับระบบภายใน KBank อื่นหรือใช้ UI ในระบบ KBank อื่น ที่นอกเหนือจาก Microsoft 365 หรือ MDP หรือไม่? (ตัวอย่าง: ถ้า user มีความจำเป็นต้องใช้งานผ่านระบบ RQ ให้ตอบว่า ใช่ (มี))', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q4ConnectNonM365 === 'yes' ? 'ใช่ (มี) - จำเป็นต้องเชื่อมต่อระบบ RQ / SmartServe / ระบบภายใน KBank' : 'ไม่ใช่ - ใช้งานเฉพาะ Microsoft 365 / MDP', bold: true, size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 5: การรวบรวมความรู้สู่ OneDrive/SharePoint', size: 21 })] })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'หากใช้เฉพาะฐานความรู้ Office 365 สามารถรวบรวมหรือจัดเก็บลงใน OneDrive/SharePoint ได้หรือไม่', size: 21 })] })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q5O365KnowledgeToSharepoint === 'yes' ? 'สามารถรวบรวมได้ (จัดเก็บลง OneDrive/SharePoint ได้)' : 'ไม่สามารถรวบรวมได้ (แนะนำโซลูชัน Microsoft)', bold: true, size: 21 })] })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 5: การรวบรวมความรู้สู่ OneDrive / SharePoint', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'หากคุณใช้เฉพาะฐานความรู้ Office 365 คุณสามารถรวบรวมความรู้สู่ OneDrive หรือ SharePoint ได้หรือไม่ (ถ้าต้องการใช้ knowledge นอก Office 365 ให้ตอบว่า ไม่ได้ และติดต่อ KBTG EA ก่อนกรอก เนื่องจากมีความเป็นไปได้โครงการ IT customized)', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q5O365KnowledgeToSharepoint === 'yes' ? 'สามารถรวบรวมได้ (จัดเก็บลง OneDrive/SharePoint ได้)' : 'ไม่สามารถรวบรวมได้ (หรือต้องการใช้ Knowledge นอก Office 365 - แนะนำโซลูชัน Microsoft หรือติดต่อ KBTG EA)', bold: true, size: 21 })] })] })
                 ]
               }),
               new TableRow({

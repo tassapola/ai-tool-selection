@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, FileText, Image as ImageIcon, Users, MessageSquare, Sparkles, Calculator, Check, Info, FileSpreadsheet, Layers, BookOpen, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, FileText, Image as ImageIcon, Users, MessageSquare, Sparkles, Calculator, Check, Info, Layers, BookOpen } from 'lucide-react';
 
 export default function QuestionThree({
   athenaInputs,
@@ -22,6 +22,7 @@ export default function QuestionThree({
   const costEvalQ = Number(variables.COST_OF_1_EVAL_QUESTION ?? 1.0);
   const costProdQ = Number(variables.COST_OF_PROD_QUESTION ?? 1.0);
   const costCloudFixedPerMonth = Number(variables.COST_OF_CLOUD_FIXED_COST_PER_MONTH ?? 12000.0);
+  const costAgentDoctorPerManday = Number(variables.COST_OF_AGENT_DOCTOR_PER_MANDAY ?? 16000.0);
 
   // Field values with defaults
   const DL = athenaInputs.DL ?? '';
@@ -36,6 +37,7 @@ export default function QuestionThree({
   const EVAL_Q = athenaInputs.EVAL_Q ?? '';
   const EVAL_ATTEMPTS = athenaInputs.EVAL_ATTEMPTS ?? '';
   const DEV_POC_MONTHS = athenaInputs.DEV_POC_MONTHS !== undefined && athenaInputs.DEV_POC_MONTHS !== '' ? athenaInputs.DEV_POC_MONTHS : 2;
+  const AGENT_DOCTOR_MANDAYS = athenaInputs.AGENT_DOCTOR_MANDAYS ?? '';
   const U = athenaInputs.U ?? '';
   const Q_PER_DAY = athenaInputs.Q_PER_DAY ?? '';
   const PROD_MONTHS = athenaInputs.PROD_MONTHS !== undefined && athenaInputs.PROD_MONTHS !== '' ? athenaInputs.PROD_MONTHS : 10;
@@ -509,6 +511,41 @@ export default function QuestionThree({
                   </div>
                 </div>
               </div>
+
+              {/* Section 1.5: Agent Doctor Help */}
+              <div className="space-y-4 pt-3 border-t border-slate-200">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                    ส่วนที่ 1.5: [Optional] Do you need Agent Doctor help on implementation?
+                  </h4>
+                  <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-medium">
+                    แนะนำ 0 mandays (Hint: 0 mandays)
+                  </span>
+                </div>
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-1.5 max-w-md">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-semibold text-slate-800">
+                      จำนวนวันทำงานของ Agent Doctor รวม (Agent doctors mandays (total))
+                    </label>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      AGENT_DOCTOR_MANDAYS
+                    </span>
+                  </div>
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={AGENT_DOCTOR_MANDAYS}
+                    onChange={(e) => handleFieldChange('AGENT_DOCTOR_MANDAYS', e.target.value)}
+                    placeholder="เช่น 0 (แนะนำ 0 mandays)"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold"
+                  />
+                  <div className="text-[11px] text-slate-400">
+                    หน่วย: mandays • อัตราค่าบริการ: ฿{costAgentDoctorPerManday.toLocaleString()} บาท / manday (กำหนดได้ใน DB)
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* SECTION 2: PILOT & PRODUCTION */}
@@ -658,7 +695,10 @@ export default function QuestionThree({
                     การประเมินผล ({EVAL_Q || 0}×{EVAL_ATTEMPTS || 0}×฿{costEvalQ}) = ฿{(athenaBreakdown.evalCostTotal || 0).toLocaleString()}
                   </div>
                   <div className="text-slate-600">
-                    Cloud Compute คงที่ ({DEV_POC_MONTHS || 0} เดือน × ฿{costCloudFixedPerMonth.toLocaleString()}) = ฿{(athenaBreakdown.costCloudFixedTotal ?? (Number(DEV_POC_MONTHS || 0) * costCloudFixedPerMonth)).toLocaleString()}
+                    Cloud Compute คงที่ ({DEV_POC_MONTHS || 0} เดือน × ฿{costCloudFixedPerMonth.toLocaleString()}) = ฿{(athenaBreakdown.costCloudFixedDevPoc ?? (Number(DEV_POC_MONTHS || 0) * costCloudFixedPerMonth)).toLocaleString()}
+                  </div>
+                  <div className="text-slate-600">
+                    Agent Doctor ({AGENT_DOCTOR_MANDAYS || 0} mandays × ฿{costAgentDoctorPerManday.toLocaleString()}) = ฿{(athenaBreakdown.costAgentDoctorTotal || 0).toLocaleString()}
                   </div>
                   <div className="font-bold text-emerald-800 pt-1 border-t border-slate-100">
                     รวม Dev & PoC = ฿{(athenaDevPocTotal || 0).toLocaleString()}
@@ -670,13 +710,16 @@ export default function QuestionThree({
                     2. ยอดรวม Pilot & Production:
                   </div>
                   <div className="text-slate-500 text-[11px]">
-                    สูตร: U × Q_PER_DAY × 30 วัน × PROD_MONTHS × ฿{costProdQ}
+                    สูตรคำถาม: U × Q_PER_DAY × 30 วัน × PROD_MONTHS × ฿{costProdQ}
                   </div>
                   <div className="text-slate-700">
-                    = {U || 0} ผู้ใช้ × {Q_PER_DAY || 0} คำถาม/วัน × 30 × {PROD_MONTHS || 0} เดือน × ฿{costProdQ}
+                    • คำถาม Production: {U || 0} ผู้ใช้ × {Q_PER_DAY || 0} คำถาม/วัน × 30 × {PROD_MONTHS || 0} เดือน × ฿{costProdQ} = ฿{(athenaBreakdown.costProdUsageTotal || 0).toLocaleString()}
+                  </div>
+                  <div className="text-slate-700">
+                    • Cloud Compute คงที่: {PROD_MONTHS || 0} เดือน × ฿{costCloudFixedPerMonth.toLocaleString()} = ฿{(athenaBreakdown.costCloudFixedProd ?? (Number(PROD_MONTHS || 0) * costCloudFixedPerMonth)).toLocaleString()}
                   </div>
                   <div className="font-bold text-teal-800 pt-1 border-t border-slate-100">
-                    ต้นทุนการใช้งานจริง Production = ฿{(athenaPilotProdTotal || 0).toLocaleString()}
+                    รวม Pilot & Production = ฿{(athenaPilotProdTotal || 0).toLocaleString()}
                   </div>
 
                   <div className="pt-2 text-[11px] text-slate-500 font-sans">
@@ -808,7 +851,15 @@ export default function QuestionThree({
                     </tr>
                     <tr className="hover:bg-slate-50 bg-emerald-50/40">
                       <td className="px-4 py-2 font-bold text-slate-800">COST_OF_CLOUD_FIXED_COST_PER_MONTH</td>
-                      <td className="px-4 py-2 text-slate-600">12,000 THB / เดือน (ค่า Cloud Compute คงที่)</td>
+                      <td className="px-4 py-2 text-slate-600">12,000 THB / เดือน (ค่า Cloud Compute คงที่ช่วง Dev & PoC)</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 bg-emerald-50/40">
+                      <td className="px-4 py-2 font-bold text-slate-800">AGENT_DOCTOR_MANDAYS</td>
+                      <td className="px-4 py-2 text-slate-600">0 mandays (ความช่วยเหลือจาก Agent Doctor)</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 bg-emerald-50/40">
+                      <td className="px-4 py-2 font-bold text-slate-800">COST_OF_AGENT_DOCTOR_PER_MANDAY</td>
+                      <td className="px-4 py-2 text-slate-600">16,000 THB / manday (กำหนดได้ใน DB)</td>
                     </tr>
                   </tbody>
                 </table>
@@ -838,6 +889,10 @@ export default function QuestionThree({
                         <td className="px-4 py-2 font-bold text-slate-800">COST_OF_PROD_QUESTION</td>
                         <td className="px-4 py-2 text-slate-600">1 THB / คำถาม</td>
                       </tr>
+                      <tr className="hover:bg-slate-50 bg-teal-50/40">
+                        <td className="px-4 py-2 font-bold text-slate-800">COST_OF_CLOUD_FIXED_COST_PER_MONTH</td>
+                        <td className="px-4 py-2 text-slate-600">12,000 THB / เดือน (ค่า Cloud Compute คงที่ช่วง Pilot & Production)</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -854,14 +909,17 @@ export default function QuestionThree({
                   <div>• ค่าใช้จ่ายอื่นๆ: 1 × 1.1 = <strong>฿1.10</strong></div>
                   <div>• การประเมินผล: 300 × 10 × 1 = <strong>฿3,000</strong></div>
                   <div>• ค่า Cloud Compute คงที่ (Dev & PoC): 2 × 12,000 = <strong>฿24,000</strong></div>
+                  <div>• ค่าช่วยเหลือ Agent Doctor: 0 × 16,000 = <strong>฿0</strong></div>
                   <div className="text-white pt-1">
-                    ➤ ยอดรวมช่วง Dev & PoC = 10,000 + 1,400 + 70 + 14 + 1.1 + 3,000 + 24,000 = <span className="text-emerald-300 font-bold">฿38,485.10</span>
+                    ➤ ยอดรวมช่วง Dev & PoC = 10,000 + 1,400 + 70 + 14 + 1.1 + 3,000 + 24,000 + 0 = <span className="text-emerald-300 font-bold">฿38,485.10</span>
                   </div>
-                  <div className="pt-2 border-t border-slate-800 text-teal-300">
-                    ➤ ยอดรวมช่วง Pilot & Production = 400 × 2 × 30 × 10 × 1 = <span className="text-teal-200 font-bold">฿240,000.00</span>
+                  <div className="pt-2 border-t border-slate-800 text-teal-300 space-y-1">
+                    <div>• ค่าคำถาม Production: 400 × 2 × 30 × 10 × 1 = <strong>฿240,000</strong></div>
+                    <div>• ค่า Cloud Compute คงที่ (Pilot & Prod): 10 × 12,000 = <strong>฿120,000</strong></div>
+                    <div>➤ ยอดรวมช่วง Pilot & Production = 240,000 + 120,000 = <span className="text-teal-200 font-bold">฿360,000.00</span></div>
                   </div>
                   <div className="pt-2 border-t border-slate-700 text-white font-bold text-sm">
-                    ★ รวมต้นทุน Athena ทั้งหมด = ฿38,485.10 + ฿240,000 = <span className="text-emerald-400 text-base">฿278,485.10 THB</span>
+                    ★ รวมต้นทุน Athena ทั้งหมด = ฿38,485.10 + ฿360,000 = <span className="text-emerald-400 text-base">฿398,485.10 THB</span>
                   </div>
                 </div>
               </div>
