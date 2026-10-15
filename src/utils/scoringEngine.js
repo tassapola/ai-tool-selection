@@ -194,7 +194,7 @@ export function calculateEvaluation({
       },
       reasoning: [
         `การประเมินกำลังดำเนินการ (ตอบแล้ว ${completedCount} จาก 3 คำถามหลัก)`,
-        'ระบบจะปลดล็อกผลการแนะนำเครื่องมือโดยอัตโนมัติเมื่อตอบข้อ 3 (ประมาณการค่าใช้จ่าย: Athena) เรียบร้อย'
+        'ระบบจะปลดล็อกผลการแนะนำเครื่องมือโดยอัตโนมัติเมื่อตอบข้อ 4 (ประมาณการค่าใช้จ่าย: Athena) เรียบร้อย'
       ],
       isDecisive: false,
       isPendingFirstThree: true,
@@ -291,9 +291,9 @@ export function calculateEvaluation({
     conflicts.push({
       id: 'conflict_smartserve_vs_cannot_move_o365',
       title: 'ความขัดแย้งระหว่างการเชื่อมต่อระบบภายใน KBank อื่น กับข้อจำกัดการรวบรวมความรู้สู่ OneDrive',
-      description: 'คำถามข้อ 4 ระบุว่าจำเป็นต้องเชื่อมต่อกับระบบภายใน KBank อื่นหรือใช้ UI ในระบบ KBank อื่น (เช่น ระบบ RQ, SmartServe) ซึ่งรองรับเฉพาะ Athena แต่คำถามข้อ 5 ระบุว่าไม่สามารถรวบรวมหรือจัดเก็บฐานความรู้ลงใน OneDrive/SharePoint ได้ (หรือต้องการใช้ Knowledge นอก Office 365 ซึ่งต้องติดต่อ KBTG EA ก่อนกรอกเนื่องจากเป็นโครงการ IT customized)',
-      questionA: 'ข้อ 4 (ระบบภายใน KBank อื่น / ระบบ RQ / SmartServe) = ใช่ [แนะนำ Athena]',
-      questionB: 'ข้อ 5 (รวบรวมความรู้สู่ OneDrive) = ทำไม่ได้ [แนะนำ Microsoft]'
+      description: 'คำถามข้อ 5 ระบุว่าจำเป็นต้องเชื่อมต่อกับระบบภายใน KBank อื่นหรือใช้ UI ในระบบ KBank อื่น (เช่น ระบบ RQ, SmartServe) ซึ่งรองรับเฉพาะ Athena แต่คำถามข้อ 6 ระบุว่าไม่สามารถรวบรวมหรือจัดเก็บฐานความรู้ลงใน OneDrive/SharePoint ได้ (หรือต้องการใช้ Knowledge นอก Office 365 ซึ่งต้องติดต่อ KBTG EA ก่อนกรอกเนื่องจากเป็นโครงการ IT customized)',
+      questionA: 'ข้อ 5 (ระบบภายใน KBank อื่น / ระบบ RQ / SmartServe) = ใช่ [แนะนำ Athena]',
+      questionB: 'ข้อ 6 (รวบรวมความรู้สู่ OneDrive) = ทำไม่ได้ [แนะนำ Microsoft]'
     });
   }
 
@@ -302,9 +302,9 @@ export function calculateEvaluation({
     conflicts.push({
       id: 'conflict_m365_only_vs_no_uam_governance',
       title: 'ความขัดแย้งระหว่างระบบนิเวศ Microsoft ล้วน กับการไม่มีทีมกำกับดูแลสิทธิ์ UAM',
-      description: 'คำถามข้อ 4 ระบุว่าไม่จำเป็นต้องเชื่อมต่อระบบภายนอก ใช้เฉพาะระบบนิเวศ Microsoft 365 / MDP ล้วน (เหมาะกับโซลูชัน Microsoft) แต่คำถามข้อ 6 ระบุว่าทีมงานไม่มีบุคลากร กระบวนการ และเวลาในการกำกับดูแลสิทธิ์ UAM และการส่งมอบ Agent แบบกระจายศูนย์ด้วยตนเอง (จำเป็นต้องใช้ระบบกำกับดูแล UAM รวมศูนย์ของ Athena)',
-      questionA: 'ข้อ 4 (เชื่อมต่อระบบภายนอก M365) = ไม่ใช่ [แนะนำ Microsoft]',
-      questionB: 'ข้อ 6 (ความพร้อมกำกับดูแลสิทธิ์ UAM) = ไม่มีความพร้อม [แนะนำ Athena]'
+      description: 'คำถามข้อ 5 ระบุว่าไม่จำเป็นต้องเชื่อมต่อระบบภายนอก ใช้เฉพาะระบบนิเวศ Microsoft 365 / MDP ล้วน (เหมาะกับโซลูชัน Microsoft) แต่คำถามข้อ 7 ระบุว่าทีมงานไม่มีบุคลากร กระบวนการ และเวลาในการกำกับดูแลสิทธิ์ UAM และการส่งมอบ Agent แบบกระจายศูนย์ด้วยตนเอง (จำเป็นต้องใช้ระบบกำกับดูแล UAM รวมศูนย์ของ Athena)',
+      questionA: 'ข้อ 5 (เชื่อมต่อระบบภายนอก M365) = ไม่ใช่ [แนะนำ Microsoft]',
+      questionB: 'ข้อ 7 (ความพร้อมกำกับดูแลสิทธิ์ UAM) = ไม่มีความพร้อม [แนะนำ Athena]'
     });
   }
 
@@ -313,9 +313,9 @@ export function calculateEvaluation({
     conflicts.push({
       id: 'conflict_local_llm_vs_cannot_move_o365',
       title: 'ความขัดแย้งระหว่างแผนการใช้งาน Local LLM กับข้อจำกัดการรวบรวมความรู้สู่ OneDrive',
-      description: 'คำถามข้อ 7 ระบุว่ามีแผนจะใช้งาน Local LLM หรือโมเดลที่โฮสต์บน KBank/KBTG ในอนาคต ซึ่งรองรับเฉพาะ Athena แต่คำถามข้อ 5 ระบุว่าไม่สามารถรวบรวมหรือจัดเก็บฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้ ซึ่งจำเป็นต้องใช้โซลูชัน Microsoft เพื่อเข้าถึงข้อมูลได้โดยตรงแบบ In-Place Access',
-      questionA: 'ข้อ 7 (แผนโมเดล Local / KBTG LLM) = มีแผนงาน [แนะนำ Athena]',
-      questionB: 'ข้อ 5 (รวบรวมความรู้สู่ OneDrive) = ทำไม่ได้ [แนะนำ Microsoft]'
+      description: 'คำถามข้อ 8 ระบุว่ามีแผนจะใช้งาน Local LLM หรือโมเดลที่โฮสต์บน KBank/KBTG ในอนาคต ซึ่งรองรับเฉพาะ Athena แต่คำถามข้อ 6 ระบุว่าไม่สามารถรวบรวมหรือจัดเก็บฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้ ซึ่งจำเป็นต้องใช้โซลูชัน Microsoft เพื่อเข้าถึงข้อมูลได้โดยตรงแบบ In-Place Access',
+      questionA: 'ข้อ 8 (แผนโมเดล Local / KBTG LLM) = มีแผนงาน [แนะนำ Athena]',
+      questionB: 'ข้อ 6 (รวบรวมความรู้สู่ OneDrive) = ทำไม่ได้ [แนะนำ Microsoft]'
     });
   }
 
@@ -324,9 +324,9 @@ export function calculateEvaluation({
     conflicts.push({
       id: 'conflict_no_uam_vs_cannot_move_o365',
       title: 'ความขัดแย้งระหว่างข้อจำกัดการรวบรวมความรู้สู่ OneDrive กับการไม่มีทีมกำกับดูแลสิทธิ์ UAM',
-      description: 'คำถามข้อ 5 ระบุว่าไม่สามารถรวบรวมฐานความรู้ลงใน OneDrive/SharePoint ได้ (จำเป็นต้องใช้โซลูชัน Microsoft เพื่อเข้าถึงข้อมูลใน Office 365) แต่คำถามข้อ 6 ระบุว่าไม่มีบุคลากรดูแลสิทธิ์ UAM และการโอนย้ายความเป็นเจ้าของ Agent แบบกระจายศูนย์ (ต้องการระบบกำกับดูแล UAM รวมศูนย์ของ Athena)',
-      questionA: 'ข้อ 5 (รวบรวมความรู้สู่ OneDrive) = ทำไม่ได้ [แนะนำ Microsoft]',
-      questionB: 'ข้อ 6 (ความพร้อมกำกับดูแลสิทธิ์ UAM) = ไม่มีความพร้อม [แนะนำ Athena]'
+      description: 'คำถามข้อ 6 ระบุว่าไม่สามารถรวบรวมฐานความรู้ลงใน OneDrive/SharePoint ได้ (จำเป็นต้องใช้โซลูชัน Microsoft เพื่อเข้าถึงข้อมูลใน Office 365) แต่คำถามข้อ 7 ระบุว่าไม่มีบุคลากรดูแลสิทธิ์ UAM และการโอนย้ายความเป็นเจ้าของ Agent แบบกระจายศูนย์ (ต้องการระบบกำกับดูแล UAM รวมศูนย์ของ Athena)',
+      questionA: 'ข้อ 6 (รวบรวมความรู้สู่ OneDrive) = ทำไม่ได้ [แนะนำ Microsoft]',
+      questionB: 'ข้อ 7 (ความพร้อมกำกับดูแลสิทธิ์ UAM) = ไม่มีความพร้อม [แนะนำ Athena]'
     });
   }
 
@@ -358,13 +358,13 @@ export function calculateEvaluation({
       primaryRecommendationId = 'copilot_studio';
       rawWeightedScores = { m365_copilot: 20, copilot_studio: 72, athena: 8 };
       reasoning.push(
-        'ไม่สามารถรวบรวมฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้ (คำถามข้อ 5: ไม่ใช่); แนะนำ Copilot Studio เพื่อสร้าง AI Agent ที่เชื่อมต่อและประมวลผลข้อมูลในระบบนิเวศ Office 365 ได้โดยตรงแบบ In-Place Access'
+        'ไม่สามารถรวบรวมฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้ (คำถามข้อ 6: ไม่ใช่); แนะนำ Copilot Studio เพื่อสร้าง AI Agent ที่เชื่อมต่อและประมวลผลข้อมูลในระบบนิเวศ Office 365 ได้โดยตรงแบบ In-Place Access'
       );
     } else {
       primaryRecommendationId = 'm365_copilot';
       rawWeightedScores = { m365_copilot: 90, copilot_studio: 5, athena: 5 };
       reasoning.push(
-        'ไม่สามารถรวบรวมฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้ (คำถามข้อ 5: ไม่ใช่) และทีมงานยังไม่มีบุคลากรพร้อมสร้าง Workflow (คำถามข้อ 1: ไม่พร้อม); แนะนำ Microsoft 365 Copilot (Easy mode) Advanced license allow share ซึ่งเข้าถึงข้อมูล Office 365 ได้โดยตรงแบบสำเร็จรูป (Turnkey)'
+        'ไม่สามารถรวบรวมฐานความรู้ Office 365 ลงใน OneDrive/SharePoint ได้ (คำถามข้อ 6: ไม่ใช่) และทีมงานยังไม่มีบุคลากรพร้อมสร้าง Workflow (คำถามข้อ 2: ไม่พร้อม); แนะนำ Microsoft 365 Copilot (Easy mode) Advanced license allow share ซึ่งเข้าถึงข้อมูล Office 365 ได้โดยตรงแบบสำเร็จรูป (Turnkey)'
       );
     }
   }
@@ -378,7 +378,7 @@ export function calculateEvaluation({
       primaryRecommendationId = 'athena';
       rawWeightedScores = { m365_copilot: 22, copilot_studio: 6, athena: 72 };
       reasoning.push(
-        `การปรับเปลี่ยนตามเกณฑ์ต้นทุน (Cost Threshold Override): แม้ว่าคำถามข้อ 1 (Advanced Builder Readiness) จะแนะนำ Microsoft 365 Copilot (Easy mode) Advanced license allow share แต่เนื่องจากต้นทุนรายปีของ Microsoft (฿${m365AnnualCostThb.toLocaleString()}) สูงกว่าต้นทุน Athena (฿${athenaTotalCostThb.toLocaleString()}) ถึง ฿${costDiffM365VsAthena.toLocaleString()} บาท ซึ่งเกินกว่าเกณฑ์ที่กำหนดไว้ ฿${costThresholdToPickAthena.toLocaleString()} บาท (COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = ${costThresholdToPickAthena.toLocaleString()}) จึงแนะนำให้เลือก Athena แทน เพื่อประหยัดต้นทุนองค์กรได้อย่างมีนัยสำคัญ`
+        `การปรับเปลี่ยนตามเกณฑ์ต้นทุน (Cost Threshold Override): แม้ว่าคำถามข้อ 2 (Advanced Builder Readiness) จะแนะนำ Microsoft 365 Copilot (Easy mode) Advanced license allow share แต่เนื่องจากต้นทุนรายปีของ Microsoft (฿${m365AnnualCostThb.toLocaleString()}) สูงกว่าต้นทุน Athena (฿${athenaTotalCostThb.toLocaleString()}) ถึง ฿${costDiffM365VsAthena.toLocaleString()} บาท ซึ่งเกินกว่าเกณฑ์ที่กำหนดไว้ ฿${costThresholdToPickAthena.toLocaleString()} บาท (COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = ${costThresholdToPickAthena.toLocaleString()}) จึงแนะนำให้เลือก Athena แทน เพื่อประหยัดต้นทุนองค์กรได้อย่างมีนัยสำคัญ`
       );
     } else {
       primaryRecommendationId = 'm365_copilot';

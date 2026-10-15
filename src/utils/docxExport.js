@@ -519,14 +519,14 @@ export async function exportAssessmentToDocx({
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 1: ความพร้อมของทีมในการสร้าง Agent ขั้นสูง (Advanced Builder Readiness)', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 2: ความพร้อมของทีมในการสร้าง Agent ขั้นสูง (Advanced Builder Readiness)', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ขีดความสามารถของทีมในการเรียนรู้และตั้งค่า Multi-Stage Agentic Workflow', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q1AgenticWorkflow === 'yes' ? 'พร้อม (มีผู้พร้อมเรียนรู้ Workflow)' : 'ไม่พร้อม (ต้องการ Microsoft 365 Copilot (Easy mode) Advanced license allow share สำเร็จรูป)', bold: true, size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 2: ประมาณการไลเซนส์ Microsoft', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 3: ประมาณการไลเซนส์ Microsoft', size: 21 })] })] }),
                   new TableCell({
                     borders: thinBorder,
                     children: [new Paragraph({ children: [new TextRun({ text: 'การประมาณการค่าไลเซนส์โซลูชัน Microsoft:\nตัวแปร H (มีสิทธิ์การใช้งาน Microsoft 365 ขั้นสูง (Advanced license) อยู่แล้ว) เทียบกับ ตัวแปร U (ผู้ใช้งานที่จำเป็นต้องใช้งาน AI Agent นี้ รวม users ทั้งหมดที่ต้อง share ออกไปหา)', size: 21 })] })]
@@ -548,7 +548,7 @@ export async function exportAssessmentToDocx({
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 3: ประมาณการต้นทุน Athena (Dev/PoC และ Pilot/Production)', size: 21, bold: true })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 4: ประมาณการต้นทุน Athena (Dev/PoC และ Pilot/Production)', size: 21, bold: true })] })] }),
                   new TableCell({
                     borders: thinBorder,
                     children: [
@@ -584,28 +584,28 @@ export async function exportAssessmentToDocx({
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 4: การเชื่อมต่อระบบภายใน KBank อื่นหรือใช้งานผ่าน UI ในระบบ KBank อื่น', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 5: การเชื่อมต่อระบบภายใน KBank อื่นหรือใช้งานผ่าน UI ในระบบ KBank อื่น', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'คุณหรือ users จำเป็นต้องเชื่อมต่อกับระบบภายใน KBank อื่นหรือใช้ UI ในระบบ KBank อื่น ที่นอกเหนือจาก Microsoft 365 หรือ MDP หรือไม่? (ตัวอย่าง: ถ้า user มีความจำเป็นต้องใช้งานผ่านระบบ RQ ให้ตอบว่า ใช่ (มี))', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q4ConnectNonM365 === 'yes' ? 'ใช่ (มี) - จำเป็นต้องเชื่อมต่อระบบ RQ / SmartServe / ระบบภายใน KBank' : 'ไม่ใช่ - ใช้งานเฉพาะ Microsoft 365 / MDP', bold: true, size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 5: การรวบรวมความรู้สู่ OneDrive / SharePoint', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 6: การรวบรวมความรู้สู่ OneDrive / SharePoint', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'หากคุณใช้เฉพาะฐานความรู้ Office 365 คุณสามารถรวบรวมความรู้สู่ OneDrive หรือ SharePoint ได้หรือไม่ (ถ้าต้องการใช้ knowledge นอก Office 365 ให้ตอบว่า ไม่ได้ และติดต่อ KBTG EA ก่อนกรอก เนื่องจากมีความเป็นไปได้โครงการ IT customized)', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q5O365KnowledgeToSharepoint === 'yes' ? 'สามารถรวบรวมได้ (จัดเก็บลง OneDrive/SharePoint ได้)' : 'ไม่สามารถรวบรวมได้ (หรือต้องการใช้ Knowledge นอก Office 365 - แนะนำโซลูชัน Microsoft หรือติดต่อ KBTG EA)', bold: true, size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 6: การกำกับดูแล UAM และการโอนย้ายสิทธิ์', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 7: การกำกับดูแล UAM และการโอนย้ายสิทธิ์', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'มีความพร้อมในการรับผิดชอบทบทวนสิทธิ์ UAM และส่งมอบความเป็นเจ้าของ Agent', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: effectiveQ6Uam === 'yes' ? 'พร้อม (ทีมงานสามารถดูแล UAM เองได้)' : 'ไม่พร้อม (ต้องการ UAM รวมศูนย์ขององค์กร)', bold: true, size: 21 })] })] })
                 ]
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 7: แผนโมเดล Local LLM', size: 21 })] })] }),
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 8: แผนโมเดล Local LLM', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'มีแผนจะใช้งาน Local LLM หรือโมเดลที่โฮสต์บน KBank/KBTG ในอนาคต', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: effectiveQ7Llm === 'yes' ? 'มีแผน (ต้องการใช้ Private / KBTG Model)' : 'ไม่มีแผน (ใช้ Cloud LLM มาตรฐาน)', bold: true, size: 21 })] })] })
                 ]

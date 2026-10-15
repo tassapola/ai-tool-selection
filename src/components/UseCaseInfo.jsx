@@ -129,7 +129,7 @@ export default function UseCaseInfo({
             onClick={onNext}
             className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition cursor-pointer"
           >
-            <span>ต่อไปยังคำถามที่ 1 (ความพร้อมสร้าง Agent ขั้นสูง)</span>
+            <span>ต่อไปยังคำถามที่ 2 (ความพร้อมสร้าง Agent ขั้นสูง)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

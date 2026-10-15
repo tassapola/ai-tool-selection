@@ -39,9 +39,9 @@ export default function QuestionTwo({
       <div className="bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-white p-6 sm:p-8 border-b border-slate-100">
         <div className="flex items-center space-x-2.5 text-xs font-semibold text-blue-700 uppercase tracking-wider mb-2">
           <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
-            2
+            3
           </span>
-          <span>คำถามที่ 2 • การประเมินต้นทุนค่าสิทธิ์ (Licensing Economics)</span>
+          <span>คำถามที่ 3 • การประเมินต้นทุนค่าสิทธิ์ (Licensing Economics)</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
           การประเมินต้นทุน: โซลูชัน Microsoft
@@ -202,7 +202,7 @@ export default function QuestionTwo({
             className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>ย้อนกลับไปคำถามที่ 1 (ความพร้อมในการสร้าง Agent ขั้นสูง)</span>
+            <span>ย้อนกลับไปคำถามที่ 2 (ความพร้อมในการสร้าง Agent ขั้นสูง)</span>
           </button>
 
           <button
@@ -210,7 +210,7 @@ export default function QuestionTwo({
             onClick={onNext}
             className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition"
           >
-            <span>ต่อไปยังคำถามที่ 3 (การประเมินต้นทุน: Athena)</span>
+            <span>ต่อไปยังคำถามที่ 4 (การประเมินต้นทุน: Athena)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

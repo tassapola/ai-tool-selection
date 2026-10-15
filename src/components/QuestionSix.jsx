@@ -13,9 +13,9 @@ export default function QuestionSix({
       <div className="bg-gradient-to-r from-purple-50/80 via-indigo-50/50 to-white p-6 sm:p-8 border-b border-slate-100">
         <div className="flex items-center space-x-2.5 text-xs font-semibold text-purple-700 uppercase tracking-wider mb-2">
           <span className="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs font-bold">
-            6
+            7
           </span>
-          <span>คำถามที่ 6 • การกำกับดูแลสิทธิ์ UAM และวงจรความเป็นเจ้าของ (UAM Governance & Ownership Lifecycle)</span>
+          <span>คำถามที่ 7 • การกำกับดูแลสิทธิ์ UAM และวงจรความเป็นเจ้าของ (UAM Governance & Ownership Lifecycle)</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
           คุณมีบุคลากร กระบวนการ และเวลาที่พร้อมในการกำกับดูแลสิทธิ์ UAM ให้อยู่ในการควบคุมหรือไม่?
@@ -155,7 +155,7 @@ export default function QuestionSix({
             className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>ย้อนกลับไปคำถามที่ 5 (การรวบรวมความรู้สู่ OneDrive)</span>
+            <span>ย้อนกลับไปคำถามที่ 6 (การรวบรวมความรู้สู่ OneDrive)</span>
           </button>
 
           <button
@@ -168,7 +168,7 @@ export default function QuestionSix({
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
-            <span>ต่อไปยังคำถามที่ 7 (แผนโมเดล Local LLM)</span>
+            <span>ต่อไปยังคำถามที่ 8 (แผนโมเดล Local LLM)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

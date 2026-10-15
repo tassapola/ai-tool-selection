@@ -16,9 +16,9 @@ export default function QuestionOne({
       <div className="bg-gradient-to-r from-blue-50/70 via-indigo-50/50 to-white p-6 sm:p-8 border-b border-slate-100">
         <div className="flex items-center space-x-2.5 text-xs font-semibold text-blue-700 uppercase tracking-wider mb-2">
           <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
-            1
+            2
           </span>
-          <span>คำถามที่ 1 • ความพร้อมของทีมในการสร้าง Agent ขั้นสูง (Advanced Builder Readiness)</span>
+          <span>คำถามที่ 2 • ความพร้อมของทีมในการสร้าง Agent ขั้นสูง (Advanced Builder Readiness)</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
           ความพร้อมของทีม: ทีมของคุณมีบุคลากรที่พร้อมเรียนรู้การสร้าง Multi-Stage Agentic Workflow หรือไม่?
@@ -167,7 +167,7 @@ export default function QuestionOne({
             <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
             <div>
               <span className="font-bold">เงื่อนไขการประเมินทำงาน: </span>
-              เนื่องจากไม่มีผู้ดูแลระบบ Workflow แบบหลายขั้นตอน <strong>Microsoft 365 Copilot (โหมดใช้งานง่าย)</strong> จึงถูกเลือกเป็นโซลูชันที่เหมาะสมที่สุดโดยอัตโนมัติ ทั้งนี้คุณยังสามารถระบุจำนวนผู้ใช้ในคำถามที่ 2 เพื่อประเมินค่าใช้จ่ายได้!
+              เนื่องจากไม่มีผู้ดูแลระบบ Workflow แบบหลายขั้นตอน <strong>Microsoft 365 Copilot (โหมดใช้งานง่าย)</strong> จึงถูกเลือกเป็นโซลูชันที่เหมาะสมที่สุดโดยอัตโนมัติ ทั้งนี้คุณยังสามารถระบุจำนวนผู้ใช้ในคำถามที่ 3 เพื่อประเมินค่าใช้จ่ายได้!
             </div>
           </div>
         )}
@@ -205,7 +205,7 @@ export default function QuestionOne({
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
-            <span>ต่อไปยังคำถามที่ 2 (การประเมินต้นทุน: โซลูชัน Microsoft)</span>
+            <span>ต่อไปยังคำถามที่ 3 (การประเมินต้นทุน: โซลูชัน Microsoft)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

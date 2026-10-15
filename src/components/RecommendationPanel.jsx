@@ -162,7 +162,7 @@ export default function RecommendationPanel({
               <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
                 <span>ตอบคำถามหลักแล้ว: <strong>{completedCoreCount} จาก 3 ข้อ</strong></span>
                 <span className="font-medium text-amber-700">
-                  คำแนะนำเครื่องมือจะแสดงขึ้นเมื่อตอบคำถามข้อ 1, 2 และ 3 เสร็จสิ้น
+                  คำแนะนำเครื่องมือจะแสดงขึ้นเมื่อตอบคำถามข้อ 2, 3 และ 4 เสร็จสิ้น
                 </span>
               </div>
             </div>

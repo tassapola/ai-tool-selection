@@ -285,13 +285,13 @@ export default function App() {
   // Step descriptions map in Thai (9 stages)
   const stepTitles = {
     1: "ข้อมูล Use-case และฝ่ายงาน (Use-case info)",
-    2: "ข้อที่ 1: ความพร้อมสร้าง Agent ขั้นสูง (Advanced Builder Readiness)",
-    3: "ข้อที่ 2: ประมาณการค่าใช้จ่าย: โซลูชัน Microsoft (Cost estimation: Microsoft solution)",
-    4: "ข้อที่ 3: ประมาณการค่าใช้จ่าย: Athena (Gemini 3.1 Flash Lite)",
-    5: "ข้อที่ 4: การเชื่อมต่อระบบภายใน KBank อื่นหรือใช้ UI ในระบบ KBank อื่น (นอกเหนือจาก M365/MDP)",
-    6: "ข้อที่ 5: การรวบรวมความรู้สู่ OneDrive / SharePoint (Knowledge Consolidation)",
-    7: "ข้อที่ 6: การกำกับดูแลสิทธิ์ UAM และการโอนย้ายความเป็นเจ้าของ Agent",
-    8: "ข้อที่ 7: แผนการใช้งานโมเดล Local LLM หรือ LLM ภายใน KBank/KBTG",
+    2: "ข้อที่ 2: ความพร้อมสร้าง Agent ขั้นสูง (Advanced Builder Readiness)",
+    3: "ข้อที่ 3: ประมาณการค่าใช้จ่าย: โซลูชัน Microsoft (Cost estimation: Microsoft solution)",
+    4: "ข้อที่ 4: ประมาณการค่าใช้จ่าย: Athena (Gemini 3.1 Flash Lite)",
+    5: "ข้อที่ 5: การเชื่อมต่อระบบภายใน KBank อื่นหรือใช้ UI ในระบบ KBank อื่น (นอกเหนือจาก M365/MDP)",
+    6: "ข้อที่ 6: การรวบรวมความรู้สู่ OneDrive / SharePoint (Knowledge Consolidation)",
+    7: "ข้อที่ 7: การกำกับดูแลสิทธิ์ UAM และการโอนย้ายความเป็นเจ้าของ Agent",
+    8: "ข้อที่ 8: แผนการใช้งานโมเดล Local LLM หรือ LLM ภายใน KBank/KBTG",
     9: "สรุปผลการประเมินและเปรียบเทียบทั้ง 3 โซลูชัน (Final Recommendation & Comparison)"
   };
 

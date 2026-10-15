@@ -383,7 +383,7 @@ export default function DatabaseModal({
                         เกณฑ์ส่วนต่างต้นทุนเพื่อเปลี่ยนเป็น Athena (`COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD`)
                       </h4>
                       <p className="text-xs text-slate-500">
-                        เมื่อคำถามข้อ 1 เลือก Microsoft 365 Copilot (Easy mode) Advanced license allow share หากต้นทุนรายปีของ Microsoft สูงกว่า Athena เกินจำนวนนี้ ระบบจะแนะนำ Athena แทน ถ้าเลือกเลขต่ำ โอกาสเลือก Microsoft จะสูงขึ้น
+                        เมื่อคำถามข้อ 2 เลือก Microsoft 365 Copilot (Easy mode) Advanced license allow share หากต้นทุนรายปีของ Microsoft สูงกว่า Athena เกินจำนวนนี้ ระบบจะแนะนำ Athena แทน ถ้าเลือกเลขต่ำ โอกาสเลือก Microsoft จะสูงขึ้น
                       </p>
                     </div>
                   </div>

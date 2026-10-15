@@ -268,7 +268,7 @@ export default function SummaryView({
           <div className="p-4 bg-white/90 rounded-xl border border-rose-300 text-xs text-rose-950 leading-relaxed space-y-1.5">
             <span className="font-bold block text-rose-900 text-sm">💡 แนวทางแก้ไขข้อขัดแย้งเพื่อเลือกเครื่องมือที่เหมาะสม:</span>
             <ul className="list-disc pl-5 space-y-1 text-slate-700">
-              <li><strong>หากต้องการเลือกโซลูชัน Microsoft:</strong> ต้องเปิดให้สามารถรวบรวมหรือจัดเก็บเอกสาร/ฐานความรู้สู่ OneDrive หรือ SharePoint ได้ (คำถามข้อ 5) และเตรียมทีมงานให้พร้อมดูแลสิทธิ์ UAM และส่งมอบ Agent (คำถามข้อ 6) รวมถึงใช้ Cloud LLM ที่รองรับบน Azure/M365</li>
+              <li><strong>หากต้องการเลือกโซลูชัน Microsoft:</strong> ต้องเปิดให้สามารถรวบรวมหรือจัดเก็บเอกสาร/ฐานความรู้สู่ OneDrive หรือ SharePoint ได้ (คำถามข้อ 6) และเตรียมทีมงานให้พร้อมดูแลสิทธิ์ UAM และส่งมอบ Agent (คำถามข้อ 7) รวมถึงใช้ Cloud LLM ที่รองรับบน Azure/M365</li>
               <li><strong>หากต้องการเลือกโซลูชัน Athena:</strong> หากจำเป็นต้องเชื่อมต่อระบบภายใน (SmartServe) หรือต้องการรัน Local LLM ต้องวางแผนกระบวนการ ETL เอกสารจาก Office 365 เข้าสู่ระบบ Athena และใช้ระบบการกำกับดูแล UAM แบบรวมศูนย์ของ Athena</li>
             </ul>
           </div>
@@ -284,7 +284,7 @@ export default function SummaryView({
               เงื่อนไขข้ามโหมดเนื่องจากผลต่างต้นทุนทำงาน (COST_THRESHOLD_THB_TO_PICK_ATHENA_INSTEAD = ฿{costThresholdToPickAthena.toLocaleString()} THB)
             </span>
             <p className="leading-relaxed">
-              แม้ว่าคำถามที่ 1 (ความพร้อมของทีมในการสร้าง Agent ขั้นสูง) จะระบุว่าไม่มีผู้เรียนรู้การสร้าง Workflow แบบหลายขั้นตอน (ซึ่งโดยปกติจะแนะนำ Microsoft Copilot โหมดใช้งานง่าย) แต่ต้นทุนค่าสิทธิ์รายปีของโซลูชัน Microsoft (<strong>฿{m365AnnualCostThb.toLocaleString()} บาท/ปี</strong>) สูงกว่าต้นทุนการติดตั้งและดำเนินงานของ Athena (<strong>฿{athenaTotalCostThb.toLocaleString()} บาท</strong>) ถึง <strong>฿{costDiffM365VsAthena.toLocaleString()} บาท</strong> เนื่องจากส่วนต่างนี้เกินเกณฑ์ที่กำหนดไว้ที่ <strong>฿{costThresholdToPickAthena.toLocaleString()} บาท</strong> ระบบการประเมินจึงจัดลำดับความสำคัญให้ <strong>Athena</strong> เพื่อช่วยประหยัดต้นทุนระดับองค์กรอย่างมีนัยสำคัญ
+              แม้ว่าคำถามที่ 2 (ความพร้อมของทีมในการสร้าง Agent ขั้นสูง) จะระบุว่าไม่มีผู้เรียนรู้การสร้าง Workflow แบบหลายขั้นตอน (ซึ่งโดยปกติจะแนะนำ Microsoft Copilot โหมดใช้งานง่าย) แต่ต้นทุนค่าสิทธิ์รายปีของโซลูชัน Microsoft (<strong>฿{m365AnnualCostThb.toLocaleString()} บาท/ปี</strong>) สูงกว่าต้นทุนการติดตั้งและดำเนินงานของ Athena (<strong>฿{athenaTotalCostThb.toLocaleString()} บาท</strong>) ถึง <strong>฿{costDiffM365VsAthena.toLocaleString()} บาท</strong> เนื่องจากส่วนต่างนี้เกินเกณฑ์ที่กำหนดไว้ที่ <strong>฿{costThresholdToPickAthena.toLocaleString()} บาท</strong> ระบบการประเมินจึงจัดลำดับความสำคัญให้ <strong>Athena</strong> เพื่อช่วยประหยัดต้นทุนระดับองค์กรอย่างมีนัยสำคัญ
             </p>
           </div>
         </div>
@@ -691,7 +691,7 @@ export default function SummaryView({
           className="inline-flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>ย้อนกลับไปคำถามที่ 7 (แผนโมเดล Local LLM)</span>
+          <span>ย้อนกลับไปคำถามที่ 8 (แผนโมเดล Local LLM)</span>
         </button>
 
         <div className="flex items-center space-x-3">

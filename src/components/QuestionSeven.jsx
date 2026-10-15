@@ -13,9 +13,9 @@ export default function QuestionSeven({
       <div className="bg-gradient-to-r from-teal-50/80 via-emerald-50/50 to-white p-6 sm:p-8 border-b border-slate-100">
         <div className="flex items-center space-x-2.5 text-xs font-semibold text-teal-700 uppercase tracking-wider mb-2">
           <span className="w-6 h-6 rounded-full bg-teal-600 text-white flex items-center justify-center text-xs font-bold">
-            7
+            8
           </span>
-          <span>คำถามที่ 7 • แผนโมเดล Local LLM ภายในองค์กร (Model Hosting & Sovereign LLM Roadmap)</span>
+          <span>คำถามที่ 8 • แผนโมเดล Local LLM ภายในองค์กร (Model Hosting & Sovereign LLM Roadmap)</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
           คุณมีแผนจะใช้ Local LLM หรือ LLM ที่โฮสต์ภายใน KBank/KBTG ในอนาคตหรือไม่?
@@ -116,7 +116,7 @@ export default function QuestionSeven({
             className="w-full sm:w-auto inline-flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>ย้อนกลับไปคำถามที่ 6 (การกำกับดูแล UAM)</span>
+            <span>ย้อนกลับไปคำถามที่ 7 (การกำกับดูแล UAM)</span>
           </button>
 
           <button

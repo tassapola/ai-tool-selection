@@ -127,9 +127,9 @@ export default function QuestionThree({
           <div>
             <div className="flex items-center space-x-2.5 text-xs font-semibold text-emerald-700 uppercase tracking-wider mb-2">
               <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
-                3
+                4
               </span>
-              <span>คำถามที่ 3 • สถาปัตยกรรมระบบภายใน (Internal System Architecture)</span>
+              <span>คำถามที่ 4 • สถาปัตยกรรมระบบภายใน (Internal System Architecture)</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
               การประเมินต้นทุน: Athena
@@ -935,7 +935,7 @@ export default function QuestionThree({
             className="w-full sm:w-auto inline-flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>ย้อนกลับไปคำถามที่ 2 (Microsoft)</span>
+            <span>ย้อนกลับไปคำถามที่ 3 (Microsoft)</span>
           </button>
 
           <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2">
@@ -955,7 +955,7 @@ export default function QuestionThree({
               onClick={onComplete}
               className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition"
             >
-              <span>ต่อไปยังคำถามที่ 4 (เชื่อมต่อระบบ KBank อื่น)</span>
+              <span>ต่อไปยังคำถามที่ 5 (เชื่อมต่อระบบ KBank อื่น)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
