@@ -24,6 +24,7 @@ export async function exportAssessmentToDocx({
   useCaseName = '',
   departmentName = '',
   q1AgenticWorkflow,
+  q1SubQuestions = {},
   hUsers,
   uUsers,
   athenaInputs = {},
@@ -519,9 +520,22 @@ export async function exportAssessmentToDocx({
               }),
               new TableRow({
                 children: [
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 2: ความพร้อมของทีมในการสร้าง Agent ขั้นสูง (Advanced Builder Readiness)', size: 21 })] })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ขีดความสามารถของทีมในการเรียนรู้และตั้งค่า Multi-Stage Agentic Workflow', size: 21 })] })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: q1AgenticWorkflow === 'yes' ? 'พร้อม (มีผู้พร้อมเรียนรู้ Workflow)' : 'ไม่พร้อม (ต้องการ Microsoft 365 Copilot (Easy mode) Advanced license allow share สำเร็จรูป)', bold: true, size: 21 })] })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 2: ความจำเป็นในการทำ Multi-Stage Agent และความพร้อมของทีม', size: 21, bold: true })] })] }),
+                  new TableCell({
+                    borders: thinBorder,
+                    children: [
+                      new Paragraph({ children: [new TextRun({ text: 'ประเมินความจำเป็นในการทำ Multi-Stage Agent (3 ข้อ) และความพร้อมของบุคลากรในทีม:\n• 2.1 มีแผนสร้าง sub-agent แยกตามแต่ละ knowledge domain หรือไม่?\n• 2.2 มีแผนสร้าง sub-agent ให้อ่าน FAQ ใน vector database ก่อนไปถาม LLM หรือไม่?\n• 2.3 มีแผนทำ Functional guardrail (เช่น คำถามที่มีความเสี่ยงทางกฎหมาย เช่น บัญชีผู้วายชนม์) หรือไม่?', size: 20 })] })
+                    ]
+                  }),
+                  new TableCell({
+                    borders: thinBorder,
+                    children: [
+                      new Paragraph({ children: [new TextRun({ text: q1AgenticWorkflow === 'yes' ? 'สรุป: ใช่ (ต้องทำ Multi-Stage Agent → Microsoft Copilot Studio หรือ Athena)' : 'สรุป: ไม่ใช่ (ใช้ Microsoft Copilot Easy Agent Builder)', bold: true, size: 21 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• ข้อ 2.1 (Sub-agent แยกโดเมน): ${q1SubQuestions?.sub1 === 'yes' ? 'ใช่ (มีแผน)' : q1SubQuestions?.sub1 === 'no' ? 'ไม่ใช่' : 'ไม่ระบุ'}`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• ข้อ 2.2 (อ่าน FAQ ใน Vector DB): ${q1SubQuestions?.sub2 === 'yes' ? 'ใช่ (มีแผน)' : q1SubQuestions?.sub2 === 'no' ? 'ไม่ใช่' : 'ไม่ระบุ'}`, size: 20 })] }),
+                      new Paragraph({ children: [new TextRun({ text: `• ข้อ 2.3 (Functional Guardrail): ${q1SubQuestions?.sub3 === 'yes' ? 'ใช่ (มีแผน)' : q1SubQuestions?.sub3 === 'no' ? 'ไม่ใช่' : 'ไม่ระบุ'}`, size: 20 })] })
+                    ]
+                  })
                 ]
               }),
               new TableRow({

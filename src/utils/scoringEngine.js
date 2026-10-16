@@ -6,6 +6,7 @@
  */
 export function calculateEvaluation({
   q1AgenticWorkflow, // 'yes' | 'no' | null
+  q1SubQuestions = {}, // { sub1: 'yes'|'no'|null, sub2: 'yes'|'no'|null, sub3: 'yes'|'no'|null }
   // Question 2 (Microsoft Solution)
   hUsers = 0,        // Number of existing Advanced licenses (H)
   uUsers = 0,        // Number of users needed (U)
@@ -428,6 +429,20 @@ export function calculateEvaluation({
       primaryRecommendationId = 'copilot_studio';
       reasoning.push(`ทีมงานมีศักยภาพในการสร้าง Agentic Workflow และต้นทุนไลเซนส์ (฿${m365AnnualCostThb.toLocaleString()}/ปี) สอดคล้องกับข้อกำหนดระบบนิเวศของ Microsoft`);
     }
+  }
+
+  // Append specific Multi-Stage Agent sub-question reasons if answered
+  if (q1SubQuestions?.sub1 === 'yes') {
+    reasoning.push('ข้อ 2.1: มีแผนสร้าง Sub-agent แยกตาม Knowledge Domain เพื่อป้องกัน AI ทำงานผิดพลาดและเพิ่มความแม่นยำ → ต้องใช้ Microsoft Copilot Studio หรือ Athena');
+  }
+  if (q1SubQuestions?.sub2 === 'yes') {
+    reasoning.push('ข้อ 2.2: มีแผนสร้าง Sub-agent ให้อ่าน FAQ ใน Vector Database ก่อนไปถาม LLM เพื่อเพิ่มความแม่นยำและประหยัดค่าใช้จ่าย → ต้องใช้ Microsoft Copilot Studio หรือ Athena');
+  }
+  if (q1SubQuestions?.sub3 === 'yes') {
+    reasoning.push('ข้อ 2.3: มีแผนทำ Functional Guardrail (เช่น คำถามที่มีความเสี่ยงทางกฎหมาย เช่น บัญชีผู้วายชนม์) เพื่อสั่งให้ AI ไม่ตอบคำถามสุ่มเสี่ยง → ต้องใช้ Microsoft Copilot Studio หรือ Athena');
+  }
+  if (q1SubQuestions?.sub1 === 'no' && q1SubQuestions?.sub2 === 'no' && q1SubQuestions?.sub3 === 'no') {
+    reasoning.push('ข้อ 2.1–2.3: ไม่มีความจำเป็นต้องแยก Sub-agent ตาม Knowledge Domain, ไม่ได้คิวรี FAQ จาก Vector DB แยกขั้นตอน และไม่มี Functional Guardrail เฉพาะทาง → รองรับด้วย Microsoft Copilot Easy Agent Builder');
   }
 
   // Normalize percentages to sum to 100%

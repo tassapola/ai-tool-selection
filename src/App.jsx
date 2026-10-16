@@ -53,8 +53,13 @@ export default function App() {
   const [useCaseName, setUseCaseName] = useState(savedState?.useCaseName || '');
   const [departmentName, setDepartmentName] = useState(savedState?.departmentName || '');
 
-  // Q1 State: Advanced Builder Readiness
+  // Q1 State: Advanced Builder Readiness & Multi-Stage Sub-Questions
   const [q1AgenticWorkflow, setQ1AgenticWorkflow] = useState(savedState?.q1AgenticWorkflow ?? null); // 'yes' | 'no' | null
+  const [q1SubQuestions, setQ1SubQuestions] = useState(savedState?.q1SubQuestions || {
+    sub1: null,
+    sub2: null,
+    sub3: null
+  });
   
   // Q2 State: Microsoft solution
   const [hUsers, setHUsers] = useState(savedState?.hUsers ?? 0); // Existing licenses (Variable H)
@@ -142,6 +147,7 @@ export default function App() {
   const evaluation = useMemo(() => {
     return calculateEvaluation({
       q1AgenticWorkflow,
+      q1SubQuestions,
       hUsers,
       uUsers,
       athenaInputs,
@@ -155,6 +161,7 @@ export default function App() {
     });
   }, [
     q1AgenticWorkflow,
+    q1SubQuestions,
     hUsers,
     uUsers,
     athenaInputs,
@@ -175,6 +182,7 @@ export default function App() {
         useCaseName,
         departmentName,
         q1AgenticWorkflow,
+        q1SubQuestions,
         hUsers,
         uUsers,
         athenaInputs,
@@ -191,6 +199,7 @@ export default function App() {
     useCaseName,
     departmentName,
     q1AgenticWorkflow,
+    q1SubQuestions,
     hUsers,
     uUsers,
     athenaInputs,
@@ -232,6 +241,7 @@ export default function App() {
     setUseCaseName('');
     setDepartmentName('');
     setQ1AgenticWorkflow(null);
+    setQ1SubQuestions({ sub1: null, sub2: null, sub3: null });
     setHUsers(0);
     setUUsers(0);
     setAthenaInputs({
@@ -412,6 +422,8 @@ export default function App() {
           <QuestionOne
             value={q1AgenticWorkflow}
             onChange={(val) => setQ1AgenticWorkflow(val)}
+            subQuestions={q1SubQuestions}
+            onSubQuestionsChange={(val) => setQ1SubQuestions(val)}
             onBack={() => {
               setCurrentStep(1);
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -524,6 +536,7 @@ export default function App() {
             useCaseName={useCaseName}
             departmentName={departmentName}
             q1AgenticWorkflow={q1AgenticWorkflow}
+            q1SubQuestions={q1SubQuestions}
             hUsers={hUsers}
             uUsers={uUsers}
             athenaInputs={athenaInputs}

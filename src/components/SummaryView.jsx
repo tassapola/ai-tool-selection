@@ -7,6 +7,7 @@ export default function SummaryView({
   useCaseName = '',
   departmentName = '',
   q1AgenticWorkflow,
+  q1SubQuestions = {},
   hUsers,
   uUsers,
   athenaInputs = {},
@@ -62,6 +63,7 @@ export default function SummaryView({
         useCaseName,
         departmentName,
         q1AgenticWorkflow,
+        q1SubQuestions,
         hUsers,
         uUsers,
         athenaInputs,
@@ -551,32 +553,39 @@ export default function SummaryView({
             </div>
           </div>
 
-          {/* Q1 */}
-          <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+          {/* Q2 (QuestionOne) */}
+          <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1.5">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">1. ความพร้อมสร้าง Agent ขั้นสูง</span>
-              <button onClick={onBackToQ1} className="text-indigo-600 hover:underline text-[11px]">แก้ไข</button>
+              <span className="font-semibold text-slate-800">2. Multi-Stage Agent & ความพร้อมทีม</span>
+              <button onClick={onBackToQ1} className="text-indigo-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              {q1AgenticWorkflow === 'yes' ? '✅ ใช่ (พร้อมเรียนรู้สร้าง Workflow)' : '❌ ไม่ใช่ (ต้องการแบบพร้อมใช้ทันที)'}
+              {q1AgenticWorkflow === 'yes' ? '✅ ใช่ (ทำ Multi-Stage Agent: Copilot Studio / Athena)' : '❌ ไม่ใช่ (ใช้ Microsoft Copilot Easy Agent Builder)'}
             </div>
+            {(q1SubQuestions?.sub1 || q1SubQuestions?.sub2 || q1SubQuestions?.sub3) && (
+              <div className="pt-1 border-t border-slate-100 text-[11px] text-slate-500 space-y-0.5">
+                <div>• 2.1 Sub-agent แยกโดเมน: <strong>{q1SubQuestions.sub1 === 'yes' ? 'ใช่ (มีแผน)' : q1SubQuestions.sub1 === 'no' ? 'ไม่ใช่' : '-'}</strong></div>
+                <div>• 2.2 อ่าน FAQ ใน Vector DB: <strong>{q1SubQuestions.sub2 === 'yes' ? 'ใช่ (มีแผน)' : q1SubQuestions.sub2 === 'no' ? 'ไม่ใช่' : '-'}</strong></div>
+                <div>• 2.3 ทำ Functional Guardrail: <strong>{q1SubQuestions.sub3 === 'yes' ? 'ใช่ (มีแผน)' : q1SubQuestions.sub3 === 'no' ? 'ไม่ใช่' : '-'}</strong></div>
+              </div>
+            )}
           </div>
 
-          {/* Q2 */}
+          {/* Q3 (QuestionTwo) */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">2. ต้นทุนโซลูชัน Microsoft</span>
-              <button onClick={onBackToQ2} className="text-blue-600 hover:underline text-[11px]">แก้ไข</button>
+              <span className="font-semibold text-slate-800">3. ต้นทุนโซลูชัน Microsoft</span>
+              <button onClick={onBackToQ2} className="text-blue-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
               H: {H} • U: {U} (ซื้อเพิ่ม {additionalLicensesNeeded} สิทธิ์) → <strong>฿{annualCostThb.toLocaleString()} / ปี</strong>
             </div>
           </div>
 
-          {/* Q3 */}
+          {/* Q4 (QuestionThree) */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">3. ต้นทุนระบบ Athena</span>
+              <span className="font-semibold text-slate-800">4. ต้นทุนระบบ Athena</span>
               <button onClick={onBackToQ3} className="text-emerald-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
@@ -584,10 +593,10 @@ export default function SummaryView({
             </div>
           </div>
 
-          {/* Q4 */}
+          {/* Q5 (QuestionFour) */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">4. เชื่อมต่อระบบ KBank อื่น / UI อื่น</span>
+              <span className="font-semibold text-slate-800">5. เชื่อมต่อระบบ KBank อื่น / UI อื่น</span>
               <button onClick={onBackToQ4} className="text-emerald-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
@@ -595,10 +604,10 @@ export default function SummaryView({
             </div>
           </div>
 
-          {/* Q5 */}
+          {/* Q6 (QuestionFive) */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">5. รวมความรู้สู่ OneDrive</span>
+              <span className="font-semibold text-slate-800">6. รวมความรู้สู่ OneDrive</span>
               <button onClick={onBackToQ5} className="text-blue-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
@@ -606,10 +615,10 @@ export default function SummaryView({
             </div>
           </div>
 
-          {/* Q6 */}
+          {/* Q7 (QuestionSix) */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">6. การกำกับดูแลสิทธิ์ UAM</span>
+              <span className="font-semibold text-slate-800">7. การกำกับดูแลสิทธิ์ UAM</span>
               <button onClick={onBackToQ6} className="text-purple-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
@@ -617,10 +626,10 @@ export default function SummaryView({
             </div>
           </div>
 
-          {/* Q7 */}
+          {/* Q8 (QuestionSeven) */}
           <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-800">7. แผนโมเดล Local / KBTG LLM</span>
+              <span className="font-semibold text-slate-800">8. แผนโมเดล Local / KBTG LLM</span>
               <button onClick={onBackToQ7} className="text-teal-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
