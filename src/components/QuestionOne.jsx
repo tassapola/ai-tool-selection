@@ -388,40 +388,6 @@ export default function QuestionOne({
             สรุปคำตอบข้อที่ 2: โครงการของท่านต้องสร้าง Multi-Stage Agentic Workflow และทีมพร้อมเรียนรู้หรือไม่?
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* NO Option */}
-            <button
-              type="button"
-              onClick={() => onChange('no')}
-              className={`p-5 rounded-xl border-2 text-left transition-all duration-200 relative flex flex-col justify-between cursor-pointer ${
-                value === 'no'
-                  ? 'border-blue-600 bg-blue-50/80 ring-2 ring-blue-500/20 shadow-sm'
-                  : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 bg-white'
-              }`}
-            >
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className={`text-lg font-bold ${value === 'no' ? 'text-blue-900' : 'text-slate-900'}`}>
-                    ไม่ใช่ (No — ใช้ Microsoft M365 Copilot Easy mode Advanced license)
-                  </span>
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                    value === 'no' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'
-                  }`}>
-                    {value === 'no' ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
-                  </div>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  ไม่จำเป็นต้องทำ Multi-Stage Agent (ตอบ &quot;ไม่ใช่&quot; ทั้ง 3 ข้อข้างต้น) หรือทีมไม่มีกำลังคนและต้องการ AI แบบพร้อมใช้งานทันที (Ready-to-use)
-                </p>
-              </div>
-
-              {value === 'no' && (
-                <div className="mt-3 pt-3 border-t border-blue-200/80 text-xs font-semibold text-blue-700 flex items-center space-x-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                  <span>คำแนะนำตรง: Microsoft M365 Copilot Easy mode Advanced license</span>
-                </div>
-              )}
-            </button>
-
             {/* YES Option */}
             <button
               type="button"
@@ -452,6 +418,40 @@ export default function QuestionOne({
                 <div className="mt-3 pt-3 border-t border-purple-200/80 text-xs font-semibold text-purple-700 flex items-center space-x-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-purple-600 shrink-0" />
                   <span>แนะนำ: Microsoft Copilot Studio หรือ Athena (เปรียบเทียบต้นทุนและสถาปัตยกรรมในขั้นตอนถัดไป)</span>
+                </div>
+              )}
+            </button>
+
+            {/* NO Option */}
+            <button
+              type="button"
+              onClick={() => onChange('no')}
+              className={`p-5 rounded-xl border-2 text-left transition-all duration-200 relative flex flex-col justify-between cursor-pointer ${
+                value === 'no'
+                  ? 'border-blue-600 bg-blue-50/80 ring-2 ring-blue-500/20 shadow-sm'
+                  : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 bg-white'
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className={`text-lg font-bold ${value === 'no' ? 'text-blue-900' : 'text-slate-900'}`}>
+                    ไม่ใช่ (No — ใช้ Microsoft M365 Copilot Easy mode Advanced license)
+                  </span>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                    value === 'no' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'
+                  }`}>
+                    {value === 'no' ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                  </div>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  ไม่จำเป็นต้องทำ Multi-Stage Agent (ตอบ &quot;ไม่ใช่&quot; ทั้ง 3 ข้อข้างต้น) หรือทีมไม่มีกำลังคนและต้องการ AI แบบพร้อมใช้งานทันที (Ready-to-use)
+                </p>
+              </div>
+
+              {value === 'no' && (
+                <div className="mt-3 pt-3 border-t border-blue-200/80 text-xs font-semibold text-blue-700 flex items-center space-x-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span>คำแนะนำตรง: Microsoft M365 Copilot Easy mode Advanced license</span>
                 </div>
               )}
             </button>

@@ -21,11 +21,24 @@ export default function QuestionSix({
           คุณมีบุคลากร กระบวนการ และเวลาที่พร้อมในการกำกับดูแลสิทธิ์ UAM ให้อยู่ในการควบคุมหรือไม่?
         </h2>
         <p className="mt-2 text-sm text-slate-600 max-w-2xl leading-relaxed">
-          ในแพลตฟอร์มแบบ Self-Service เช่น Microsoft Copilot Studio ทีมของคุณมีความรับผิดชอบโดยตรง (Accountable) ในการดูแลสิทธิ์การเข้าถึงและการส่งต่อความเป็นเจ้าของ Agent
+          ในแพลตฟอร์มแบบ Self-Service เช่น Microsoft Copilot Studio ทีมของคุณมีความรับผิดชอบโดยตรง (Accountable) ในการดูแลสิทธิ์การเข้าถึงและการส่งต่อความเป็นเจ้าของ Agent โดย<strong className="text-rose-700">คุณต้องดูแล UAM เองกรณีพนักงานย้ายฝ่าย ถ้าธปท. (ธนาคารแห่งประเทศไทย) มาตรวจสอบแล้วสิทธิ์ผิด ท่านอาจพบกรณีความเสี่ยงที่ธปท.มีความกังวลใจ</strong>
         </p>
       </div>
 
       <div className="p-6 sm:p-8 space-y-6">
+        {/* Highlighted Regulatory / BoT Warning Box */}
+        <div className="p-4 rounded-xl bg-amber-50 border-2 border-amber-300 text-xs text-amber-950 flex items-start space-x-3">
+          <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="space-y-1 leading-relaxed">
+            <span className="font-bold text-amber-900 block text-sm">
+              ข้อควรระวังสำคัญด้านการตรวจสอบจาก ธปท. (ธนาคารแห่งประเทศไทย)
+            </span>
+            <p>
+              <strong>คุณต้องดูแล UAM เองกรณีพนักงานย้ายฝ่าย</strong> หากไม่มีกระบวนการตรวจสอบและเพิกถอนสิทธิ์ที่รัดกุม <strong>ถ้าธปท. (ธนาคารแห่งประเทศไทย) มาตรวจสอบแล้วสิทธิ์ผิด ท่านอาจพบกรณีความเสี่ยงที่ธปท.มีความกังวลใจ</strong>
+            </p>
+          </div>
+        </div>
+
         {/* The 2 Specific Governance Cases */}
         <div className="space-y-3">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-700 block">
@@ -44,7 +57,7 @@ export default function QuestionSix({
                 </h3>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                หากบุคคลที่คุณแชร์ AI Agent ให้ย้ายไปอยู่ฝ่ายอื่นภายใน KBank <strong>คุณมีความรับผิดชอบโดยตรง (ACCOUNTABLE)</strong> ในการตรวจสอบและปรับปรุงหรือเพิกถอนสิทธิ์การเข้าถึง Agent นั้น
+                หากบุคคลที่คุณแชร์ AI Agent ให้ย้ายไปอยู่ฝ่ายอื่นภายใน KBank <strong>คุณต้องดูแล UAM เองและมีความรับผิดชอบโดยตรง (ACCOUNTABLE)</strong> ในการตรวจสอบและปรับปรุงหรือเพิกถอนสิทธิ์การเข้าถึง Agent นั้น <strong className="text-rose-700">ถ้าธปท. (ธนาคารแห่งประเทศไทย) มาตรวจสอบแล้วสิทธิ์ผิด ท่านอาจพบกรณีความเสี่ยงที่ธปท.มีความกังวลใจ</strong>
               </p>
             </div>
 
@@ -89,7 +102,7 @@ export default function QuestionSix({
                 </div>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                ใช่ ทีมของเรามีบุคลากร กระบวนการ และเวลาในการตรวจสอบสิทธิ์อย่างสม่ำเสมอ เพื่อจัดการสิทธิ์ของ Agent และการส่งต่องานอย่างต่อเนื่อง
+                ใช่ ทีมของเรามีบุคลากร กระบวนการ และเวลาในการตรวจสอบสิทธิ์อย่างสม่ำเสมอ พร้อมรับผิดชอบ<strong>ดูแล UAM เองกรณีพนักงานย้ายฝ่าย</strong> เพื่อควบคุมสิทธิ์ให้ถูกต้องและป้องกันไม่ให้เกิดกรณีความเสี่ยงที่ธปท. (ธนาคารแห่งประเทศไทย) มีความกังวลใจหากมาตรวจสอบแล้วพบว่าสิทธิ์ผิด
               </p>
             </div>
 
@@ -123,7 +136,7 @@ export default function QuestionSix({
                 </div>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                ไม่ใช่ ทีมไม่สามารถรับภาระในการตรวจสอบสิทธิ์ผู้ใช้หรือโอนย้ายความเป็นเจ้าของอย่างต่อเนื่องได้ เราต้องการการกำกับดูแลแบบรวมศูนย์ระดับองค์กร
+                ไม่ใช่ ทีมไม่สามารถรับภาระในการ<strong>ดูแล UAM เองกรณีพนักงานย้ายฝ่าย</strong>หรือโอนย้ายความเป็นเจ้าของอย่างต่อเนื่องได้ (ซึ่งถ้าธปท. (ธนาคารแห่งประเทศไทย) มาตรวจสอบแล้วสิทธิ์ผิด ท่านอาจพบกรณีความเสี่ยงที่ธปท.มีความกังวลใจ) เราจึงต้องการการกำกับดูแลแบบรวมศูนย์ระดับองค์กร
               </p>
             </div>
 

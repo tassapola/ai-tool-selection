@@ -14,7 +14,7 @@ export default function Navbar({
 }) {
   const steps = [
     { num: 1, label: 'Use-case info', title: 'ข้อมูล Use-case และฝ่ายงาน (Use-case info)' },
-    { num: 2, label: 'ความพร้อมทีม', title: 'ข้อที่ 2: ความพร้อมสร้าง Agent ขั้นสูง (Advanced Builder Readiness)' },
+    { num: 2, label: 'Multi-step agent', title: 'ข้อที่ 2: ความพร้อมสร้าง Agent ขั้นสูง (Advanced Builder Readiness)' },
     { num: 3, label: 'ค่าใช้จ่าย M365', title: 'ข้อที่ 3: ประมาณการค่าใช้จ่าย: โซลูชัน Microsoft' },
     { num: 4, label: 'ค่าใช้จ่าย Athena', title: 'ข้อที่ 4: ประมาณการค่าใช้จ่าย: Athena' },
     { num: 5, label: 'เชื่อมต่อ KBank อื่น', title: 'ข้อที่ 5: การเชื่อมต่อระบบภายใน KBank อื่นหรือใช้ UI ในระบบ KBank อื่น (นอกเหนือจาก M365/MDP เช่น RQ / SmartServe)' },
