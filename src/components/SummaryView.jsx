@@ -622,7 +622,7 @@ export default function SummaryView({
               <button onClick={onBackToQ6} className="text-purple-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              {effectiveQ6Uam === 'yes' ? '✅ ใช่ (ทีมพร้อมตรวจสอบสิทธิ์ UAM)' : '❌ ไม่ใช่ (ต้องการ UAM รวมศูนย์)'}
+              {effectiveQ6Uam === 'yes' ? '✅ ใช่ ฉันจะดูแล UAM เอง' : '❌ ไม่ใช่ ฉันอยากให้ IT หรือ BU ส่วนกลางดูแล UAM ให้'}
             </div>
           </div>
 

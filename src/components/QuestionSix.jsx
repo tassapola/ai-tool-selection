@@ -91,11 +91,11 @@ export default function QuestionSix({
             }`}
           >
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className={`text-lg font-bold ${value === 'yes' ? 'text-indigo-900' : 'text-slate-900'}`}>
-                  ใช่ (Yes)
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span className={`text-base sm:text-lg font-bold leading-snug ${value === 'yes' ? 'text-indigo-900' : 'text-slate-900'}`}>
+                  ใช่ ฉันจะดูแล UAM เอง
                 </span>
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
                   value === 'yes' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'
                 }`}>
                   <Check className="w-4 h-4" />
@@ -125,11 +125,11 @@ export default function QuestionSix({
             }`}
           >
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className={`text-lg font-bold ${value === 'no' ? 'text-emerald-900' : 'text-slate-900'}`}>
-                  ไม่ใช่ (No)
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span className={`text-base sm:text-lg font-bold leading-snug ${value === 'no' ? 'text-emerald-900' : 'text-slate-900'}`}>
+                  ไม่ใช่ ฉันอยากให้ IT หรือ BU ส่วนกลางดูแล UAM ให้
                 </span>
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
                   value === 'no' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-400'
                 }`}>
                   {value === 'no' ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}

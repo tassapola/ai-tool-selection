@@ -614,7 +614,7 @@ export async function exportAssessmentToDocx({
                 children: [
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'ข้อที่ 7: การกำกับดูแล UAM และการโอนย้ายสิทธิ์', size: 21 })] })] }),
                   new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: 'คุณมีบุคลากร กระบวนการ และเวลาที่พร้อมในการกำกับดูแลสิทธิ์ UAM ให้อยู่ในการควบคุมหรือไม่? (ต้องดูแล UAM เองกรณีพนักงานย้ายฝ่าย ถ้าธปท. (ธนาคารแห่งประเทศไทย) มาตรวจสอบแล้วสิทธิ์ผิด ท่านอาจพบกรณีความเสี่ยงที่ธปท.มีความกังวลใจ)', size: 21 })] })] }),
-                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: effectiveQ6Uam === 'yes' ? 'ใช่ (พร้อมดูแล UAM เองกรณีพนักงานย้ายฝ่าย)' : 'ไม่ใช่ (ไม่พร้อมดูแล UAM เอง — ต้องการ UAM รวมศูนย์ขององค์กร)', bold: true, size: 21 })] })] })
+                  new TableCell({ borders: thinBorder, children: [new Paragraph({ children: [new TextRun({ text: effectiveQ6Uam === 'yes' ? 'ใช่ ฉันจะดูแล UAM เอง' : 'ไม่ใช่ ฉันอยากให้ IT หรือ BU ส่วนกลางดูแล UAM ให้', bold: true, size: 21 })] })] })
                 ]
               }),
               new TableRow({
