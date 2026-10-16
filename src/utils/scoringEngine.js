@@ -442,7 +442,7 @@ export function calculateEvaluation({
     reasoning.push('ข้อ 2.3: มีแผนทำ Functional Guardrail (เช่น คำถามที่มีความเสี่ยงทางกฎหมาย เช่น บัญชีผู้วายชนม์) เพื่อสั่งให้ AI ไม่ตอบคำถามสุ่มเสี่ยง → ต้องใช้ Microsoft Copilot Studio หรือ Athena');
   }
   if (q1SubQuestions?.sub1 === 'no' && q1SubQuestions?.sub2 === 'no' && q1SubQuestions?.sub3 === 'no') {
-    reasoning.push('ข้อ 2.1–2.3: ไม่มีความจำเป็นต้องแยก Sub-agent ตาม Knowledge Domain, ไม่ได้คิวรี FAQ จาก Vector DB แยกขั้นตอน และไม่มี Functional Guardrail เฉพาะทาง → รองรับด้วย Microsoft Copilot Easy Agent Builder');
+    reasoning.push('ข้อ 2.1–2.3: ไม่มีความจำเป็นต้องแยก Sub-agent ตาม Knowledge Domain, ไม่ได้คิวรี FAQ จาก Vector DB แยกขั้นตอน และไม่มี Functional Guardrail เฉพาะทาง → รองรับด้วย Microsoft M365 Copilot Easy mode Advanced license');
   }
 
   // Normalize percentages to sum to 100%

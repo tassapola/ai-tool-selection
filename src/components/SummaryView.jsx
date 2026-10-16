@@ -560,7 +560,7 @@ export default function SummaryView({
               <button onClick={onBackToQ1} className="text-indigo-600 hover:underline text-[11px] print:hidden">แก้ไข</button>
             </div>
             <div className="text-slate-600">
-              {q1AgenticWorkflow === 'yes' ? '✅ ใช่ (ทำ Multi-Stage Agent: Copilot Studio / Athena)' : '❌ ไม่ใช่ (ใช้ Microsoft Copilot Easy Agent Builder)'}
+              {q1AgenticWorkflow === 'yes' ? '✅ ใช่ (ทำ Multi-Stage Agent: Copilot Studio / Athena)' : '❌ ไม่ใช่ (ใช้ Microsoft M365 Copilot Easy mode Advanced license)'}
             </div>
             {(q1SubQuestions?.sub1 || q1SubQuestions?.sub2 || q1SubQuestions?.sub3) && (
               <div className="pt-1 border-t border-slate-100 text-[11px] text-slate-500 space-y-0.5">

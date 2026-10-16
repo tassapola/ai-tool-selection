@@ -530,7 +530,7 @@ export async function exportAssessmentToDocx({
                   new TableCell({
                     borders: thinBorder,
                     children: [
-                      new Paragraph({ children: [new TextRun({ text: q1AgenticWorkflow === 'yes' ? 'สรุป: ใช่ (ต้องทำ Multi-Stage Agent → Microsoft Copilot Studio หรือ Athena)' : 'สรุป: ไม่ใช่ (ใช้ Microsoft Copilot Easy Agent Builder)', bold: true, size: 21 })] }),
+                      new Paragraph({ children: [new TextRun({ text: q1AgenticWorkflow === 'yes' ? 'สรุป: ใช่ (ต้องทำ Multi-Stage Agent → Microsoft Copilot Studio หรือ Athena)' : 'สรุป: ไม่ใช่ (ใช้ Microsoft M365 Copilot Easy mode Advanced license)', bold: true, size: 21 })] }),
                       new Paragraph({ children: [new TextRun({ text: `• ข้อ 2.1 (Sub-agent แยกโดเมน): ${q1SubQuestions?.sub1 === 'yes' ? 'ใช่ (มีแผน)' : q1SubQuestions?.sub1 === 'no' ? 'ไม่ใช่' : 'ไม่ระบุ'}`, size: 20 })] }),
                       new Paragraph({ children: [new TextRun({ text: `• ข้อ 2.2 (อ่าน FAQ ใน Vector DB): ${q1SubQuestions?.sub2 === 'yes' ? 'ใช่ (มีแผน)' : q1SubQuestions?.sub2 === 'no' ? 'ไม่ใช่' : 'ไม่ระบุ'}`, size: 20 })] }),
                       new Paragraph({ children: [new TextRun({ text: `• ข้อ 2.3 (Functional Guardrail): ${q1SubQuestions?.sub3 === 'yes' ? 'ใช่ (มีแผน)' : q1SubQuestions?.sub3 === 'no' ? 'ไม่ใช่' : 'ไม่ระบุ'}`, size: 20 })] })
