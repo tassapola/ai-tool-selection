@@ -524,7 +524,7 @@ export async function exportAssessmentToDocx({
                   new TableCell({
                     borders: thinBorder,
                     children: [
-                      new Paragraph({ children: [new TextRun({ text: 'ประเมินความจำเป็นในการทำ Multi-Stage Agent (3 ข้อ) และความพร้อมของบุคลากรในทีม:\n• 2.1 มีแผนสร้าง sub-agent แยกตามแต่ละ knowledge domain หรือไม่?\n• 2.2 มีแผนสร้าง sub-agent ให้อ่าน FAQ ใน vector database ก่อนไปถาม LLM หรือไม่?\n• 2.3 มีแผนทำ Functional guardrail (เช่น คำถามที่มีความเสี่ยงทางกฎหมาย เช่น บัญชีผู้วายชนม์) หรือไม่?', size: 20 })] })
+                      new Paragraph({ children: [new TextRun({ text: 'ประเมินความจำเป็นในการทำ Multi-Stage Agent (3 ข้อ) และความพร้อมของบุคลากรในทีม:\n• 2.1 มีแผนสร้าง sub-agent แยกตามแต่ละ knowledge domain หรือไม่?\n• 2.2 มีแผนสร้าง sub-agent ให้อ่าน FAQ ใน vector database ก่อนไปถาม LLM หรือไม่?\n• 2.3 มีแผนทำ Functional guardrail ที่มีลำดับและผิดไม่ได้ ที่ควรจะใช้ sub-agent ที่ทำงานที่ชัดเจน เช่นคำถามที่มีความเสี่ยงทางกฎหมาย (ตัวอย่างเพิ่มเติมคำถามเกี่ยวกับวสวท. กรณีผู้วาชนม์) หรือไม่?', size: 20 })] })
                     ]
                   }),
                   new TableCell({
