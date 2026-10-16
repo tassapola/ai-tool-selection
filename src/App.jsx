@@ -3,6 +3,7 @@ import { dbService } from './db/database';
 import { calculateEvaluation } from './utils/scoringEngine';
 import Navbar from './components/Navbar';
 import RecommendationPanel from './components/RecommendationPanel';
+import BeforeStart from './components/BeforeStart';
 import UseCaseInfo from './components/UseCaseInfo';
 import QuestionOne from './components/QuestionOne';
 import QuestionTwo from './components/QuestionTwo';
@@ -38,6 +39,7 @@ export default function App() {
   const [isScreenAlertOpen, setIsScreenAlertOpen] = useState(false);
 
   // Questionnaire Steps:
+  // 0 = ก่อนเริ่ม (Before Starting)
   // 1 = Use-case info (Use-case ชื่ออะไร, ของฝ่ายงานไหน)
   // 2 = Q1 (Advanced Builder Readiness)
   // 3 = Q2 (Cost: Microsoft)
@@ -47,7 +49,7 @@ export default function App() {
   // 7 = Q6 (UAM Governance)
   // 8 = Q7 (Model Roadmap: Local/KBTG LLM)
   // 9 = Summary & 3-Way Comparison
-  const [currentStep, setCurrentStep] = useState(savedState?.currentStep || 1);
+  const [currentStep, setCurrentStep] = useState(savedState?.currentStep ?? 0);
   
   // Use-case Info State (Stage 1)
   const [useCaseName, setUseCaseName] = useState(savedState?.useCaseName || '');
@@ -267,7 +269,7 @@ export default function App() {
     setQ5O365KnowledgeToSharepoint(null);
     setQ6UamGovernance(null);
     setQ7LocalKbtgLlm(null);
-    setCurrentStep(1);
+    setCurrentStep(0);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -292,8 +294,9 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Step descriptions map in Thai (9 stages)
+  // Step descriptions map in Thai (0 = ก่อนเริ่ม, 1–9 = 9 stages)
   const stepTitles = {
+    0: "ก่อนเริ่ม: ข้อควรทราบและขอบเขตการใช้งานเครื่องมือ (Before Starting)",
     1: "ข้อมูล Use-case และฝ่ายงาน (Use-case info)",
     2: "ข้อที่ 2: ความพร้อมสร้าง Agent ขั้นสูง (Advanced Builder Readiness)",
     3: "ข้อที่ 3: ประมาณการค่าใช้จ่าย: โซลูชัน Microsoft (Cost estimation: Microsoft solution)",
@@ -359,7 +362,7 @@ export default function App() {
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              ขั้นตอนที่ {currentStep} จาก 9:
+              {currentStep === 0 ? 'ขั้นตอนเตรียมความพร้อม:' : `ขั้นตอนที่ ${currentStep} จาก 9:`}
             </span>
             <span className="text-sm font-bold text-slate-900">
               {stepTitles[currentStep]}
@@ -368,7 +371,7 @@ export default function App() {
 
           {/* Step dots */}
           <div className="flex items-center space-x-1.5 self-start sm:self-auto">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
               <button
                 key={num}
                 type="button"
@@ -380,6 +383,8 @@ export default function App() {
                 className={`w-3 h-3 rounded-full transition-all ${
                   currentStep === num
                     ? 'bg-indigo-600 scale-125'
+                    : num === 0 && currentStep > 0
+                    ? 'bg-emerald-500'
                     : num === 1 && (useCaseName || departmentName)
                     ? 'bg-emerald-500'
                     : num === 2 && q1AgenticWorkflow
@@ -398,19 +403,32 @@ export default function App() {
                     ? 'bg-emerald-500'
                     : 'bg-slate-300'
                 }`}
-                title={`Step ${num}`}
+                title={num === 0 ? 'ก่อนเริ่ม' : `Step ${num}`}
               />
             ))}
           </div>
         </div>
 
-        {/* View Switching (9 Stages) */}
+        {/* View Switching (0 = ก่อนเริ่ม, 1–9 = 9 Stages) */}
+        {currentStep === 0 && (
+          <BeforeStart
+            onStart={() => {
+              setCurrentStep(1);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        )}
+
         {currentStep === 1 && (
           <UseCaseInfo
             useCaseName={useCaseName}
             departmentName={departmentName}
             onUseCaseNameChange={(val) => setUseCaseName(val)}
             onDepartmentNameChange={(val) => setDepartmentName(val)}
+            onBack={() => {
+              setCurrentStep(0);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             onNext={() => {
               setCurrentStep(2);
               window.scrollTo({ top: 0, behavior: 'smooth' });

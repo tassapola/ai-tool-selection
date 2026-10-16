@@ -202,7 +202,7 @@ export default function QuestionTwo({
             className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>ย้อนกลับไปคำถามที่ 2 (ความพร้อมในการสร้าง Agent ขั้นสูง)</span>
+            <span>ย้อนกลับไปคำถามที่ 2 (Multi-step agent)</span>
           </button>
 
           <button
